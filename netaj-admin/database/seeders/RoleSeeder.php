@@ -15,19 +15,19 @@ class RoleSeeder extends Seeder
      */
     public function run(): void
     {
-        // إنشاء الأدوار الأساسية
+        // Create basic roles
         $superAdmin = Role::firstOrCreate(['name' => 'super_admin', 'guard_name' => 'web']);
         $admin = Role::firstOrCreate(['name' => 'admin', 'guard_name' => 'web']);
         $editor = Role::firstOrCreate(['name' => 'editor', 'guard_name' => 'web']);
         $viewer = Role::firstOrCreate(['name' => 'viewer', 'guard_name' => 'web']);
         
-        // الحصول على جميع الصلاحيات
+        // Get all permissions
         $allPermissions = Permission::all();
         
-        // تعيين جميع الصلاحيات لـ Super Admin
+        // Assign all permissions to Super Admin
         $superAdmin->syncPermissions($allPermissions);
         
-        // تعيين صلاحيات محددة للمدير
+        // Assign specific permissions to Admin
         $adminPermissions = Permission::whereIn('name', [
             'view_any_user',
             'view_user',
@@ -41,7 +41,7 @@ class RoleSeeder extends Seeder
         ])->get();
         $admin->syncPermissions($adminPermissions);
         
-        // تعيين صلاحيات محددة للمحرر
+        // Assign specific permissions to Editor
         $editorPermissions = Permission::whereIn('name', [
             'view_any_user',
             'view_user',
@@ -52,7 +52,7 @@ class RoleSeeder extends Seeder
         ])->get();
         $editor->syncPermissions($editorPermissions);
         
-        // تعيين صلاحيات القراءة فقط للمشاهد
+        // Assign read-only permissions to Viewer
         $viewerPermissions = Permission::whereIn('name', [
             'view_any_user',
             'view_user',
@@ -61,17 +61,17 @@ class RoleSeeder extends Seeder
         ])->get();
         $viewer->syncPermissions($viewerPermissions);
         
-        // تعيين دور Super Admin للمستخدم الأول (admin@example.com)
+        // Assign Super Admin role to first user (admin@example.com)
         $adminUser = User::where('email', 'admin@example.com')->first();
         if ($adminUser) {
             $adminUser->assignRole('super_admin');
         }
         
-        $this->command->info('تم إنشاء الأدوار والصلاحيات بنجاح!');
-        $this->command->info('الأدوار المُنشأة:');
-        $this->command->info('- Super Admin: جميع الصلاحيات');
-        $this->command->info('- Admin: إدارة المستخدمين والأدوار (بدون حذف الأدوار)');
-        $this->command->info('- Editor: عرض وإنشاء وتعديل المستخدمين، عرض الأدوار');
-        $this->command->info('- Viewer: عرض المستخدمين والأدوار فقط');
+        $this->command->info('Roles and permissions created successfully!');
+        $this->command->info('Created roles:');
+        $this->command->info('- Super Admin: All permissions');
+        $this->command->info('- Admin: User and role management (without role deletion)');
+        $this->command->info('- Editor: View, create and edit users, view roles');
+        $this->command->info('- Viewer: View users and roles only');
     }
 }

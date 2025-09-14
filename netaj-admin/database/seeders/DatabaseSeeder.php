@@ -15,14 +15,17 @@ class DatabaseSeeder extends Seeder
     {
         // User::factory(10)->create();
 
+        // Create default user
         User::factory()->create([
             'name' => 'Test User',
             'email' => 'test@example.com',
         ]);
         
-        // تشغيل seeder الأدوار والصلاحيات
+        // Run other seeders
         $this->call([
             RoleSeeder::class,
         ]);
+
+        $this->command->info('All seeders executed successfully!');
     }
 }
