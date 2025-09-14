@@ -10,6 +10,7 @@ use App\Models\Transporter;
 use App\Models\Product;
 use Filament\Forms;
 use Filament\Forms\Form;
+use Filament\Forms\Components\Actions\Action;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
@@ -80,7 +81,9 @@ class DeliveryDocumentResource extends Resource
                             ->columns(5)
                             ->defaultItems(1)
                             ->addActionLabel('Add Product')
-                            ->deleteActionLabel('Remove Product')
+                            ->deleteAction(
+                                fn (Action $action) => $action->label('Remove Product')
+                            )
                             ->label('Products')
                             ->columnSpanFull(),
                     ])->columns(2),
