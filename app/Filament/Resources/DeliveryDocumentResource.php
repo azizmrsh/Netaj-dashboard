@@ -33,6 +33,7 @@ class DeliveryDocumentResource extends Resource
                     ->schema([
                         Forms\Components\DateTimePicker::make('date_and_time')
                             ->required()
+                            ->now
                             ->label('Date and Time'),
                         Forms\Components\Select::make('id_customer')
                             ->relationship('customer', 'name')
@@ -63,20 +64,7 @@ class DeliveryDocumentResource extends Resource
                                     ->step(0.001)
                                     ->label('Quantity')
                                     ->columnSpan(1),
-                                Forms\Components\TextInput::make('unit_price')
-                                    ->numeric()
-                                    ->minValue(0)
-                                    ->step(0.01)
-                                    ->label('Unit Price')
-                                    ->columnSpan(1),
-                                Forms\Components\TextInput::make('tax_rate')
-                                    ->numeric()
-                                    ->minValue(0)
-                                    ->maxValue(100)
-                                    ->step(0.01)
-                                    ->default(15)
-                                    ->label('Tax Rate (%)')
-                                    ->columnSpan(1),
+
                             ])
                             ->columns(5)
                             ->defaultItems(1)
