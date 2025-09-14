@@ -33,7 +33,7 @@ class DeliveryDocumentResource extends Resource
                     ->schema([
                         Forms\Components\DateTimePicker::make('date_and_time')
                             ->required()
-                            ->now
+                            
                             ->label('Date and Time'),
                         Forms\Components\Select::make('id_customer')
                             ->relationship('customer', 'name')
