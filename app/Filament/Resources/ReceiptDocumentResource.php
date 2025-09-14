@@ -14,6 +14,9 @@ use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use pxlrbt\FilamentExcel\Actions\Tables\ExportBulkAction;
+use pxlrbt\FilamentExcel\Actions\Tables\ExportAction;
+use pxlrbt\FilamentExcel\Exports\ExcelExport;
 
 class ReceiptDocumentResource extends Resource
 {
@@ -127,10 +130,22 @@ class ReceiptDocumentResource extends Resource
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
+                ExportAction::make()
+                    ->exports([
+                        ExcelExport::make()
+                            ->fromTable()
+                            ->withFilename(fn () => 'receipt-documents-' . date('Y-m-d-H-i-s'))
+                    ])
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),
+                    ExportBulkAction::make()
+                        ->exports([
+                            ExcelExport::make()
+                                ->fromTable()
+                                ->withFilename(fn () => 'receipt-documents-' . date('Y-m-d-H-i-s'))
+                        ])
                 ]),
             ]);
     }
