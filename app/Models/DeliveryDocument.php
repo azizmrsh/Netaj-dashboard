@@ -20,8 +20,6 @@ class DeliveryDocument extends Model
         'date_and_time',
         'id_customer',
         'id_transporter',
-        'id_product',
-        'product_quantity',
         'purchasing_officer_name',
         'purchasing_officer_signature',
         'warehouse_officer_name',
@@ -40,7 +38,6 @@ class DeliveryDocument extends Model
      */
     protected $casts = [
         'date_and_time' => 'datetime',
-        'product_quantity' => 'integer',
     ];
 
     /**
@@ -59,13 +56,7 @@ class DeliveryDocument extends Model
         return $this->belongsTo(Transporter::class, 'id_transporter');
     }
 
-    /**
-     * Get the product that owns the delivery document.
-     */
-    public function product(): BelongsTo
-    {
-        return $this->belongsTo(Product::class, 'id_product');
-    }
+
 
     /**
      * Get the delivery document products for the delivery document.

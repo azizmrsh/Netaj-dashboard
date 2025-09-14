@@ -45,17 +45,44 @@ class DeliveryDocumentResource extends Resource
                             ->searchable()
                             ->preload()
                             ->label('Transporter'),
-                        Forms\Components\Select::make('id_product')
-                            ->relationship('product', 'name')
-                            ->required()
-                            ->searchable()
-                            ->preload()
-                            ->label('Product'),
-                        Forms\Components\TextInput::make('product_quantity')
-                            ->required()
-                            ->numeric()
-                            ->minValue(1)
-                            ->label('Product Quantity'),
+                        Forms\Components\Repeater::make('deliveryDocumentProducts')
+                            ->relationship()
+                            ->schema([
+                                Forms\Components\Select::make('product_id')
+                                    ->relationship('product', 'name')
+                                    ->required()
+                                    ->searchable()
+                                    ->preload()
+                                    ->label('Product')
+                                    ->columnSpan(2),
+                                Forms\Components\TextInput::make('quantity')
+                                    ->required()
+                                    ->numeric()
+                                    ->minValue(0.001)
+                                    ->step(0.001)
+                                    ->label('Quantity')
+                                    ->columnSpan(1),
+                                Forms\Components\TextInput::make('unit_price')
+                                    ->numeric()
+                                    ->minValue(0)
+                                    ->step(0.01)
+                                    ->label('Unit Price')
+                                    ->columnSpan(1),
+                                Forms\Components\TextInput::make('tax_rate')
+                                    ->numeric()
+                                    ->minValue(0)
+                                    ->maxValue(100)
+                                    ->step(0.01)
+                                    ->default(15)
+                                    ->label('Tax Rate (%)')
+                                    ->columnSpan(1),
+                            ])
+                            ->columns(5)
+                            ->defaultItems(1)
+                            ->addActionLabel('Add Product')
+                            ->deleteActionLabel('Remove Product')
+                            ->label('Products')
+                            ->columnSpanFull(),
                     ])->columns(2),
                 
                 Forms\Components\Section::make('Order Information')
@@ -114,14 +141,16 @@ class DeliveryDocumentResource extends Resource
                     ->sortable()
                     ->searchable()
                     ->label('Transporter'),
-                Tables\Columns\TextColumn::make('product.name')
-                    ->sortable()
-                    ->searchable()
-                    ->label('Product'),
-                Tables\Columns\TextColumn::make('product_quantity')
-                    ->numeric()
-                    ->sortable()
-                    ->label('Quantity'),
+                Tables\Columns\TextColumn::make('deliveryDocumentProducts')
+                    ->label('Products')
+                    ->formatStateUsing(function ($record) {
+                        return $record->deliveryDocumentProducts
+                            ->map(fn($item) => $item->product->name . ' (' . $item->quantity . ')')
+                            ->join(', ');
+                    })
+                    ->searchable(false)
+                    ->sortable(false)
+                    ->limit(50),
                 Tables\Columns\TextColumn::make('purchase_order_no')
                     ->searchable()
                     ->label('PO Number'),
