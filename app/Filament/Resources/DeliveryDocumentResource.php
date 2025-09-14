@@ -64,9 +64,8 @@ class DeliveryDocumentResource extends Resource
                                     ->step(0.001)
                                     ->label('Quantity')
                                     ->columnSpan(1),
-
                             ])
-                            ->columns(5)
+                            ->columns(3)
                             ->defaultItems(1)
                             ->addActionLabel('Add Product')
                             ->deleteAction(
