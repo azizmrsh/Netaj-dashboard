@@ -25,6 +25,7 @@ use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Filters\Filter;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Grid;
+use Filament\Forms\Components\Repeater;
 use Filament\Tables\Actions\BulkActionGroup;
 use Filament\Tables\Actions\DeleteBulkAction;
 use Filament\Support\Enums\FontWeight;
@@ -75,14 +76,28 @@ class SalesInvoiceResource extends Resource
                             ->reactive()
                             ->afterStateUpdated(function ($state, callable $set) {
                                 if ($state) {
-                                    $deliveryDocument = DeliveryDocument::with('customer')->find($state);
+                                    $deliveryDocument = DeliveryDocument::with(['customer', 'deliveryDocumentProducts.product'])->find($state);
                                     if ($deliveryDocument && $deliveryDocument->customer) {
                                         $customer = $deliveryDocument->customer;
                                         $set('customer_name', $customer->name);
                                         $set('customer_address', $customer->address);
                                         $set('customer_phone', $customer->phone);
                                         $set('customer_tax_number', $customer->tax_number);
+                                        
+                                        // Load products from delivery document
+                                        $products = [];
+                                        foreach ($deliveryDocument->deliveryDocumentProducts as $deliveryProduct) {
+                                            $products[] = [
+                                                'product_name' => $deliveryProduct->product->name,
+                                                'quantity' => $deliveryProduct->quantity,
+                                                'unit_price' => 0, // User will fill this
+                                                'subtotal' => 0,
+                                            ];
+                                        }
+                                        $set('products', $products);
                                     }
+                                } else {
+                                    $set('products', []);
                                 }
                             }),
                     ])->columns(3),
@@ -119,6 +134,68 @@ class SalesInvoiceResource extends Resource
                             ->placeholder('Invoice due date'),
                     ])->columns(2),
                     
+                Section::make('Products')
+                    ->description('Products from selected delivery document')
+                    ->schema([
+                        Repeater::make('products')
+                            ->label('Products')
+                            ->schema([
+                                TextInput::make('product_name')
+                                    ->label('Product Name')
+                                    ->disabled()
+                                    ->dehydrated(false),
+                                TextInput::make('quantity')
+                                    ->label('Quantity')
+                                    ->numeric()
+                                    ->disabled()
+                                    ->dehydrated(false),
+                                TextInput::make('unit_price')
+                                    ->label('Unit Price')
+                                    ->numeric()
+                                    ->prefix('SAR')
+                                    ->step(0.01)
+                                    ->reactive()
+                                    ->afterStateUpdated(function ($state, $set, $get) {
+                                        $quantity = $get('quantity') ?? 0;
+                                        $unitPrice = $state ?? 0;
+                                        $subtotal = $quantity * $unitPrice;
+                                        $set('subtotal', $subtotal);
+                                        
+                                        // Calculate totals for all products
+                                        $allProducts = $get('../../products') ?? [];
+                                        $totalSubtotal = 0;
+                                        
+                                        foreach ($allProducts as $product) {
+                                            $totalSubtotal += ($product['subtotal'] ?? 0);
+                                        }
+                                        
+                                        $set('../../subtotal', $totalSubtotal);
+                                        
+                                        // Calculate tax amount
+                                        $taxRate = $get('../../tax_rate') ?? 15;
+                                        $taxAmount = ($totalSubtotal * $taxRate) / 100;
+                                        $set('../../tax_amount', $taxAmount);
+                                        
+                                        // Calculate total amount
+                                        $discountAmount = $get('../../discount_amount') ?? 0;
+                                        $totalAmount = $totalSubtotal + $taxAmount - $discountAmount;
+                                        $set('../../total_amount', $totalAmount);
+                                    }),
+                                TextInput::make('subtotal')
+                                    ->label('Subtotal')
+                                    ->numeric()
+                                    ->prefix('SAR')
+                                    ->disabled()
+                                    ->dehydrated(false),
+                            ])
+                            ->columns(4)
+                            ->addable(false)
+                            ->deletable(false)
+                            ->reorderable(false)
+                            ->defaultItems(0)
+                            ->columnSpanFull(),
+                    ]),
+                    
                 Section::make('Financial Totals')
                     ->description('Amount and tax totals')
                     ->schema([
@@ -134,7 +211,18 @@ class SalesInvoiceResource extends Resource
                             ->numeric()
                             ->suffix('%')
                             ->default(15.00)
-                            ->step(0.01),
+                            ->step(0.01)
+                            ->reactive()
+                            ->afterStateUpdated(function ($state, $set, $get) {
+                                $subtotal = $get('subtotal') ?? 0;
+                                $taxRate = $state ?? 15;
+                                $taxAmount = ($subtotal * $taxRate) / 100;
+                                $set('tax_amount', $taxAmount);
+                                
+                                $discountAmount = $get('discount_amount') ?? 0;
+                                $totalAmount = $subtotal + $taxAmount - $discountAmount;
+                                $set('total_amount', $totalAmount);
+                            }),
                         TextInput::make('tax_amount')
                             ->label('Total Tax Amount')
                             ->numeric()
@@ -146,7 +234,15 @@ class SalesInvoiceResource extends Resource
                             ->label('Discount Amount')
                             ->numeric()
                             ->prefix('SAR')
-                            ->default(0.00),
+                            ->default(0.00)
+                            ->reactive()
+                            ->afterStateUpdated(function ($state, $set, $get) {
+                                $subtotal = $get('subtotal') ?? 0;
+                                $taxAmount = $get('tax_amount') ?? 0;
+                                $discountAmount = $state ?? 0;
+                                $totalAmount = $subtotal + $taxAmount - $discountAmount;
+                                $set('total_amount', $totalAmount);
+                            }),
                         TextInput::make('total_amount')
                             ->label('Total Amount')
                             ->numeric()
