@@ -214,10 +214,8 @@ class DeliveryDocumentResource extends Resource
                             ->clearable()
                             ->downloadable()
                             ->downloadActionDropdownPlacement('center')
-                            ->confirmationModal(
-                                title: 'Clear Signature',
-                                description: 'Are you sure you want to clear this signature?',
-                            ),
+                            ->confirmable(),
+
                         Forms\Components\TextInput::make('warehouse_officer_name')
                             ->label('Warehouse Officer Name'),
                         SignaturePad::make('warehouse_officer_signature')
@@ -230,10 +228,7 @@ class DeliveryDocumentResource extends Resource
                             ->clearable()
                             ->downloadable()
                             ->downloadActionDropdownPlacement('center')
-                            ->confirmationModal(
-                                title: 'Clear Signature',
-                                description: 'Are you sure you want to clear this signature?',
-                            ),
+                            ->confirmable(),
                         Forms\Components\TextInput::make('recipient_name')
                             ->label('Recipient Name'),
                         SignaturePad::make('recipient_signature')
@@ -246,10 +241,7 @@ class DeliveryDocumentResource extends Resource
                             ->clearable()
                             ->downloadable()
                             ->downloadActionDropdownPlacement('center')
-                            ->confirmationModal(
-                                title: 'Clear Signature',
-                                description: 'Are you sure you want to clear this signature?',
-                            ),
+                            ->confirmable(),
                         Forms\Components\TextInput::make('accountant_name')
                             ->label('Accountant Name'),
                         SignaturePad::make('accountant_signature')
@@ -262,10 +254,7 @@ class DeliveryDocumentResource extends Resource
                             ->clearable()
                             ->downloadable()
                             ->downloadActionDropdownPlacement('center')
-                            ->confirmationModal(
-                                title: 'Clear Signature',
-                                description: 'Are you sure you want to clear this signature?',
-                            ),
+                            ->confirmable(),
                     ])->columns(2)->collapsible(),
                 
                 Forms\Components\Section::make('Additional Information')
