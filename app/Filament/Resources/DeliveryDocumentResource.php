@@ -460,13 +460,8 @@ class DeliveryDocumentResource extends Resource
                                 fn (Builder $query, $accountant): Builder => $query->where('accountant_name', 'like', "%{$accountant}%"),
                             );
                     }),
-            ])
-            ->filtersLayout(FiltersLayout::AboveContent)
-            ->filtersTriggerAction(
-                fn (Tables\Actions\Action $action) => $action
-                    ->button()
-                    //->label('Filters')
-            )
+            ], layout: Tables\Enums\FiltersLayout::AboveContentCollapsible)
+
             ->filtersFormColumns(4)
             ->headerActions([
                 FilamentExportHeaderAction::make('export')
