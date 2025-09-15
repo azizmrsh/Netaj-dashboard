@@ -81,7 +81,7 @@ class DeliveryDocumentResource extends Resource
                         Forms\Components\Repeater::make('deliveryDocumentProducts')
                             ->relationship()
                             ->schema([
-                                Forms\Components\Grid::make(2)
+                                Forms\Components\Grid::make(4)
                                     ->schema([
                                         Forms\Components\Select::make('product_id')
                                             ->relationship('product', 'name')
@@ -198,7 +198,7 @@ class DeliveryDocumentResource extends Resource
                             ->required()
                             ->label('Project Name and Location')
                             ->columnSpanFull(),
-                    ])->columns(2),
+                    ])->columns(3),
                 
                 Forms\Components\Section::make('Officer Information')
                     ->schema([
