@@ -12,6 +12,7 @@ use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Forms\Get;
 use Filament\Forms\Components\Actions\Action;
+use Saade\FilamentAutograph\Forms\Components\SignaturePad;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
@@ -203,20 +204,68 @@ class DeliveryDocumentResource extends Resource
                     ->schema([
                         Forms\Components\TextInput::make('purchasing_officer_name')
                             ->label('Purchasing Officer Name'),
-                        Forms\Components\Textarea::make('purchasing_officer_signature')
-                            ->label('Purchasing Officer Signature'),
+                        SignaturePad::make('purchasing_officer_signature')
+                            ->label('Purchasing Officer Signature')
+                            ->backgroundColor('rgb(245, 245, 245)')
+                            ->penColor('rgb(0, 0, 0)')
+                            ->exportPenColor('rgb(0, 0, 0)')
+                            ->exportBackgroundColor('rgb(255, 255, 255)')
+                            ->undoable()
+                            ->clearable()
+                            ->downloadable()
+                            ->downloadActionDropdownPlacement('center')
+                            ->confirmationModal(
+                                title: 'Clear Signature',
+                                description: 'Are you sure you want to clear this signature?',
+                            ),
                         Forms\Components\TextInput::make('warehouse_officer_name')
                             ->label('Warehouse Officer Name'),
-                        Forms\Components\Textarea::make('warehouse_officer_signature')
-                            ->label('Warehouse Officer Signature'),
+                        SignaturePad::make('warehouse_officer_signature')
+                            ->label('Warehouse Officer Signature')
+                            ->backgroundColor('rgb(245, 245, 245)')
+                            ->penColor('rgb(0, 0, 0)')
+                            ->exportPenColor('rgb(0, 0, 0)')
+                            ->exportBackgroundColor('rgb(255, 255, 255)')
+                            ->undoable()
+                            ->clearable()
+                            ->downloadable()
+                            ->downloadActionDropdownPlacement('center')
+                            ->confirmationModal(
+                                title: 'Clear Signature',
+                                description: 'Are you sure you want to clear this signature?',
+                            ),
                         Forms\Components\TextInput::make('recipient_name')
                             ->label('Recipient Name'),
-                        Forms\Components\Textarea::make('recipient_signature')
-                            ->label('Recipient Signature'),
+                        SignaturePad::make('recipient_signature')
+                            ->label('Recipient Signature')
+                            ->backgroundColor('rgb(245, 245, 245)')
+                            ->penColor('rgb(0, 0, 0)')
+                            ->exportPenColor('rgb(0, 0, 0)')
+                            ->exportBackgroundColor('rgb(255, 255, 255)')
+                            ->undoable()
+                            ->clearable()
+                            ->downloadable()
+                            ->downloadActionDropdownPlacement('center')
+                            ->confirmationModal(
+                                title: 'Clear Signature',
+                                description: 'Are you sure you want to clear this signature?',
+                            ),
                         Forms\Components\TextInput::make('accountant_name')
                             ->label('Accountant Name'),
-                        Forms\Components\Textarea::make('accountant_signature')
-                            ->label('Accountant Signature'),
+                        SignaturePad::make('accountant_signature')
+                            ->label('Accountant Signature')
+                            ->backgroundColor('rgb(245, 245, 245)')
+                            ->penColor('rgb(0, 0, 0)')
+                            ->exportPenColor('rgb(0, 0, 0)')
+                            ->exportBackgroundColor('rgb(255, 255, 255)')
+                            ->undoable()
+                            ->clearable()
+                            ->downloadable()
+                            ->downloadActionDropdownPlacement('center')
+                            ->confirmationModal(
+                                title: 'Clear Signature',
+                                description: 'Are you sure you want to clear this signature?',
+                            ),
                     ])->columns(2)->collapsible(),
                 
                 Forms\Components\Section::make('Additional Information')

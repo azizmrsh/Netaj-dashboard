@@ -47,7 +47,7 @@ return new class extends Migration
                   ->nullable()
                   ->comment('Name of the purchasing officer');
             
-            $table->text('purchasing_officer_signature')
+            $table->string('purchasing_officer_signature')
                   ->nullable()
                   ->comment('Signature of the purchasing officer');
             
@@ -55,7 +55,7 @@ return new class extends Migration
                   ->nullable()
                   ->comment('Name of the warehouse officer');
             
-            $table->text('warehouse_officer_signature')
+            $table->string('warehouse_officer_signature')
                   ->nullable()
                   ->comment('Signature of the warehouse officer');
             
@@ -63,7 +63,7 @@ return new class extends Migration
                   ->nullable()
                   ->comment('Name of the recipient');
             
-            $table->text('recipient_signature')
+            $table->string('recipient_signature')
                   ->nullable()
                   ->comment('Signature of the recipient');
             
@@ -71,7 +71,7 @@ return new class extends Migration
                   ->nullable()
                   ->comment('Name of the accountant');
             
-            $table->text('accountant_signature')
+            $table->string('accountant_signature')
                   ->nullable()
                   ->comment('Signature of the accountant');
             
