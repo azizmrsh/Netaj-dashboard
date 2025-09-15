@@ -462,7 +462,7 @@ class DeliveryDocumentResource extends Resource
                     }),
             ])
             ->filtersLayout(FiltersLayout::AboveContent)
-            ->filtersFormColumns(2)
+            ->filtersFormColumns(4)
             ->filtersTriggerAction(
                 fn (Tables\Actions\Action $action) => $action
                     ->button()
