@@ -426,43 +426,10 @@ class DeliveryDocumentResource extends Resource
                                 fn (Builder $query, $project): Builder => $query->where('project_name_and_location', 'like', "%{$project}%"),
                             );
                     }),
-                Filter::make('officers')
-                    ->form([
-                        TextInput::make('purchasing_officer')
-                            ->label('Purchasing Officer')
-                            ->placeholder('Search by purchasing officer...'),
-                        TextInput::make('warehouse_officer')
-                            ->label('Warehouse Officer')
-                            ->placeholder('Search by warehouse officer...'),
-                        TextInput::make('recipient')
-                            ->label('Recipient')
-                            ->placeholder('Search by recipient...'),
-                        TextInput::make('accountant')
-                            ->label('Accountant')
-                            ->placeholder('Search by accountant...'),
-                    ])
-                    ->query(function (Builder $query, array $data): Builder {
-                        return $query
-                            ->when(
-                                $data['purchasing_officer'],
-                                fn (Builder $query, $officer): Builder => $query->where('purchasing_officer_name', 'like', "%{$officer}%"),
-                            )
-                            ->when(
-                                $data['warehouse_officer'],
-                                fn (Builder $query, $officer): Builder => $query->where('warehouse_officer_name', 'like', "%{$officer}%"),
-                            )
-                            ->when(
-                                $data['recipient'],
-                                fn (Builder $query, $recipient): Builder => $query->where('recipient_name', 'like', "%{$recipient}%"),
-                            )
-                            ->when(
-                                $data['accountant'],
-                                fn (Builder $query, $accountant): Builder => $query->where('accountant_name', 'like', "%{$accountant}%"),
-                            );
-                    }),
+
             ], layout: Tables\Enums\FiltersLayout::AboveContentCollapsible)
 
-            ->filtersFormColumns(4)
+            ->filtersFormColumns(3)
             ->headerActions([
                 FilamentExportHeaderAction::make('export')
                     ->fileName('Delivery Documents')
