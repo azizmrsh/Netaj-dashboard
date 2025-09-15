@@ -81,7 +81,7 @@ class DeliveryDocumentResource extends Resource
                         Forms\Components\Repeater::make('deliveryDocumentProducts')
                             ->relationship()
                             ->schema([
-                                Forms\Components\Grid::make(2)
+                                Forms\Components\Grid::make(4)
                                     ->schema([
                                         Forms\Components\Select::make('product_id')
                                             ->relationship('product', 'name')
@@ -108,9 +108,6 @@ class DeliveryDocumentResource extends Resource
                                             ->minValue(0.001)
                                             ->step(0.001)
                                             ->label('Quantity'),
-                                    ]),
-                                Forms\Components\Grid::make(2)
-                                    ->schema([
                                         Forms\Components\TextInput::make('unit_price')
                                             ->numeric()
                                             ->minValue(0)
@@ -191,13 +188,15 @@ class DeliveryDocumentResource extends Resource
                 
                 Forms\Components\Section::make('Order Information')
                     ->schema([
-                        Forms\Components\TextInput::make('purchase_order_no')
-                            ->required()
-                            ->label('Purchase Order Number'),
-                        Forms\Components\Textarea::make('project_name_and_location')
-                            ->required()
-                            ->label('Project Name and Location')
-                            ->columnSpanFull(),
+                        Forms\Components\Grid::make(2)
+                            ->schema([
+                                Forms\Components\TextInput::make('purchase_order_no')
+                                    ->required()
+                                    ->label('Purchase Order Number'),
+                                Forms\Components\TextInput::make('project_name_and_location')
+                                    ->required()
+                                    ->label('Project Name and Location'),
+                            ]),
                     ])->columns(2),
                 
                 Forms\Components\Section::make('Officer Information')
