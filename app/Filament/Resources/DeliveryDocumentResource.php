@@ -64,8 +64,22 @@ class DeliveryDocumentResource extends Resource
                                     ->step(0.001)
                                     ->label('Quantity')
                                     ->columnSpan(1),
+                                Forms\Components\TextInput::make('unit_price')
+                                    ->numeric()
+                                    ->minValue(0)
+                                    ->step(0.01)
+                                    ->label('Unit Price')
+                                    ->columnSpan(1),
+                                Forms\Components\TextInput::make('tax_rate')
+                                    ->numeric()
+                                    ->minValue(0)
+                                    ->maxValue(100)
+                                    ->step(0.01)
+                                    ->suffix('%')
+                                    ->label('Tax Rate')
+                                    ->columnSpan(1),
                             ])
-                            ->columns(3)
+                            ->columns(5)
                             ->defaultItems(1)
                             ->addActionLabel('Add Product')
                             ->deleteAction(
@@ -135,12 +149,22 @@ class DeliveryDocumentResource extends Resource
                     ->label('Products')
                     ->formatStateUsing(function ($record) {
                         return $record->deliveryDocumentProducts
-                            ->map(fn($item) => $item->product->name . ' (' . $item->quantity . ')')
+                            ->map(function($item) {
+                                $text = $item->product->name . ' (Qty: ' . $item->quantity;
+                                if ($item->unit_price) {
+                                    $text .= ', Price: $' . number_format($item->unit_price, 2);
+                                }
+                                if ($item->tax_rate) {
+                                    $text .= ', Tax: ' . $item->tax_rate . '%';
+                                }
+                                $text .= ')';
+                                return $text;
+                            })
                             ->join(', ');
                     })
                     ->searchable(false)
                     ->sortable(false)
-                    ->limit(50),
+                    ->limit(100),
                 Tables\Columns\TextColumn::make('purchase_order_no')
                     ->searchable()
                     ->label('PO Number'),
