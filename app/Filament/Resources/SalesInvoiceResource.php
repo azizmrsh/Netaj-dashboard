@@ -513,14 +513,9 @@ class SalesInvoiceResource extends Resource
                                 fn (Builder $query, $name): Builder => $query->where('customer_name', 'like', "%{$name}%"),
                             );
                     }),
-            ])
-            ->filtersLayout(FiltersLayout::AboveContent)
+            ], layout: Tables\Enums\FiltersLayout::AboveContentCollapsible)
+
             ->filtersFormColumns(4)
-            ->filtersTriggerAction(
-                fn (Tables\Actions\Action $action) => $action
-                    ->button()
-                    ->label('Filters')
-            )
             ->headerActions([
                 FilamentExportHeaderAction::make('export')
                     ->fileName('Sales Invoices')
