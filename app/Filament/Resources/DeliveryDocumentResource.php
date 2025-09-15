@@ -16,6 +16,8 @@ use Saade\FilamentAutograph\Forms\Components\SignaturePad;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
+use AlperenErsoy\FilamentExport\Actions\FilamentExportBulkAction;
+use AlperenErsoy\FilamentExport\Actions\FilamentExportHeaderAction;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 
@@ -343,12 +345,29 @@ class DeliveryDocumentResource extends Resource
             ->filters([
                 //
             ])
+            ->headerActions([
+                FilamentExportHeaderAction::make('export')
+                    ->fileName('Delivery Documents')
+                    ->timeFormat('Y-m-d_H-i-s')
+                    ->defaultFormat('xlsx')
+                    ->withColumns([
+                        Tables\Columns\TextColumn::make('date_and_time')->label('Date & Time'),
+                        Tables\Columns\TextColumn::make('customer.name')->label('Customer'),
+                        Tables\Columns\TextColumn::make('transporter.name')->label('Transporter'),
+                        Tables\Columns\TextColumn::make('purchase_order_no')->label('PO Number'),
+                        Tables\Columns\TextColumn::make('project_name_and_location')->label('Project'),
+                    ]),
+            ])
             ->actions([
                 Tables\Actions\EditAction::make(),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),
+                    FilamentExportBulkAction::make('export')
+                        ->fileName('Selected Delivery Documents')
+                        ->timeFormat('Y-m-d_H-i-s')
+                        ->defaultFormat('xlsx'),
                 ]),
             ]);
     }

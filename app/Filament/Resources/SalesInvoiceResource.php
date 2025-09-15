@@ -28,6 +28,8 @@ use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\Repeater;
 use Filament\Tables\Actions\BulkActionGroup;
 use Filament\Tables\Actions\DeleteBulkAction;
+use AlperenErsoy\FilamentExport\Actions\FilamentExportBulkAction;
+use AlperenErsoy\FilamentExport\Actions\FilamentExportHeaderAction;
 use Filament\Support\Enums\FontWeight;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
@@ -432,14 +434,30 @@ class SalesInvoiceResource extends Resource
                     ])
                     ->multiple(),
             ])
+            ->headerActions([
+                FilamentExportHeaderAction::make('export')
+                    ->fileName('Sales Invoices')
+                    ->timeFormat('Y-m-d_H-i-s')
+                    ->defaultFormat('xlsx')
+                    ->withColumns([
+                        Tables\Columns\TextColumn::make('invoice_no')->label('Invoice Number'),
+                        Tables\Columns\TextColumn::make('customer_name')->label('Customer Name'),
+                        Tables\Columns\TextColumn::make('total_amount')->label('Total Amount'),
+                        Tables\Columns\TextColumn::make('status')->label('Status'),
+                    ]),
+            ])
             ->actions([
-                ViewAction::make(),
                 EditAction::make(),
+                ViewAction::make(),
                 DeleteAction::make(),
             ])
             ->bulkActions([
                 BulkActionGroup::make([
                     DeleteBulkAction::make(),
+                    FilamentExportBulkAction::make('export')
+                        ->fileName('Selected Sales Invoices')
+                        ->timeFormat('Y-m-d_H-i-s')
+                        ->defaultFormat('xlsx'),
                 ]),
             ])
             ->defaultSort('created_at', 'desc')
