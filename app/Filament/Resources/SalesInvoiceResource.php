@@ -71,7 +71,7 @@ class SalesInvoiceResource extends Resource
                             ->required()
                             ->searchable()
                             ->preload(),
-                    ])->columns(2),
+                    ])->columns(3),
                     
                 Section::make('Customer & Payment Information')
                     ->description('Customer details and payment information')
