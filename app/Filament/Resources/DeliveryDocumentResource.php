@@ -40,12 +40,40 @@ class DeliveryDocumentResource extends Resource
                             ->required()
                             ->searchable()
                             ->preload()
+                            ->createOptionForm([
+                                Forms\Components\TextInput::make('name')
+                                    ->required()
+                                    ->label('Customer Name'),
+                                Forms\Components\TextInput::make('phone')
+                                    ->tel()
+                                    ->label('Phone'),
+                                Forms\Components\TextInput::make('email')
+                                    ->email()
+                                    ->label('Email'),
+                                Forms\Components\Textarea::make('address')
+                                    ->label('Address'),
+                            ])
                             ->label('Customer'),
                         Forms\Components\Select::make('id_transporter')
                             ->relationship('transporter', 'name')
                             ->required()
                             ->searchable()
                             ->preload()
+                            ->createOptionForm([
+                                Forms\Components\TextInput::make('name')
+                                    ->required()
+                                    ->label('Transporter Name'),
+                                Forms\Components\TextInput::make('phone')
+                                    ->tel()
+                                    ->label('Phone'),
+                                Forms\Components\TextInput::make('email')
+                                    ->email()
+                                    ->label('Email'),
+                                Forms\Components\Textarea::make('address')
+                                    ->label('Address'),
+                                Forms\Components\TextInput::make('license_number')
+                                    ->label('License Number'),
+                            ])
                             ->label('Transporter'),
                         Forms\Components\Repeater::make('deliveryDocumentProducts')
                             ->relationship()
@@ -55,6 +83,19 @@ class DeliveryDocumentResource extends Resource
                                     ->required()
                                     ->searchable()
                                     ->preload()
+                                    ->createOptionForm([
+                                        Forms\Components\TextInput::make('name')
+                                            ->required()
+                                            ->label('Product Name'),
+                                        Forms\Components\Textarea::make('description')
+                                            ->label('Description'),
+                                        Forms\Components\TextInput::make('unit')
+                                            ->label('Unit (e.g., kg, pieces)'),
+                                        Forms\Components\TextInput::make('price')
+                                            ->numeric()
+                                            ->step(0.01)
+                                            ->label('Default Price'),
+                                    ])
                                     ->label('Product')
                                     ->columnSpan(2),
                                 Forms\Components\TextInput::make('quantity')
