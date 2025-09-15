@@ -515,6 +515,7 @@ class SalesInvoiceResource extends Resource
                     }),
             ])
             ->filtersLayout(FiltersLayout::AboveContent)
+            ->filtersFormColumns(2)
             ->filtersTriggerAction(
                 fn (Tables\Actions\Action $action) => $action
                     ->button()
