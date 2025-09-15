@@ -462,12 +462,12 @@ class DeliveryDocumentResource extends Resource
                     }),
             ])
             ->filtersLayout(FiltersLayout::AboveContent)
-            ->filtersFormColumns(4)
             ->filtersTriggerAction(
                 fn (Tables\Actions\Action $action) => $action
                     ->button()
-                    ->label('Filters')
+                    //->label('Filters')
             )
+            ->filtersFormColumns(4)
             ->headerActions([
                 FilamentExportHeaderAction::make('export')
                     ->fileName('Delivery Documents')
