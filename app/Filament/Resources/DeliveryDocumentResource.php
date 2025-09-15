@@ -202,9 +202,8 @@ class DeliveryDocumentResource extends Resource
                 
                 Forms\Components\Section::make('Officer Information')
                     ->schema([
-                        Forms\Components\Grid::make(2)
+                        Forms\Components\Grid::make(4)
                             ->schema([
-                                // First Row - Purchasing Officer and Warehouse Officer
                                 Forms\Components\Group::make([
                                     Forms\Components\TextInput::make('purchasing_officer_name')
                                         ->label('Purchasing Officer Name'),
@@ -235,7 +234,6 @@ class DeliveryDocumentResource extends Resource
                                         ->downloadActionDropdownPlacement('center')
                                         ->confirmable(),
                                 ]),
-                                // Second Row - Recipient and Accountant
                                 Forms\Components\Group::make([
                                     Forms\Components\TextInput::make('recipient_name')
                                         ->label('Recipient Name'),
