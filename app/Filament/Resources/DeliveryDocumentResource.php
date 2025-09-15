@@ -10,6 +10,7 @@ use App\Models\Transporter;
 use App\Models\Product;
 use Filament\Forms;
 use Filament\Forms\Form;
+use Filament\Forms\Get;
 use Filament\Forms\Components\Actions\Action;
 use Filament\Resources\Resource;
 use Filament\Tables;
@@ -31,96 +32,99 @@ class DeliveryDocumentResource extends Resource
             ->schema([
                 Forms\Components\Section::make('Document Information')
                     ->schema([
-                        Forms\Components\DateTimePicker::make('date_and_time')
-                            ->required()
-                            
-                            ->label('Date and Time'),
-                        Forms\Components\Select::make('id_customer')
-                            ->relationship('customer', 'name')
-                            ->required()
-                            ->searchable()
-                            ->preload()
-                            ->createOptionForm([
-                                Forms\Components\TextInput::make('name')
-                                    ->required()
-                                    ->label('Customer Name'),
-                                Forms\Components\TextInput::make('phone')
-                                    ->tel()
-                                    ->label('Phone'),
-                                Forms\Components\TextInput::make('email')
-                                    ->email()
-                                    ->label('Email'),
-                                Forms\Components\Textarea::make('address')
-                                    ->label('Address'),
-                            ])
-                            ->label('Customer'),
-                        Forms\Components\Select::make('id_transporter')
-                            ->relationship('transporter', 'name')
-                            ->required()
-                            ->searchable()
-                            ->preload()
-                            ->createOptionForm([
-                                Forms\Components\TextInput::make('name')
-                                    ->required()
-                                    ->label('Transporter Name'),
-                                Forms\Components\TextInput::make('phone')
-                                    ->tel()
-                                    ->label('Phone'),
-                                Forms\Components\TextInput::make('email')
-                                    ->email()
-                                    ->label('Email'),
-                                Forms\Components\Textarea::make('address')
-                                    ->label('Address'),
-                                Forms\Components\TextInput::make('license_number')
-                                    ->label('License Number'),
-                            ])
-                            ->label('Transporter'),
-                        Forms\Components\Repeater::make('deliveryDocumentProducts')
-                            ->relationship()
+                        Forms\Components\Grid::make(3)
                             ->schema([
-                                Forms\Components\Select::make('product_id')
-                                    ->relationship('product', 'name')
+                                Forms\Components\DateTimePicker::make('date_and_time')
+                                    ->required()
+                                    ->label('Date and Time'),
+                                Forms\Components\Select::make('id_customer')
+                                    ->relationship('customer', 'name')
                                     ->required()
                                     ->searchable()
                                     ->preload()
                                     ->createOptionForm([
                                         Forms\Components\TextInput::make('name')
                                             ->required()
-                                            ->label('Product Name'),
-                                        Forms\Components\Textarea::make('description')
-                                            ->label('Description'),
-                                        Forms\Components\TextInput::make('unit')
-                                            ->label('Unit (e.g., kg, pieces)'),
-                                        Forms\Components\TextInput::make('price')
-                                            ->numeric()
-                                            ->step(0.01)
-                                            ->label('Default Price'),
+                                            ->label('Customer Name'),
+                                        Forms\Components\TextInput::make('phone')
+                                            ->tel()
+                                            ->label('Phone'),
+                                        Forms\Components\TextInput::make('email')
+                                            ->email()
+                                            ->label('Email'),
+                                        Forms\Components\Textarea::make('address')
+                                            ->label('Address'),
                                     ])
-                                    ->label('Product')
-                                    ->columnSpan(2),
-                                Forms\Components\TextInput::make('quantity')
+                                    ->label('Customer'),
+                                Forms\Components\Select::make('id_transporter')
+                                    ->relationship('transporter', 'name')
                                     ->required()
-                                    ->numeric()
-                                    ->minValue(0.001)
-                                    ->step(0.001)
-                                    ->label('Quantity')
-                                    ->columnSpan(1),
-                                Forms\Components\TextInput::make('unit_price')
-                                    ->numeric()
-                                    ->minValue(0)
-                                    ->step(0.01)
-                                    ->label('Unit Price')
-                                    ->columnSpan(1),
-                                Forms\Components\TextInput::make('tax_rate')
-                                    ->numeric()
-                                    ->minValue(0)
-                                    ->maxValue(100)
-                                    ->step(0.01)
-                                    ->suffix('%')
-                                    ->label('Tax Rate')
-                                    ->columnSpan(1),
+                                    ->searchable()
+                                    ->preload()
+                                    ->createOptionForm([
+                                        Forms\Components\TextInput::make('name')
+                                            ->required()
+                                            ->label('Transporter Name'),
+                                        Forms\Components\TextInput::make('phone')
+                                            ->tel()
+                                            ->label('Phone'),
+                                        Forms\Components\TextInput::make('email')
+                                            ->email()
+                                            ->label('Email'),
+                                        Forms\Components\Textarea::make('address')
+                                            ->label('Address'),
+                                        Forms\Components\TextInput::make('license_number')
+                                            ->label('License Number'),
+                                    ])
+                                    ->label('Transporter'),
+                            ]),
+                        Forms\Components\Repeater::make('deliveryDocumentProducts')
+                            ->relationship()
+                            ->schema([
+                                Forms\Components\Grid::make(2)
+                                    ->schema([
+                                        Forms\Components\Select::make('product_id')
+                                            ->relationship('product', 'name')
+                                            ->required()
+                                            ->searchable()
+                                            ->preload()
+                                            ->createOptionForm([
+                                                Forms\Components\TextInput::make('name')
+                                                    ->required()
+                                                    ->label('Product Name'),
+                                                Forms\Components\Textarea::make('description')
+                                                    ->label('Description'),
+                                                Forms\Components\TextInput::make('unit')
+                                                    ->label('Unit (e.g., kg, pieces)'),
+                                                Forms\Components\TextInput::make('price')
+                                                    ->numeric()
+                                                    ->step(0.01)
+                                                    ->label('Default Price'),
+                                            ])
+                                            ->label('Product'),
+                                        Forms\Components\TextInput::make('quantity')
+                                            ->required()
+                                            ->numeric()
+                                            ->minValue(0.001)
+                                            ->step(0.001)
+                                            ->label('Quantity'),
+                                    ]),
+                                Forms\Components\Grid::make(2)
+                                    ->schema([
+                                        Forms\Components\TextInput::make('unit_price')
+                                            ->numeric()
+                                            ->minValue(0)
+                                            ->step(0.01)
+                                            ->label('Unit Price'),
+                                        Forms\Components\TextInput::make('tax_rate')
+                                            ->numeric()
+                                            ->minValue(0)
+                                            ->maxValue(100)
+                                            ->step(0.01)
+                                            ->suffix('%')
+                                            ->label('Tax Rate'),
+                                    ]),
                             ])
-                            ->columns(5)
                             ->defaultItems(1)
                             ->addActionLabel('Add Product')
                             ->deleteAction(
@@ -129,6 +133,61 @@ class DeliveryDocumentResource extends Resource
                             ->label('Products')
                             ->columnSpanFull(),
                     ])->columns(2),
+                
+                Forms\Components\Section::make('Order Summary')
+                    ->schema([
+                        Forms\Components\Placeholder::make('subtotal')
+                            ->label('Subtotal (Before Tax)')
+                            ->content(function (Get $get): string {
+                                $products = $get('deliveryDocumentProducts') ?? [];
+                                $subtotal = 0;
+                                
+                                foreach ($products as $product) {
+                                    if (isset($product['quantity']) && isset($product['unit_price'])) {
+                                        $subtotal += $product['quantity'] * $product['unit_price'];
+                                    }
+                                }
+                                
+                                return '$' . number_format($subtotal, 2);
+                            }),
+                        Forms\Components\Placeholder::make('tax_amount')
+                            ->label('Tax Amount')
+                            ->content(function (Get $get): string {
+                                $products = $get('deliveryDocumentProducts') ?? [];
+                                $taxAmount = 0;
+                                
+                                foreach ($products as $product) {
+                                    if (isset($product['quantity']) && isset($product['unit_price']) && isset($product['tax_rate'])) {
+                                        $lineTotal = $product['quantity'] * $product['unit_price'];
+                                        $taxAmount += $lineTotal * ($product['tax_rate'] / 100);
+                                    }
+                                }
+                                
+                                return '$' . number_format($taxAmount, 2);
+                            }),
+                        Forms\Components\Placeholder::make('total')
+                            ->label('Total (After Tax)')
+                            ->content(function (Get $get): string {
+                                $products = $get('deliveryDocumentProducts') ?? [];
+                                $subtotal = 0;
+                                $taxAmount = 0;
+                                
+                                foreach ($products as $product) {
+                                    if (isset($product['quantity']) && isset($product['unit_price'])) {
+                                        $lineTotal = $product['quantity'] * $product['unit_price'];
+                                        $subtotal += $lineTotal;
+                                        
+                                        if (isset($product['tax_rate'])) {
+                                            $taxAmount += $lineTotal * ($product['tax_rate'] / 100);
+                                        }
+                                    }
+                                }
+                                
+                                $total = $subtotal + $taxAmount;
+                                return '$' . number_format($total, 2);
+                            }),
+                    ])
+                    ->columns(3),
                 
                 Forms\Components\Section::make('Order Information')
                     ->schema([
