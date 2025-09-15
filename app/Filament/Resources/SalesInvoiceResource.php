@@ -70,7 +70,20 @@ class SalesInvoiceResource extends Resource
                             ->getOptionLabelFromRecordUsing(fn (DeliveryDocument $record): string => "Delivery #{$record->id} - {$record->customer->name}")
                             ->required()
                             ->searchable()
-                            ->preload(),
+                            ->preload()
+                            ->reactive()
+                            ->afterStateUpdated(function ($state, callable $set) {
+                                if ($state) {
+                                    $deliveryDocument = DeliveryDocument::with('customer')->find($state);
+                                    if ($deliveryDocument && $deliveryDocument->customer) {
+                                        $customer = $deliveryDocument->customer;
+                                        $set('customer_name', $customer->name);
+                                        $set('customer_address', $customer->address);
+                                        $set('customer_phone', $customer->phone);
+                                        $set('customer_tax_number', $customer->tax_number);
+                                    }
+                                }
+                            }),
                     ])->columns(3),
                     
                 Section::make('Customer & Payment Information')
