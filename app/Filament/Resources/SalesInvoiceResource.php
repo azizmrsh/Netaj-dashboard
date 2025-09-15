@@ -24,7 +24,7 @@ use Filament\Tables\Actions\ViewAction;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Filters\Filter;
 use Filament\Forms\Components\DatePicker;
-use Filament\Forms\Components\Columns;
+use Filament\Forms\Components\Grid;
 use Filament\Tables\Actions\BulkActionGroup;
 use Filament\Tables\Actions\DeleteBulkAction;
 use Filament\Support\Enums\FontWeight;
@@ -90,25 +90,26 @@ class SalesInvoiceResource extends Resource
                 Section::make('Customer & Payment Information')
                     ->description('Customer details and payment information')
                     ->schema([
-                        Columns::make([
-                            TextInput::make('customer_name')
-                                ->label('Customer Name')
-                                ->required()
-                                ->maxLength(255)
-                                ->placeholder('Customer full name'),
-                            TextInput::make('customer_address')
-                                ->label('Customer Address')
-                                ->maxLength(255)
-                                ->placeholder('Customer address'),
-                            TextInput::make('customer_phone')
-                                ->label('Customer Phone')
-                                ->maxLength(255)
-                                ->placeholder('Customer phone number'),
-                            TextInput::make('customer_tax_number')
-                                ->label('Customer Tax Number')
-                                ->maxLength(255)
-                                ->placeholder('Customer tax registration number'),
-                        ])->columns(4),
+                        Grid::make(4)
+                            ->schema([
+                                TextInput::make('customer_name')
+                                    ->label('Customer Name')
+                                    ->required()
+                                    ->maxLength(255)
+                                    ->placeholder('Customer full name'),
+                                TextInput::make('customer_address')
+                                    ->label('Customer Address')
+                                    ->maxLength(255)
+                                    ->placeholder('Customer address'),
+                                TextInput::make('customer_phone')
+                                    ->label('Customer Phone')
+                                    ->maxLength(255)
+                                    ->placeholder('Customer phone number'),
+                                TextInput::make('customer_tax_number')
+                                    ->label('Customer Tax Number')
+                                    ->maxLength(255)
+                                    ->placeholder('Customer tax registration number'),
+                            ]),
                         TextInput::make('payment_method')
                             ->label('Payment Method')
                             ->maxLength(255)
