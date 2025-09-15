@@ -11,6 +11,7 @@ use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
+use Filament\Tables\Enums\FiltersLayout;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
@@ -315,36 +316,36 @@ class SalesInvoiceResource extends Resource
                 TextColumn::make('customer_phone')
                     ->label('Customer Phone')
                     ->searchable()
-                    ->toggleable(isToggledHiddenByDefault: true),
+                    ->toggleable(),
                 
                 TextColumn::make('payment_method')
                     ->label('Payment Method')
                     ->badge()
                     ->color('info')
-                    ->toggleable(isToggledHiddenByDefault: true),
+                    ->toggleable(),
                 
                 TextColumn::make('subtotal')
                     ->label('Subtotal')
                     ->money('SAR')
                     ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
+                    ->toggleable(),
                 
                 TextColumn::make('tax_rate')
                     ->label('Tax Rate')
                     ->formatStateUsing(fn ($state) => $state ? "{$state}%" : 'N/A')
-                    ->toggleable(isToggledHiddenByDefault: true),
+                    ->toggleable(),
                 
                 TextColumn::make('tax_amount')
                     ->label('Tax Amount')
                     ->money('SAR')
                     ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
+                    ->toggleable(),
                 
                 TextColumn::make('discount_amount')
                     ->label('Discount')
                     ->money('SAR')
                     ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
+                    ->toggleable(),
                 
                 TextColumn::make('total_amount')
                     ->label('Total Amount')
@@ -358,7 +359,7 @@ class SalesInvoiceResource extends Resource
                     ->date('M j, Y')
                     ->sortable()
                     ->color(fn ($state) => $state && $state < now() ? 'danger' : 'gray')
-                    ->toggleable(isToggledHiddenByDefault: true),
+                    ->toggleable(),
                 
                 TextColumn::make('status')
                     ->label('Status')
@@ -376,15 +377,51 @@ class SalesInvoiceResource extends Resource
                     ->label('Created At')
                     ->dateTime('M j, Y g:i A')
                     ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
+                    ->toggleable(),
                 
                 TextColumn::make('updated_at')
                     ->label('Updated At')
                     ->dateTime('M j, Y g:i A')
                     ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
+                    ->toggleable(),
             ])
             ->filters([
+                Filter::make('invoice_date')
+                    ->form([
+                        DatePicker::make('invoice_date_from')
+                            ->label('Invoice Date From'),
+                        DatePicker::make('invoice_date_until')
+                            ->label('Invoice Date Until'),
+                    ])
+                    ->query(function (Builder $query, array $data): Builder {
+                        return $query
+                            ->when(
+                                $data['invoice_date_from'],
+                                fn (Builder $query, $date): Builder => $query->whereDate('invoice_date', '>=', $date),
+                            )
+                            ->when(
+                                $data['invoice_date_until'],
+                                fn (Builder $query, $date): Builder => $query->whereDate('invoice_date', '<=', $date),
+                            );
+                    }),
+                Filter::make('due_date')
+                    ->form([
+                        DatePicker::make('due_date_from')
+                            ->label('Due Date From'),
+                        DatePicker::make('due_date_until')
+                            ->label('Due Date Until'),
+                    ])
+                    ->query(function (Builder $query, array $data): Builder {
+                        return $query
+                            ->when(
+                                $data['due_date_from'],
+                                fn (Builder $query, $date): Builder => $query->whereDate('due_date', '>=', $date),
+                            )
+                            ->when(
+                                $data['due_date_until'],
+                                fn (Builder $query, $date): Builder => $query->whereDate('due_date', '<=', $date),
+                            );
+                    }),
                 Filter::make('created_at')
                     ->form([
                         DatePicker::make('created_from')
@@ -425,6 +462,28 @@ class SalesInvoiceResource extends Resource
                                 fn (Builder $query, $amount): Builder => $query->where('total_amount', '<=', $amount),
                             );
                     }),
+                Filter::make('subtotal')
+                    ->form([
+                        TextInput::make('subtotal_from')
+                            ->label('Subtotal From')
+                            ->numeric()
+                            ->prefix('SAR'),
+                        TextInput::make('subtotal_to')
+                            ->label('Subtotal To')
+                            ->numeric()
+                            ->prefix('SAR'),
+                    ])
+                    ->query(function (Builder $query, array $data): Builder {
+                        return $query
+                            ->when(
+                                $data['subtotal_from'],
+                                fn (Builder $query, $amount): Builder => $query->where('subtotal', '>=', $amount),
+                            )
+                            ->when(
+                                $data['subtotal_to'],
+                                fn (Builder $query, $amount): Builder => $query->where('subtotal', '<=', $amount),
+                            );
+                    }),
                 SelectFilter::make('status')
                     ->options([
                         'draft' => 'Draft',
@@ -433,7 +492,34 @@ class SalesInvoiceResource extends Resource
                         'cancelled' => 'Cancelled',
                     ])
                     ->multiple(),
+                SelectFilter::make('payment_method')
+                    ->options([
+                        'cash' => 'Cash',
+                        'credit_card' => 'Credit Card',
+                        'bank_transfer' => 'Bank Transfer',
+                        'check' => 'Check',
+                    ])
+                    ->multiple(),
+                Filter::make('customer_name')
+                    ->form([
+                        TextInput::make('customer_name')
+                            ->label('Customer Name')
+                            ->placeholder('Search by customer name...'),
+                    ])
+                    ->query(function (Builder $query, array $data): Builder {
+                        return $query
+                            ->when(
+                                $data['customer_name'],
+                                fn (Builder $query, $name): Builder => $query->where('customer_name', 'like', "%{$name}%"),
+                            );
+                    }),
             ])
+            ->filtersLayout(FiltersLayout::AboveContent)
+            ->filtersTriggerAction(
+                fn (Tables\Actions\Action $action) => $action
+                    ->button()
+                    ->label('Filters')
+            )
             ->headerActions([
                 FilamentExportHeaderAction::make('export')
                     ->fileName('Sales Invoices')

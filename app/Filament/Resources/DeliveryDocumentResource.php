@@ -16,6 +16,11 @@ use Saade\FilamentAutograph\Forms\Components\SignaturePad;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
+use Filament\Tables\Enums\FiltersLayout;
+use Filament\Tables\Filters\Filter;
+use Filament\Tables\Filters\SelectFilter;
+use Filament\Forms\Components\DatePicker;
+use Filament\Forms\Components\TextInput;
 use AlperenErsoy\FilamentExport\Actions\FilamentExportBulkAction;
 use AlperenErsoy\FilamentExport\Actions\FilamentExportHeaderAction;
 use Illuminate\Database\Eloquent\Builder;
@@ -323,28 +328,145 @@ class DeliveryDocumentResource extends Resource
                     ->label('Project'),
                 Tables\Columns\TextColumn::make('purchasing_officer_name')
                     ->searchable()
-                    ->toggledHiddenByDefault()
+                    ->toggleable()
                     ->label('Purchasing Officer'),
                 Tables\Columns\TextColumn::make('warehouse_officer_name')
                     ->searchable()
-                    ->toggledHiddenByDefault()
+                    ->toggleable()
                     ->label('Warehouse Officer'),
                 Tables\Columns\TextColumn::make('recipient_name')
                     ->searchable()
-                    ->toggledHiddenByDefault()
+                    ->toggleable()
                     ->label('Recipient'),
+                Tables\Columns\TextColumn::make('accountant_name')
+                    ->searchable()
+                    ->toggleable()
+                    ->label('Accountant'),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
-                    ->toggledHiddenByDefault(),
+                    ->toggleable(),
                 Tables\Columns\TextColumn::make('updated_at')
                     ->dateTime()
                     ->sortable()
-                    ->toggledHiddenByDefault(),
+                    ->toggleable(),
             ])
             ->filters([
-                //
+                Filter::make('date_and_time')
+                    ->form([
+                        DatePicker::make('date_from')
+                            ->label('Date From'),
+                        DatePicker::make('date_until')
+                            ->label('Date Until'),
+                    ])
+                    ->query(function (Builder $query, array $data): Builder {
+                        return $query
+                            ->when(
+                                $data['date_from'],
+                                fn (Builder $query, $date): Builder => $query->whereDate('date_and_time', '>=', $date),
+                            )
+                            ->when(
+                                $data['date_until'],
+                                fn (Builder $query, $date): Builder => $query->whereDate('date_and_time', '<=', $date),
+                            );
+                    }),
+                Filter::make('created_at')
+                    ->form([
+                        DatePicker::make('created_from')
+                            ->label('Created From'),
+                        DatePicker::make('created_until')
+                            ->label('Created Until'),
+                    ])
+                    ->query(function (Builder $query, array $data): Builder {
+                        return $query
+                            ->when(
+                                $data['created_from'],
+                                fn (Builder $query, $date): Builder => $query->whereDate('created_at', '>=', $date),
+                            )
+                            ->when(
+                                $data['created_until'],
+                                fn (Builder $query, $date): Builder => $query->whereDate('created_at', '<=', $date),
+                            );
+                    }),
+                SelectFilter::make('id_customer')
+                    ->relationship('customer', 'name')
+                    ->label('Customer')
+                    ->multiple()
+                    ->searchable()
+                    ->preload(),
+                SelectFilter::make('id_transporter')
+                    ->relationship('transporter', 'name')
+                    ->label('Transporter')
+                    ->multiple()
+                    ->searchable()
+                    ->preload(),
+                Filter::make('purchase_order_no')
+                    ->form([
+                        TextInput::make('purchase_order_no')
+                            ->label('Purchase Order Number')
+                            ->placeholder('Search by PO number...'),
+                    ])
+                    ->query(function (Builder $query, array $data): Builder {
+                        return $query
+                            ->when(
+                                $data['purchase_order_no'],
+                                fn (Builder $query, $po): Builder => $query->where('purchase_order_no', 'like', "%{$po}%"),
+                            );
+                    }),
+                Filter::make('project_name_and_location')
+                    ->form([
+                        TextInput::make('project_name')
+                            ->label('Project Name')
+                            ->placeholder('Search by project name...'),
+                    ])
+                    ->query(function (Builder $query, array $data): Builder {
+                        return $query
+                            ->when(
+                                $data['project_name'],
+                                fn (Builder $query, $project): Builder => $query->where('project_name_and_location', 'like', "%{$project}%"),
+                            );
+                    }),
+                Filter::make('officers')
+                    ->form([
+                        TextInput::make('purchasing_officer')
+                            ->label('Purchasing Officer')
+                            ->placeholder('Search by purchasing officer...'),
+                        TextInput::make('warehouse_officer')
+                            ->label('Warehouse Officer')
+                            ->placeholder('Search by warehouse officer...'),
+                        TextInput::make('recipient')
+                            ->label('Recipient')
+                            ->placeholder('Search by recipient...'),
+                        TextInput::make('accountant')
+                            ->label('Accountant')
+                            ->placeholder('Search by accountant...'),
+                    ])
+                    ->query(function (Builder $query, array $data): Builder {
+                        return $query
+                            ->when(
+                                $data['purchasing_officer'],
+                                fn (Builder $query, $officer): Builder => $query->where('purchasing_officer_name', 'like', "%{$officer}%"),
+                            )
+                            ->when(
+                                $data['warehouse_officer'],
+                                fn (Builder $query, $officer): Builder => $query->where('warehouse_officer_name', 'like', "%{$officer}%"),
+                            )
+                            ->when(
+                                $data['recipient'],
+                                fn (Builder $query, $recipient): Builder => $query->where('recipient_name', 'like', "%{$recipient}%"),
+                            )
+                            ->when(
+                                $data['accountant'],
+                                fn (Builder $query, $accountant): Builder => $query->where('accountant_name', 'like', "%{$accountant}%"),
+                            );
+                    }),
             ])
+            ->filtersLayout(FiltersLayout::AboveContent)
+            ->filtersTriggerAction(
+                fn (Tables\Actions\Action $action) => $action
+                    ->button()
+                    ->label('Filters')
+            )
             ->headerActions([
                 FilamentExportHeaderAction::make('export')
                     ->fileName('Delivery Documents')
