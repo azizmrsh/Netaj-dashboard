@@ -126,20 +126,59 @@ class DeliveryDocumentResource extends Resource
                                     ->searchable()
                                     ->preload()
                                     ->createOptionForm([
-                                        Forms\Components\TextInput::make('name')
-                                            ->required()
-                                            ->label('Transporter Name'),
-                                        Forms\Components\TextInput::make('phone')
-                                            ->tel()
-                                            ->label('Phone'),
-                                        Forms\Components\TextInput::make('email')
-                                            ->email()
-                                            ->label('Email'),
-                                        Forms\Components\Textarea::make('address')
-                                            ->label('Address'),
-                                        Forms\Components\TextInput::make('license_number')
-                                            ->label('License Number'),
-                                            
+                                        Forms\Components\Section::make('Basic Information')
+                                            ->schema([
+                                                Forms\Components\TextInput::make('name')
+                                                    ->label('Transporter Name')
+                                                    ->required()
+                                                    ->maxLength(255),
+                                                
+                                                Forms\Components\TextInput::make('phone')
+                                                    ->label('Phone Number')
+                                                    ->required()
+                                                    ->tel()
+                                                    ->maxLength(255),
+                                                
+                                                Forms\Components\TextInput::make('email')
+                                                    ->label('Email Address')
+                                                    ->email()
+                                                    ->maxLength(255),
+                                                
+                                                Forms\Components\Toggle::make('is_active')
+                                                    ->label('Active Status')
+                                                    ->default(true),
+                                            ])->columns(2),
+                                        
+                                        Forms\Components\Section::make('Additional Information')
+                                            ->schema([
+                                                Forms\Components\TextInput::make('id_number')
+                                                    ->label('ID Number')
+                                                    ->maxLength(255),
+                                                
+                                                Forms\Components\TextInput::make('tax_number')
+                                                    ->label('Tax Number')
+                                                    ->maxLength(255),
+                                                
+                                                Forms\Components\TextInput::make('driver_name')
+                                                    ->label('Driver Name')
+                                                    ->maxLength(255),
+                                                
+                                                Forms\Components\TextInput::make('document_no')
+                                                    ->label('Document Number')
+                                                    ->maxLength(255),
+                                                
+                                                Forms\Components\TextInput::make('car_no')
+                                                    ->label('Car Number')
+                                                    ->maxLength(255),
+                                            ])->columns(2),
+                                        
+                                        Forms\Components\Section::make('Notes')
+                                            ->schema([
+                                                Forms\Components\Textarea::make('note')
+                                                    ->label('Notes')
+                                                    ->rows(3)
+                                                    ->columnSpanFull(),
+                                            ]),
                                     ])
                                     ->label('Transporter'),
                             ]),
