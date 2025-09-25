@@ -523,7 +523,7 @@ class ReceiptDocumentResource extends Resource
                         }
                         return $indicators;
                     }),
-            ], layout: FiltersLayout::AboveContent)
+            ], layout: Tables\Enums\FiltersLayout::AboveContentCollapsible)
             ->filtersFormColumns(3)
             ->actions([
                 Tables\Actions\ViewAction::make(),

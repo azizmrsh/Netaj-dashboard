@@ -420,7 +420,7 @@ class PurchaseInvoiceResource extends Resource
                                 fn (Builder $query, $amount): Builder => $query->where('total_amount_with_tax', '<=', $amount),
                             );
                     }),
-            ], layout: FiltersLayout::AboveContent)
+            ], layout: Tables\Enums\FiltersLayout::AboveContentCollapsible)
             ->filtersFormColumns(2)
             ->actions([
                 ViewAction::make()
