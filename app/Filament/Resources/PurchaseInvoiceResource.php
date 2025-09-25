@@ -11,11 +11,15 @@ use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
+use Filament\Tables\Enums\FiltersLayout;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\Textarea;
+use Filament\Forms\Components\DatePicker;
+use Filament\Forms\Components\Grid;
+use Filament\Forms\Components\Repeater;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Columns\BadgeColumn;
 use Filament\Tables\Actions\EditAction;
@@ -23,10 +27,14 @@ use Filament\Tables\Actions\DeleteAction;
 use Filament\Tables\Actions\ViewAction;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Filters\Filter;
-use Filament\Forms\Components\DatePicker;
 use Filament\Tables\Actions\BulkActionGroup;
 use Filament\Tables\Actions\DeleteBulkAction;
+use AlperenErsoy\FilamentExport\Actions\FilamentExportBulkAction;
+use AlperenErsoy\FilamentExport\Actions\FilamentExportHeaderAction;
 use Filament\Support\Enums\FontWeight;
+use Filament\Tables\Columns\Summarizers\Sum;
+use Filament\Tables\Columns\Summarizers\Average;
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
@@ -70,12 +78,59 @@ class PurchaseInvoiceResource extends Resource
                             ->getOptionLabelFromRecordUsing(fn (ReceiptDocument $record): string => "Receipt #{$record->id} - {$record->supplier->name}")
                             ->required()
                             ->searchable()
-                            ->preload(),
-                    ])->columns(2),
+                            ->preload()
+                            ->reactive()
+                            ->afterStateUpdated(function ($state, callable $set) {
+                                if ($state) {
+                                    $receiptDocument = ReceiptDocument::with(['supplier', 'receiptDocumentProducts.product'])->find($state);
+                                    if ($receiptDocument && $receiptDocument->supplier) {
+                                        $supplier = $receiptDocument->supplier;
+                                        $set('supplier_name', $supplier->name);
+                                        $set('supplier_address', $supplier->address);
+                                        $set('supplier_phone', $supplier->phone);
+                                        $set('supplier_tax_number', $supplier->tax_number);
+                                        
+                                        // Load products from receipt document
+                                        $products = [];
+                                        foreach ($receiptDocument->receiptDocumentProducts as $receiptProduct) {
+                                            $products[] = [
+                                                'product_name' => $receiptProduct->product->name,
+                                                'quantity' => $receiptProduct->quantity,
+                                                'unit_price' => $receiptProduct->unit_price ?? 0,
+                                                'subtotal' => ($receiptProduct->quantity * ($receiptProduct->unit_price ?? 0)),
+                                            ];
+                                        }
+                                        $set('products', $products);
+                                    }
+                                } else {
+                                    $set('products', []);
+                                }
+                            }),
+                    ])->columns(3),
                     
-                Section::make('Payment & Supply Information')
-                    ->description('Payment details and supply information')
+                Section::make('Supplier & Payment Information')
+                    ->description('Supplier details and payment information')
                     ->schema([
+                        Grid::make(4)
+                            ->schema([
+                                TextInput::make('supplier_name')
+                                    ->label('Supplier Name')
+                                    ->required()
+                                    ->maxLength(255)
+                                    ->placeholder('Supplier full name'),
+                                TextInput::make('supplier_address')
+                                    ->label('Supplier Address')
+                                    ->maxLength(255)
+                                    ->placeholder('Supplier address'),
+                                TextInput::make('supplier_phone')
+                                    ->label('Supplier Phone')
+                                    ->maxLength(255)
+                                    ->placeholder('Supplier phone number'),
+                                TextInput::make('supplier_tax_number')
+                                    ->label('Supplier Tax Number')
+                                    ->maxLength(255)
+                                    ->placeholder('Supplier tax registration number'),
+                            ]),
                         TextInput::make('payment_terms')
                             ->label('Payment Terms')
                             ->required()
@@ -91,6 +146,68 @@ class PurchaseInvoiceResource extends Resource
                             ->placeholder('Example: PO-2024-001'),
                     ])->columns(2),
                     
+                Section::make('Products')
+                    ->description('Products from selected receipt document')
+                    ->schema([
+                        Repeater::make('products')
+                            ->label('Products')
+                            ->schema([
+                                TextInput::make('product_name')
+                                    ->label('Product Name')
+                                    ->disabled()
+                                    ->dehydrated(false),
+                                TextInput::make('quantity')
+                                    ->label('Quantity')
+                                    ->numeric()
+                                    ->disabled()
+                                    ->dehydrated(false),
+                                TextInput::make('unit_price')
+                                    ->label('Unit Price')
+                                    ->numeric()
+                                    ->prefix('SAR')
+                                    ->step(0.01)
+                                    ->reactive()
+                                    ->afterStateUpdated(function ($state, $set, $get) {
+                                        $quantity = $get('quantity') ?? 0;
+                                        $unitPrice = $state ?? 0;
+                                        $subtotal = $quantity * $unitPrice;
+                                        $set('subtotal', $subtotal);
+                                        
+                                        // Calculate totals for all products
+                                        $allProducts = $get('../../products') ?? [];
+                                        $totalSubtotal = 0;
+                                        
+                                        foreach ($allProducts as $product) {
+                                            $totalSubtotal += ($product['subtotal'] ?? 0);
+                                        }
+                                        
+                                        $set('../../subtotal_amount', $totalSubtotal);
+                                        
+                                        // Calculate tax amount
+                                        $taxRate = $get('../../tax_rate') ?? 15;
+                                        $taxAmount = ($totalSubtotal * $taxRate) / 100;
+                                        $set('../../total_tax_amount', $taxAmount);
+                                        
+                                        // Calculate total amount
+                                        $discountAmount = $get('../../discount_amount') ?? 0;
+                                        $totalAmount = $totalSubtotal + $taxAmount - $discountAmount;
+                                        $set('../../total_amount_with_tax', $totalAmount);
+                                    }),
+                                TextInput::make('subtotal')
+                                    ->label('Subtotal')
+                                    ->numeric()
+                                    ->prefix('SAR')
+                                    ->disabled()
+                                    ->dehydrated(false),
+                            ])
+                            ->columns(4)
+                            ->addable(false)
+                            ->deletable(false)
+                            ->reorderable(false)
+                            ->defaultItems(0)
+                            ->columnSpanFull(),
+                    ]),
+                    
                 Section::make('Financial Totals')
                     ->description('Amount and tax totals')
                     ->schema([
@@ -101,6 +218,23 @@ class PurchaseInvoiceResource extends Resource
                             ->default(0.00)
                             ->disabled()
                             ->dehydrated(),
+                        TextInput::make('tax_rate')
+                            ->label('Tax Rate (%)')
+                            ->numeric()
+                            ->suffix('%')
+                            ->default(15.00)
+                            ->step(0.01)
+                            ->reactive()
+                            ->afterStateUpdated(function ($state, $set, $get) {
+                                $subtotal = $get('subtotal_amount') ?? 0;
+                                $taxRate = $state ?? 15;
+                                $taxAmount = ($subtotal * $taxRate) / 100;
+                                $set('total_tax_amount', $taxAmount);
+                                
+                                $discountAmount = $get('discount_amount') ?? 0;
+                                $totalAmount = $subtotal + $taxAmount - $discountAmount;
+                                $set('total_amount_with_tax', $totalAmount);
+                            }),
                         TextInput::make('total_tax_amount')
                             ->label('Total Tax Amount')
                             ->numeric()
@@ -108,6 +242,19 @@ class PurchaseInvoiceResource extends Resource
                             ->default(0.00)
                             ->disabled()
                             ->dehydrated(),
+                        TextInput::make('discount_amount')
+                            ->label('Discount Amount')
+                            ->numeric()
+                            ->prefix('SAR')
+                            ->default(0.00)
+                            ->reactive()
+                            ->afterStateUpdated(function ($state, $set, $get) {
+                                $subtotal = $get('subtotal_amount') ?? 0;
+                                $taxAmount = $get('total_tax_amount') ?? 0;
+                                $discountAmount = $state ?? 0;
+                                $totalAmount = $subtotal + $taxAmount - $discountAmount;
+                                $set('total_amount_with_tax', $totalAmount);
+                            }),
                         TextInput::make('total_amount_with_tax')
                             ->label('Total Amount with Tax')
                             ->numeric()
@@ -115,6 +262,16 @@ class PurchaseInvoiceResource extends Resource
                             ->default(0.00)
                             ->disabled()
                             ->dehydrated(),
+                        Select::make('status')
+                            ->label('Status')
+                            ->options([
+                                'draft' => 'Draft',
+                                'sent' => 'Sent',
+                                'paid' => 'Paid',
+                                'cancelled' => 'Cancelled',
+                            ])
+                            ->default('draft')
+                            ->required(),
                     ])->columns(2),
                     
                 Section::make('Additional Notes')
@@ -138,15 +295,25 @@ class PurchaseInvoiceResource extends Resource
                     ->searchable()
                     ->sortable()
                     ->copyable()
+                    ->copyMessage('Invoice number copied')
+                    ->copyMessageDuration(1500)
                     ->weight(FontWeight::Bold),
                 TextColumn::make('receiptDocument.supplier.name')
                     ->label('Supplier')
                     ->searchable()
                     ->sortable()
-                    ->toggleable(),
+                    ->toggleable()
+                    ->limit(30)
+                    ->tooltip(function (TextColumn $column): ?string {
+                        $state = $column->getState();
+                        if (strlen($state) <= 30) {
+                            return null;
+                        }
+                        return $state;
+                    }),
                 TextColumn::make('date_and_time')
                     ->label('Invoice Date')
-                    ->dateTime('d/m/Y H:i')
+                    ->dateTime('M j, Y g:i A')
                     ->sortable()
                     ->toggleable(),
                 TextColumn::make('payment_terms')
@@ -172,6 +339,21 @@ class PurchaseInvoiceResource extends Resource
                     ->alignEnd()
                     ->weight(FontWeight::Bold)
                     ->color('success'),
+                TextColumn::make('status')
+                    ->label('Status')
+                    ->badge()
+                    ->color(fn (string $state): string => match ($state) {
+                        'draft' => 'gray',
+                        'sent' => 'warning',
+                        'paid' => 'success',
+                        'cancelled' => 'danger',
+                    })
+                    ->icon(fn (string $state): string => match ($state) {
+                        'draft' => 'heroicon-m-pencil-square',
+                        'sent' => 'heroicon-m-paper-airplane',
+                        'paid' => 'heroicon-m-check-circle',
+                        'cancelled' => 'heroicon-m-x-circle',
+                    }),
                 TextColumn::make('products_count')
                     ->label('Products Count')
                     ->counts('products')
@@ -185,6 +367,15 @@ class PurchaseInvoiceResource extends Resource
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
+                SelectFilter::make('status')
+                    ->label('Status')
+                    ->options([
+                        'draft' => 'Draft',
+                        'sent' => 'Sent',
+                        'paid' => 'Paid',
+                        'cancelled' => 'Cancelled',
+                    ])
+                    ->multiple(),
                 SelectFilter::make('id_receipt_documents')
                     ->label('Receipt Document')
                     ->relationship('receiptDocument', 'id')
@@ -229,7 +420,8 @@ class PurchaseInvoiceResource extends Resource
                                 fn (Builder $query, $amount): Builder => $query->where('total_amount_with_tax', '<=', $amount),
                             );
                     }),
-            ])
+            ], layout: FiltersLayout::AboveContent)
+            ->filtersFormColumns(2)
             ->actions([
                 ViewAction::make()
                     ->label('View'),
@@ -242,7 +434,17 @@ class PurchaseInvoiceResource extends Resource
                 BulkActionGroup::make([
                     DeleteBulkAction::make()
                         ->label('Delete Selected'),
+                    FilamentExportBulkAction::make('export')
+                        ->label('Export Selected')
+                        ->color('success')
+                        ->icon('heroicon-o-arrow-down-tray'),
                 ]),
+            ])
+            ->headerActions([
+                FilamentExportHeaderAction::make('export')
+                    ->label('Export All')
+                    ->color('success')
+                    ->icon('heroicon-o-arrow-down-tray'),
             ])
             ->defaultSort('created_at', 'desc')
             ->striped()
