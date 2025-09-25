@@ -353,23 +353,70 @@ class ReceiptDocumentResource extends Resource
                 
                 Forms\Components\Section::make('Officer Information')
                     ->schema([
-                        Forms\Components\TextInput::make('purchasing_officer_name')
-                            ->label('Purchasing Officer Name'),
-                        Forms\Components\Textarea::make('purchasing_officer_signature')
-                            ->label('Purchasing Officer Signature'),
-                        Forms\Components\TextInput::make('warehouse_officer_name')
-                            ->label('Warehouse Officer Name'),
-                        Forms\Components\Textarea::make('warehouse_officer_signature')
-                            ->label('Warehouse Officer Signature'),
-                        Forms\Components\TextInput::make('recipient_name')
-                            ->label('Recipient Name'),
-                        Forms\Components\Textarea::make('recipient_signature')
-                            ->label('Recipient Signature'),
-                        Forms\Components\TextInput::make('accountant_name')
-                            ->label('Accountant Name'),
-                        Forms\Components\Textarea::make('accountant_signature')
-                            ->label('Accountant Signature'),
-                    ])->columns(2)->collapsible(),
+                        Forms\Components\Grid::make(4)
+                            ->schema([
+                                Forms\Components\Group::make([
+                                    Forms\Components\TextInput::make('purchasing_officer_name')
+                                        ->label('Purchasing Officer Name'),
+                                    SignaturePad::make('purchasing_officer_signature')
+                                        ->label('Purchasing Officer Signature')
+                                        ->backgroundColor('rgb(245, 245, 245)')
+                                        ->penColor('rgb(0, 0, 0)')
+                                        ->exportPenColor('rgb(0, 0, 0)')
+                                        ->exportBackgroundColor('rgb(255, 255, 255)')
+                                        ->undoable()
+                                        ->clearable()
+                                        ->downloadable()
+                                        ->downloadActionDropdownPlacement('center')
+                                        ->confirmable(),
+                                ]),
+                                Forms\Components\Group::make([
+                                    Forms\Components\TextInput::make('warehouse_officer_name')
+                                        ->label('Warehouse Officer Name'),
+                                    SignaturePad::make('warehouse_officer_signature')
+                                        ->label('Warehouse Officer Signature')
+                                        ->backgroundColor('rgb(245, 245, 245)')
+                                        ->penColor('rgb(0, 0, 0)')
+                                        ->exportPenColor('rgb(0, 0, 0)')
+                                        ->exportBackgroundColor('rgb(255, 255, 255)')
+                                        ->undoable()
+                                        ->clearable()
+                                        ->downloadable()
+                                        ->downloadActionDropdownPlacement('center')
+                                        ->confirmable(),
+                                ]),
+                                Forms\Components\Group::make([
+                                    Forms\Components\TextInput::make('recipient_name')
+                                        ->label('Recipient Name'),
+                                    SignaturePad::make('recipient_signature')
+                                        ->label('Recipient Signature')
+                                        ->backgroundColor('rgb(245, 245, 245)')
+                                        ->penColor('rgb(0, 0, 0)')
+                                        ->exportPenColor('rgb(0, 0, 0)')
+                                        ->exportBackgroundColor('rgb(255, 255, 255)')
+                                        ->undoable()
+                                        ->clearable()
+                                        ->downloadable()
+                                        ->downloadActionDropdownPlacement('center')
+                                        ->confirmable(),
+                                ]),
+                                Forms\Components\Group::make([
+                                    Forms\Components\TextInput::make('accountant_name')
+                                        ->label('Accountant Name'),
+                                    SignaturePad::make('accountant_signature')
+                                        ->label('Accountant Signature')
+                                        ->backgroundColor('rgb(245, 245, 245)')
+                                        ->penColor('rgb(0, 0, 0)')
+                                        ->exportPenColor('rgb(0, 0, 0)')
+                                        ->exportBackgroundColor('rgb(255, 255, 255)')
+                                        ->undoable()
+                                        ->clearable()
+                                        ->downloadable()
+                                        ->downloadActionDropdownPlacement('center')
+                                        ->confirmable(),
+                                ]),
+                            ]),
+                    ])->collapsible(),
                 
                 Forms\Components\Section::make('Additional Information')
                     ->schema([
