@@ -193,17 +193,68 @@ class DeliveryDocumentResource extends Resource
                                             ->searchable()
                                             ->preload()
                                             ->createOptionForm([
-                                                Forms\Components\TextInput::make('name')
-                                                    ->required()
-                                                    ->label('Product Name'),
-                                                Forms\Components\Textarea::make('description')
-                                                    ->label('Description'),
-                                                Forms\Components\TextInput::make('unit')
-                                                    ->label('Unit (e.g., kg, pieces)'),
-                                                Forms\Components\TextInput::make('price')
-                                                    ->numeric()
-                                                    ->step(0.01)
-                                                    ->label('Default Price'),
+                                                Forms\Components\Section::make('Basic Product Information')
+                                                    ->schema([
+                                                        Forms\Components\TextInput::make('name')
+                                                            ->label('Product Name')
+                                                            ->required()
+                                                            ->maxLength(255),
+                                                        
+                                                        Forms\Components\TextInput::make('product_code')
+                                                            ->label('Product Code')
+                                                            ->required()
+                                                            ->unique(ignoreRecord: true)
+                                                            ->maxLength(255),
+                                                        
+                                                        Forms\Components\Textarea::make('description')
+                                                            ->label('Description')
+                                                            ->rows(3)
+                                                            ->columnSpanFull(),
+                                                    ])
+                                                    ->columns(2),
+                                                
+                                                Forms\Components\Section::make('Product Specifications')
+                                                    ->schema([
+                                                        Forms\Components\TextInput::make('performance_grade')
+                                                            ->label('Performance Grade')
+                                                            ->maxLength(255),
+                                                        
+                                                        Forms\Components\TextInput::make('modification_type')
+                                                            ->label('Modification Type')
+                                                            ->maxLength(255),
+                                                        
+                                                        Forms\Components\Select::make('unit')
+                                                            ->label('Unit of Measurement')
+                                                            ->options([
+                                                                'ton' => 'Ton',
+                                                                'barrel' => 'Barrel',
+                                                            ])
+                                                            ->required(),
+                                                        
+                                                        Forms\Components\Select::make('is_active')
+                                                            ->label('Status')
+                                                            ->options([
+                                                                1 => 'Active',
+                                                                0 => 'Inactive',
+                                                            ])
+                                                            ->default(1)
+                                                            ->required(),
+                                                    ])
+                                                    ->columns(2),
+                                                
+                                                Forms\Components\Section::make('Pricing Information')
+                                                    ->schema([
+                                                        Forms\Components\TextInput::make('price1')
+                                                            ->label('Price 1')
+                                                            ->numeric()
+                                                            ->prefix('$'),
+                                                        
+                                                        Forms\Components\TextInput::make('price2')
+                                                            ->label('Price 2')
+                                                            ->numeric()
+                                                            ->prefix('$'),
+                                                    ])
+                                                    ->columns(2),
                                             ])
                                             ->label('Product'),
                                         Forms\Components\TextInput::make('quantity')
