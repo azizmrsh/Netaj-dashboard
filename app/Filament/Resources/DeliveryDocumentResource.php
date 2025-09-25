@@ -51,17 +51,73 @@ class DeliveryDocumentResource extends Resource
                                     ->searchable()
                                     ->preload()
                                     ->createOptionForm([
-                                        Forms\Components\TextInput::make('name')
-                                            ->required()
-                                            ->label('Customer Name'),
-                                        Forms\Components\TextInput::make('phone')
-                                            ->tel()
-                                            ->label('Phone'),
-                                        Forms\Components\TextInput::make('email')
-                                            ->email()
-                                            ->label('Email'),
-                                        Forms\Components\Textarea::make('address')
-                                            ->label('Address'),
+                                        Forms\Components\Section::make('Basic Customer Information')
+                                            ->schema([
+                                                Forms\Components\TextInput::make('name')
+                                                    ->label('Customer Name')
+                                                    ->required()
+                                                    ->maxLength(255),
+                                                
+                                                Forms\Components\TextInput::make('phone')
+                                                    ->label('Phone Number')
+                                                    ->tel()
+                                                    ->maxLength(255),
+                                                
+                                                Forms\Components\TextInput::make('email')
+                                                    ->label('Email Address')
+                                                    ->email()
+                                                    ->maxLength(255),
+                                                
+                                                Forms\Components\Toggle::make('is_active')
+                                                    ->label('Active')
+                                                    ->default(true),
+                                            ])
+                                            ->columns(2),
+                                        
+                                        Forms\Components\Section::make('Company Information')
+                                            ->schema([
+                                                Forms\Components\TextInput::make('name_company')
+                                                    ->label('Company Name')
+                                                    ->maxLength(255),
+                                                
+                                                Forms\Components\TextInput::make('tax_number')
+                                                    ->label('Tax Number')
+                                                    ->maxLength(255),
+                                                
+                                                Forms\Components\TextInput::make('commercial_registration_number')
+                                                    ->label('Commercial Registration Number')
+                                                    ->maxLength(255),
+                                                
+                                                Forms\Components\TextInput::make('national_number')
+                                                    ->label('National Number')
+                                                    ->maxLength(255),
+                                            ])
+                                            ->columns(2),
+                                        
+                                        Forms\Components\Section::make('Address Information')
+                                            ->schema([
+                                                Forms\Components\TextInput::make('country')
+                                                    ->label('Country')
+                                                    ->maxLength(255),
+                                                
+                                                Forms\Components\TextInput::make('zip_code')
+                                                    ->label('Zip Code')
+                                                    ->maxLength(255),
+                                                
+                                                Forms\Components\Textarea::make('address')
+                                                    ->label('Address')
+                                                    ->rows(3)
+                                                    ->columnSpanFull(),
+                                            ])
+                                            ->columns(2),
+                                        
+                                        Forms\Components\Section::make('Notes')
+                                            ->schema([
+                                                Forms\Components\Textarea::make('note')
+                                                    ->label('Notes')
+                                                    ->rows(4)
+                                                    ->columnSpanFull(),
+                                            ]),
                                     ])
                                     ->label('Customer'),
                                 Forms\Components\Select::make('id_transporter')
