@@ -183,10 +183,13 @@ class ReceiptDocumentResource extends Resource
                                     ])
                                     ->label('Transporter'),
                             ]),
-                        Forms\Components\TextInput::make('purchase_invoice_no')
-                            ->label('Purchase Invoice Number'),
-                        Forms\Components\TextInput::make('material_source')
-                            ->label('Material Source'),
+                        Forms\Components\Grid::make(2)
+                            ->schema([
+                                Forms\Components\TextInput::make('purchase_invoice_no')
+                                    ->label('Purchase Invoice Number'),
+                                Forms\Components\TextInput::make('material_source')
+                                    ->label('Material Source'),
+                            ]),
                         Forms\Components\Repeater::make('receiptDocumentProducts')
                             ->relationship()
                             ->schema([
@@ -293,57 +296,60 @@ class ReceiptDocumentResource extends Resource
                 
                 Forms\Components\Section::make('Order Summary')
                     ->schema([
-                        Forms\Components\Placeholder::make('subtotal')
-                            ->label('Subtotal (Before Tax)')
-                            ->content(function (Get $get): string {
-                                $products = $get('receiptDocumentProducts') ?? [];
-                                $subtotal = 0;
-                                
-                                foreach ($products as $product) {
-                                    if (isset($product['quantity']) && isset($product['unit_price'])) {
-                                        $subtotal += $product['quantity'] * $product['unit_price'];
-                                    }
-                                }
-                                
-                                return '$' . number_format($subtotal, 2);
-                            }),
-                        Forms\Components\Placeholder::make('tax_amount')
-                            ->label('Tax Amount')
-                            ->content(function (Get $get): string {
-                                $products = $get('receiptDocumentProducts') ?? [];
-                                $taxAmount = 0;
-                                
-                                foreach ($products as $product) {
-                                    if (isset($product['quantity']) && isset($product['unit_price']) && isset($product['tax_rate'])) {
-                                        $lineTotal = $product['quantity'] * $product['unit_price'];
-                                        $taxAmount += $lineTotal * ($product['tax_rate'] / 100);
-                                    }
-                                }
-                                
-                                return '$' . number_format($taxAmount, 2);
-                            }),
-                        Forms\Components\Placeholder::make('total')
-                            ->label('Total (After Tax)')
-                            ->content(function (Get $get): string {
-                                $products = $get('receiptDocumentProducts') ?? [];
-                                $subtotal = 0;
-                                $taxAmount = 0;
-                                
-                                foreach ($products as $product) {
-                                    if (isset($product['quantity']) && isset($product['unit_price'])) {
-                                        $lineTotal = $product['quantity'] * $product['unit_price'];
-                                        $subtotal += $lineTotal;
+                        Forms\Components\Grid::make(3)
+                            ->schema([
+                                Forms\Components\Placeholder::make('subtotal')
+                                    ->label('Subtotal')
+                                    ->content(function (Get $get): string {
+                                        $products = $get('receiptDocumentProducts') ?? [];
+                                        $subtotal = 0;
                                         
-                                        if (isset($product['tax_rate'])) {
-                                            $taxAmount += $lineTotal * ($product['tax_rate'] / 100);
+                                        foreach ($products as $product) {
+                                            if (isset($product['quantity']) && isset($product['unit_price'])) {
+                                                $subtotal += $product['quantity'] * $product['unit_price'];
+                                            }
                                         }
-                                    }
-                                }
+                                        
+                                        return '$' . number_format($subtotal, 2);
+                                    }),
                                 
-                                return '$' . number_format($subtotal + $taxAmount, 2);
-                            }),
+                                Forms\Components\Placeholder::make('tax_amount')
+                                    ->label('Tax Amount')
+                                    ->content(function (Get $get): string {
+                                        $products = $get('receiptDocumentProducts') ?? [];
+                                        $taxAmount = 0;
+                                        
+                                        foreach ($products as $product) {
+                                            if (isset($product['quantity']) && isset($product['unit_price']) && isset($product['tax_rate'])) {
+                                                $subtotal = $product['quantity'] * $product['unit_price'];
+                                                $taxAmount += $subtotal * ($product['tax_rate'] / 100);
+                                            }
+                                        }
+                                        
+                                        return '$' . number_format($taxAmount, 2);
+                                    }),
+                                
+                                Forms\Components\Placeholder::make('total')
+                                    ->label('Total')
+                                    ->content(function (Get $get): string {
+                                        $products = $get('receiptDocumentProducts') ?? [];
+                                        $total = 0;
+                                        
+                                        foreach ($products as $product) {
+                                            if (isset($product['quantity']) && isset($product['unit_price'])) {
+                                                $subtotal = $product['quantity'] * $product['unit_price'];
+                                                $taxRate = $product['tax_rate'] ?? 0;
+                                                $total += $subtotal * (1 + ($taxRate / 100));
+                                            }
+                                        }
+                                        
+                                        return '$' . number_format($total, 2);
+                                    })
+                                    ->extraAttributes(['class' => 'font-bold text-lg']),
+                            ])
                     ])
-                    ->columns(3),
+                    ->collapsible()
+                    ->collapsed(false),
                 
                 Forms\Components\Section::make('Officer Information')
                     ->schema([
