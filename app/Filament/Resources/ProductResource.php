@@ -26,33 +26,68 @@ class ProductResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\TextInput::make('name')
-                    ->required()
-                    ->maxLength(255),
-                Forms\Components\Textarea::make('description')
-                    ->columnSpanFull(),
-                Forms\Components\TextInput::make('product_code')
-                    ->required()
-                    ->unique(ignoreRecord: true)
-                    ->maxLength(255),
-                Forms\Components\TextInput::make('performance_grade')
-                    ->maxLength(255),
-                Forms\Components\TextInput::make('modification_type')
-                    ->maxLength(255),
-                Forms\Components\Select::make('unit')
-                    ->options([
-                        'ton' => 'Ton',
-                        'barrel' => 'Barrel',
+                Forms\Components\Section::make('Basic Product Information')
+                    ->schema([
+                        Forms\Components\TextInput::make('name')
+                            ->label('Product Name')
+                            ->required()
+                            ->maxLength(255),
+                        
+                        Forms\Components\TextInput::make('product_code')
+                            ->label('Product Code')
+                            ->required()
+                            ->unique(ignoreRecord: true)
+                            ->maxLength(255),
+                        
+                        Forms\Components\Textarea::make('description')
+                            ->label('Description')
+                            ->rows(3)
+                            ->columnSpanFull(),
                     ])
-                    ->required(),
-                Forms\Components\Toggle::make('is_active')
-                    ->default(true),
-                Forms\Components\TextInput::make('price1')
-                    ->numeric()
-                    ->prefix('$'),
-                Forms\Components\TextInput::make('price2')
-                    ->numeric()
-                    ->prefix('$'),
+                    ->columns(2),
+                
+                Forms\Components\Section::make('Product Specifications')
+                    ->schema([
+                        Forms\Components\TextInput::make('performance_grade')
+                            ->label('Performance Grade')
+                            ->maxLength(255),
+                        
+                        Forms\Components\TextInput::make('modification_type')
+                            ->label('Modification Type')
+                            ->maxLength(255),
+                        
+                        Forms\Components\Select::make('unit')
+                            ->label('Unit of Measurement')
+                            ->options([
+                                'ton' => 'Ton',
+                                'barrel' => 'Barrel',
+                            ])
+                            ->required(),
+                        
+                        Forms\Components\Select::make('is_active')
+                            ->label('Status')
+                            ->options([
+                                1 => 'Active',
+                                0 => 'Inactive',
+                            ])
+                            ->default(1)
+                            ->required(),
+                    ])
+                    ->columns(2),
+                
+                Forms\Components\Section::make('Pricing Information')
+                    ->schema([
+                        Forms\Components\TextInput::make('price1')
+                            ->label('Price 1')
+                            ->numeric()
+                            ->prefix('$'),
+                        
+                        Forms\Components\TextInput::make('price2')
+                            ->label('Price 2')
+                            ->numeric()
+                            ->prefix('$'),
+                    ])
+                    ->columns(2),
             ]);
     }
 
