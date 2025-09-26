@@ -53,6 +53,7 @@ class AdminPanelProvider extends PanelProvider
             // ->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\\Filament\\Widgets')
             ->widgets([
                 \App\Filament\Widgets\DateFilterWidget::class,
+                \App\Filament\Widgets\QuickStatsWidget::class,
                 \App\Filament\Widgets\DashboardOverviewWidget::class,
             ])
             ->middleware([
