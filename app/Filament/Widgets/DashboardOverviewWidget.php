@@ -11,6 +11,7 @@ use App\Models\SalesInvoice;
 use App\Models\Supplier;
 use App\Models\Transporter;
 use App\Models\User;
+use Spatie\Permission\Models\Role;
 use Filament\Widgets\StatsOverviewWidget as BaseWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
 use Illuminate\Support\Facades\DB;
@@ -31,6 +32,8 @@ class DashboardOverviewWidget extends BaseWidget
         $totalTransporters = Transporter::count();
         $activeTransporters = Transporter::where('is_active', true)->count();
         $totalUsers = User::count();
+        $totalRoles = Role::count();
+        $activeRoles = Role::whereHas('users')->count();
         
         // حساب إحصائيات المستندات
         $totalReceiptDocuments = ReceiptDocument::count();
@@ -49,9 +52,6 @@ class DashboardOverviewWidget extends BaseWidget
         $todaySalesAmount = SalesInvoice::whereDate('created_at', today())->sum('total_amount') ?? 0;
         $totalPurchaseAmount = PurchaseInvoice::sum('total_amount_with_tax') ?? 0;
         $todayPurchaseAmount = PurchaseInvoice::whereDate('created_at', today())->sum('total_amount_with_tax') ?? 0;
-        
-        // حساب الأرباح التقديرية
-        $estimatedProfit = $totalSalesAmount - $totalPurchaseAmount;
         
         return [
             // 1. Total Products
@@ -124,12 +124,12 @@ class DashboardOverviewWidget extends BaseWidget
                 ->color('danger')
                 ->chart([800, 1200, 600, 1800, 900, 1400, 2000]),
             
-            // 11. Estimated Profit
-            Stat::make('Estimated Profit', 'SAR ' . number_format($estimatedProfit, 2))
-                ->description($estimatedProfit >= 0 ? 'Profit' : 'Loss')
-                ->descriptionIcon($estimatedProfit >= 0 ? 'heroicon-m-arrow-up' : 'heroicon-m-arrow-down')
-                ->color($estimatedProfit >= 0 ? 'success' : 'danger')
-                ->chart([200, 300, 200, 400, 300, 400, 500]),
+            // 11. System Roles
+            Stat::make('System Roles', $totalRoles)
+                ->description($activeRoles . ' roles with users')
+                ->descriptionIcon('heroicon-m-shield-check')
+                ->color('info')
+                ->chart([1, 2, 2, 3, 3, 4, $totalRoles]),
             
             // 12. System Users
             Stat::make('System Users', $totalUsers)
