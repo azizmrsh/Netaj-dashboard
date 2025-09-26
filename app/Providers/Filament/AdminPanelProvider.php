@@ -52,7 +52,7 @@ class AdminPanelProvider extends PanelProvider
             ])
             // ->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\\Filament\\Widgets')
             ->widgets([
-                // All widgets are disabled for dashboard
+                \App\Filament\Widgets\DashboardOverviewWidget::class,
             ])
             ->middleware([
                 EncryptCookies::class,
