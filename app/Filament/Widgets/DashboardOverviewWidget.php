@@ -15,13 +15,36 @@ use Spatie\Permission\Models\Role;
 use Filament\Widgets\StatsOverviewWidget as BaseWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
 use Illuminate\Support\Facades\DB;
+use Livewire\Attributes\On;
+use Carbon\Carbon;
 
 class DashboardOverviewWidget extends BaseWidget
 {
     protected static ?string $pollingInterval = '30s';
     
+    public ?string $start_date = null;
+    public ?string $end_date = null;
+    
+    public function mount(): void
+    {
+        // تعيين القيم الافتراضية
+        $this->start_date = now()->startOfMonth()->format('Y-m-d');
+        $this->end_date = now()->format('Y-m-d');
+    }
+    
+    #[On('dateFilterUpdated')]
+    public function updateDateFilter($data): void
+    {
+        $this->start_date = $data['start_date'] ?? $this->start_date;
+        $this->end_date = $data['end_date'] ?? $this->end_date;
+    }
+    
     protected function getStats(): array
     {
+        // تحويل التواريخ إلى Carbon instances
+        $startDate = $this->start_date ? Carbon::parse($this->start_date)->startOfDay() : now()->startOfMonth();
+        $endDate = $this->end_date ? Carbon::parse($this->end_date)->endOfDay() : now()->endOfDay();
+        
         // حساب الإحصائيات الأساسية
         $totalProducts = Product::count();
         $activeProducts = Product::where('is_active', true)->count();
@@ -35,22 +58,22 @@ class DashboardOverviewWidget extends BaseWidget
         $totalRoles = Role::count();
         $activeRoles = Role::whereHas('users')->count();
         
-        // حساب إحصائيات المستندات
-        $totalReceiptDocuments = ReceiptDocument::count();
+        // حساب إحصائيات المستندات بناءً على الفترة المحددة
+        $totalReceiptDocuments = ReceiptDocument::whereBetween('created_at', [$startDate, $endDate])->count();
         $todayReceiptDocuments = ReceiptDocument::whereDate('created_at', today())->count();
-        $totalDeliveryDocuments = DeliveryDocument::count();
+        $totalDeliveryDocuments = DeliveryDocument::whereBetween('created_at', [$startDate, $endDate])->count();
         $todayDeliveryDocuments = DeliveryDocument::whereDate('created_at', today())->count();
         
-        // حساب إحصائيات الفواتير
-        $totalSalesInvoices = SalesInvoice::count();
+        // حساب إحصائيات الفواتير بناءً على الفترة المحددة
+        $totalSalesInvoices = SalesInvoice::whereBetween('created_at', [$startDate, $endDate])->count();
         $todaySalesInvoices = SalesInvoice::whereDate('created_at', today())->count();
-        $totalPurchaseInvoices = PurchaseInvoice::count();
+        $totalPurchaseInvoices = PurchaseInvoice::whereBetween('created_at', [$startDate, $endDate])->count();
         $todayPurchaseInvoices = PurchaseInvoice::whereDate('created_at', today())->count();
         
-        // حساب المبالغ المالية
-        $totalSalesAmount = SalesInvoice::sum('total_amount') ?? 0;
+        // حساب المبالغ المالية بناءً على الفترة المحددة
+        $totalSalesAmount = SalesInvoice::whereBetween('created_at', [$startDate, $endDate])->sum('total_amount') ?? 0;
         $todaySalesAmount = SalesInvoice::whereDate('created_at', today())->sum('total_amount') ?? 0;
-        $totalPurchaseAmount = PurchaseInvoice::sum('total_amount_with_tax') ?? 0;
+        $totalPurchaseAmount = PurchaseInvoice::whereBetween('created_at', [$startDate, $endDate])->sum('total_amount_with_tax') ?? 0;
         $todayPurchaseAmount = PurchaseInvoice::whereDate('created_at', today())->sum('total_amount_with_tax') ?? 0;
         
         return [
@@ -84,42 +107,42 @@ class DashboardOverviewWidget extends BaseWidget
             
             // 5. Receipt Documents
             Stat::make('Receipt Documents', $totalReceiptDocuments)
-                ->description($todayReceiptDocuments . ' today')
+                ->description($todayReceiptDocuments . ' today | Period: ' . $startDate->format('M d') . ' - ' . $endDate->format('M d'))
                 ->descriptionIcon('heroicon-m-clipboard-document-check')
                 ->color('success')
                 ->chart([3, 5, 2, 8, 4, 6, 7]),
             
             // 6. Delivery Documents
             Stat::make('Delivery Documents', $totalDeliveryDocuments)
-                ->description($todayDeliveryDocuments . ' today')
+                ->description($todayDeliveryDocuments . ' today | Period: ' . $startDate->format('M d') . ' - ' . $endDate->format('M d'))
                 ->descriptionIcon('heroicon-m-clipboard-document-list')
                 ->color('info')
                 ->chart([4, 3, 6, 5, 8, 4, 9]),
             
             // 7. Sales Invoices
             Stat::make('Sales Invoices', $totalSalesInvoices)
-                ->description($todaySalesInvoices . ' invoices today')
+                ->description($todaySalesInvoices . ' today | Period: ' . $startDate->format('M d') . ' - ' . $endDate->format('M d'))
                 ->descriptionIcon('heroicon-m-banknotes')
                 ->color('success')
                 ->chart([5, 8, 3, 12, 6, 10, 14]),
             
             // 8. Purchase Invoices
             Stat::make('Purchase Invoices', $totalPurchaseInvoices)
-                ->description($todayPurchaseInvoices . ' invoices today')
+                ->description($todayPurchaseInvoices . ' today | Period: ' . $startDate->format('M d') . ' - ' . $endDate->format('M d'))
                 ->descriptionIcon('heroicon-m-receipt-percent')
                 ->color('warning')
                 ->chart([3, 6, 4, 8, 5, 7, 9]),
             
             // 9. Total Sales
             Stat::make('Total Sales', 'SAR ' . number_format($totalSalesAmount, 2))
-                ->description('Today: SAR ' . number_format($todaySalesAmount, 2))
+                ->description('Today: SAR ' . number_format($todaySalesAmount, 2) . ' | Period: ' . $startDate->format('M d') . ' - ' . $endDate->format('M d'))
                 ->descriptionIcon('heroicon-m-arrow-trending-up')
                 ->color('success')
                 ->chart([1000, 1500, 800, 2200, 1200, 1800, 2500]),
             
             // 10. Total Purchases
             Stat::make('Total Purchases', 'SAR ' . number_format($totalPurchaseAmount, 2))
-                ->description('Today: SAR ' . number_format($todayPurchaseAmount, 2))
+                ->description('Today: SAR ' . number_format($todayPurchaseAmount, 2) . ' | Period: ' . $startDate->format('M d') . ' - ' . $endDate->format('M d'))
                 ->descriptionIcon('heroicon-m-arrow-trending-down')
                 ->color('danger')
                 ->chart([800, 1200, 600, 1800, 900, 1400, 2000]),
