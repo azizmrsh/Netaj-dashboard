@@ -142,10 +142,7 @@ class ProductResource extends Resource
     public static function getWidgets(): array
     {
         return [
-            \App\Filament\Widgets\TotalProductsWidget::class,
-            \App\Filament\Widgets\ActiveProductsWidget::class,
             \App\Filament\Widgets\ProductsByUnitWidget::class,
-            \App\Filament\Widgets\AveragePriceWidget::class,
         ];
     }
 
