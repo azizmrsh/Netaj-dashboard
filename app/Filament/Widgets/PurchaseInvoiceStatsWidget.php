@@ -25,12 +25,12 @@ class PurchaseInvoiceStatsWidget extends BaseWidget
                 ->descriptionIcon('heroicon-m-calendar-days')
                 ->color('success'),
                 
-            Stat::make('Total Purchase Value', '$' . number_format(PurchaseInvoice::sum('total_amount'), 2))
+            Stat::make('Total Purchase Value', '$' . number_format(PurchaseInvoice::sum('total_amount_with_tax'), 2))
                 ->description('Total value of all purchases')
                 ->descriptionIcon('heroicon-m-currency-dollar')
                 ->color('info'),
                 
-            Stat::make('Average Invoice Value', '$' . number_format(PurchaseInvoice::avg('total_amount') ?? 0, 2))
+            Stat::make('Average Invoice Value', '$' . number_format(PurchaseInvoice::avg('total_amount_with_tax') ?? 0, 2))
                 ->description('Average purchase invoice amount')
                 ->descriptionIcon('heroicon-m-chart-bar')
                 ->color('warning'),
