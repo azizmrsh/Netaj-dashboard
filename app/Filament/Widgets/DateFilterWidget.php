@@ -2,9 +2,6 @@
 
 namespace App\Filament\Widgets;
 
-use Filament\Forms\Components\DatePicker;
-use Filament\Forms\Components\Section;
-use Filament\Forms\Form;
 use Filament\Widgets\Widget;
 use Livewire\Attributes\On;
 
@@ -22,33 +19,6 @@ class DateFilterWidget extends Widget
         // تعيين القيم الافتراضية
         $this->start_date = now()->startOfMonth()->format('Y-m-d');
         $this->end_date = now()->format('Y-m-d');
-    }
-    
-    public function form(Form $form): Form
-    {
-        return $form
-            ->schema([
-                Section::make('Date Filter')
-                    ->description('Select date range to filter dashboard statistics')
-                    ->schema([
-                        DatePicker::make('start_date')
-                            ->label('Start Date')
-                            ->default(now()->startOfMonth())
-                            ->maxDate(now())
-                            ->live()
-                            ->afterStateUpdated(fn () => $this->updateDashboard()),
-                            
-                        DatePicker::make('end_date')
-                            ->label('End Date')
-                            ->default(now())
-                            ->maxDate(now())
-                            ->live()
-                            ->afterStateUpdated(fn () => $this->updateDashboard()),
-                    ])
-                    ->columns(2)
-                    ->collapsible()
-                    ->persistCollapsed(false),
-            ]);
     }
     
     public function updateDashboard(): void
