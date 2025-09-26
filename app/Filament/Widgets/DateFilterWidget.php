@@ -58,6 +58,12 @@ class DateFilterWidget extends Widget
             'start_date' => $this->start_date,
             'end_date' => $this->end_date,
         ]);
+        
+        // Also dispatch the updateDateFilter event that DashboardOverviewWidget listens to
+        $this->dispatch('updateDateFilter', 
+            start_date: $this->start_date,
+            end_date: $this->end_date
+        );
     }
     
     public function resetFilter(): void

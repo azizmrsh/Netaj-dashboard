@@ -56,3 +56,16 @@
         </div>
     </x-filament::section>
 </x-filament-widgets::widget>
+
+<script>
+document.addEventListener('livewire:initialized', () => {
+    // Listen for date filter updates and refresh dashboard widgets
+    Livewire.on('dateFilterUpdated', (data) => {
+        // Dispatch event to update dashboard widgets
+        Livewire.dispatch('updateDateFilter', {
+            start_date: data.start_date,
+            end_date: data.end_date
+        });
+    });
+});
+</script>
