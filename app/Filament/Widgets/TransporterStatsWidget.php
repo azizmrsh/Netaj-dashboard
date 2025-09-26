@@ -25,9 +25,9 @@ class TransporterStatsWidget extends BaseWidget
                 ->descriptionIcon('heroicon-m-check-circle')
                 ->color('success'),
                 
-            Stat::make('Transporters with Companies', Transporter::whereNotNull('name_company')->count())
-                ->description('Transporters with company names')
-                ->descriptionIcon('heroicon-m-building-office')
+            Stat::make('Transporters with Tax Numbers', Transporter::whereNotNull('tax_number')->count())
+                ->description('Transporters with tax numbers')
+                ->descriptionIcon('heroicon-m-document-text')
                 ->color('info'),
                 
             Stat::make('Transporters with Phone', Transporter::whereNotNull('phone')->count())
