@@ -62,7 +62,7 @@ class RecentActivitiesWidget extends BaseWidget
         // Get recent sales invoices
         $salesInvoices = SalesInvoice::select([
             'id',
-            'invoice_number as reference',
+            'invoice_no as reference',
             'total_amount as amount',
             'created_at as date',
             'status'
@@ -74,7 +74,7 @@ class RecentActivitiesWidget extends BaseWidget
         // Get recent purchase invoices
         $purchaseInvoices = PurchaseInvoice::select([
             'id',
-            'invoice_number as reference',
+            'invoice_no as reference',
             'total_amount_with_tax as amount',
             'created_at as date',
             'status'
