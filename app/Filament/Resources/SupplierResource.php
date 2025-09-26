@@ -144,4 +144,11 @@ class SupplierResource extends Resource
             'edit' => Pages\EditSupplier::route('/{record}/edit'),
         ];
     }
+
+    public static function getWidgets(): array
+    {
+        return [
+            \App\Filament\Widgets\SupplierStatsWidget::class,
+        ];
+    }
 }

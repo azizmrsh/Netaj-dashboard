@@ -583,4 +583,11 @@ class SalesInvoiceResource extends Resource
             'edit' => Pages\EditSalesInvoice::route('/{record}/edit'),
         ];
     }
+
+    public static function getWidgets(): array
+    {
+        return [
+            \App\Filament\Widgets\SalesInvoiceStatsWidget::class,
+        ];
+    }
 }

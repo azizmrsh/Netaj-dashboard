@@ -168,4 +168,11 @@ class TransporterResource extends Resource
             'edit' => Pages\EditTransporter::route('/{record}/edit'),
         ];
     }
+
+    public static function getWidgets(): array
+    {
+        return [
+            \App\Filament\Widgets\TransporterStatsWidget::class,
+        ];
+    }
 }

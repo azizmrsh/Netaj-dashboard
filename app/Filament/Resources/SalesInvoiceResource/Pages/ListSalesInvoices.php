@@ -16,4 +16,9 @@ class ListSalesInvoices extends ListRecords
             Actions\CreateAction::make(),
         ];
     }
+
+    protected function getHeaderWidgets(): array
+    {
+        return SalesInvoiceResource::getWidgets();
+    }
 }

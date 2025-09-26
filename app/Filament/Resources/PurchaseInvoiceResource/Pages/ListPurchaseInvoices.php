@@ -16,4 +16,9 @@ class ListPurchaseInvoices extends ListRecords
             Actions\CreateAction::make(),
         ];
     }
+
+    protected function getHeaderWidgets(): array
+    {
+        return PurchaseInvoiceResource::getWidgets();
+    }
 }

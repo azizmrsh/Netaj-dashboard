@@ -16,4 +16,9 @@ class ListTransporters extends ListRecords
             Actions\CreateAction::make(),
         ];
     }
+
+    protected function getHeaderWidgets(): array
+    {
+        return TransporterResource::getWidgets();
+    }
 }

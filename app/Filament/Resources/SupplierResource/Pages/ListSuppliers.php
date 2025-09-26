@@ -16,4 +16,9 @@ class ListSuppliers extends ListRecords
             Actions\CreateAction::make(),
         ];
     }
+
+    protected function getHeaderWidgets(): array
+    {
+        return SupplierResource::getWidgets();
+    }
 }

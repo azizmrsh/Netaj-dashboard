@@ -180,6 +180,13 @@ class UserResource extends Resource
             'edit' => Pages\EditUser::route('/{record}/edit'),
         ];
     }
+
+    public static function getWidgets(): array
+    {
+        return [
+            \App\Filament\Widgets\UserStatsWidget::class,
+        ];
+    }
     
     public static function getNavigationBadge(): ?string
     {

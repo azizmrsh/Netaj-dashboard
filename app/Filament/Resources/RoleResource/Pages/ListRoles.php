@@ -25,8 +25,6 @@ class ListRoles extends ListRecords
     
     protected function getHeaderWidgets(): array
     {
-        return [
-            // Widgets can be added here later
-        ];
+        return RoleResource::getWidgets();
     }
 }

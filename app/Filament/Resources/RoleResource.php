@@ -172,6 +172,13 @@ class RoleResource extends Resource
             'edit' => Pages\EditRole::route('/{record}/edit'),
         ];
     }
+
+    public static function getWidgets(): array
+    {
+        return [
+            \App\Filament\Widgets\RoleStatsWidget::class,
+        ];
+    }
     
     public static function getNavigationBadge(): ?string
     {

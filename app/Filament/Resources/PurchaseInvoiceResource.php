@@ -466,6 +466,13 @@ class PurchaseInvoiceResource extends Resource
             'edit' => Pages\EditPurchaseInvoice::route('/{record}/edit'),
         ];
     }
+
+    public static function getWidgets(): array
+    {
+        return [
+            \App\Filament\Widgets\PurchaseInvoiceStatsWidget::class,
+        ];
+    }
     
     public static function getGlobalSearchEloquentQuery(): Builder
     {
