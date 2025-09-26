@@ -54,86 +54,86 @@ class DashboardOverviewWidget extends BaseWidget
         $estimatedProfit = $totalSalesAmount - $totalPurchaseAmount;
         
         return [
-            // 1. إجمالي المنتجات
-            Stat::make('إجمالي المنتجات', $totalProducts)
-                ->description($activeProducts . ' منتج نشط')
+            // 1. Total Products
+            Stat::make('Total Products', $totalProducts)
+                ->description($activeProducts . ' active products')
                 ->descriptionIcon('heroicon-m-cube')
                 ->color('success')
                 ->chart([7, 2, 10, 3, 15, 4, 17]),
             
-            // 2. إجمالي العملاء
-            Stat::make('إجمالي العملاء', $totalCustomers)
-                ->description($activeCustomers . ' عميل نشط')
+            // 2. Total Customers
+            Stat::make('Total Customers', $totalCustomers)
+                ->description($activeCustomers . ' active customers')
                 ->descriptionIcon('heroicon-m-users')
                 ->color('info')
                 ->chart([15, 4, 10, 2, 12, 4, 12]),
             
-            // 3. إجمالي الموردين
-            Stat::make('إجمالي الموردين', $totalSuppliers)
-                ->description($activeSuppliers . ' مورد نشط')
+            // 3. Total Suppliers
+            Stat::make('Total Suppliers', $totalSuppliers)
+                ->description($activeSuppliers . ' active suppliers')
                 ->descriptionIcon('heroicon-m-truck')
                 ->color('warning')
                 ->chart([7, 3, 4, 5, 6, 3, 5]),
             
-            // 4. شركات النقل
-            Stat::make('شركات النقل', $totalTransporters)
-                ->description($activeTransporters . ' شركة نشطة')
+            // 4. Transport Companies
+            Stat::make('Transport Companies', $totalTransporters)
+                ->description($activeTransporters . ' active companies')
                 ->descriptionIcon('heroicon-m-map')
                 ->color('primary')
                 ->chart([2, 1, 3, 2, 4, 2, 3]),
             
-            // 5. سندات الاستلام
-            Stat::make('سندات الاستلام', $totalReceiptDocuments)
-                ->description($todayReceiptDocuments . ' اليوم')
+            // 5. Receipt Documents
+            Stat::make('Receipt Documents', $totalReceiptDocuments)
+                ->description($todayReceiptDocuments . ' today')
                 ->descriptionIcon('heroicon-m-clipboard-document-check')
                 ->color('success')
                 ->chart([3, 5, 2, 8, 4, 6, 7]),
             
-            // 6. سندات التسليم
-            Stat::make('سندات التسليم', $totalDeliveryDocuments)
-                ->description($todayDeliveryDocuments . ' اليوم')
+            // 6. Delivery Documents
+            Stat::make('Delivery Documents', $totalDeliveryDocuments)
+                ->description($todayDeliveryDocuments . ' today')
                 ->descriptionIcon('heroicon-m-clipboard-document-list')
                 ->color('info')
                 ->chart([4, 3, 6, 5, 8, 4, 9]),
             
-            // 7. فواتير المبيعات
-            Stat::make('فواتير المبيعات', $totalSalesInvoices)
-                ->description($todaySalesInvoices . ' فاتورة اليوم')
+            // 7. Sales Invoices
+            Stat::make('Sales Invoices', $totalSalesInvoices)
+                ->description($todaySalesInvoices . ' invoices today')
                 ->descriptionIcon('heroicon-m-banknotes')
                 ->color('success')
                 ->chart([5, 8, 3, 12, 6, 10, 14]),
             
-            // 8. فواتير المشتريات
-            Stat::make('فواتير المشتريات', $totalPurchaseInvoices)
-                ->description($todayPurchaseInvoices . ' فاتورة اليوم')
+            // 8. Purchase Invoices
+            Stat::make('Purchase Invoices', $totalPurchaseInvoices)
+                ->description($todayPurchaseInvoices . ' invoices today')
                 ->descriptionIcon('heroicon-m-receipt-percent')
                 ->color('warning')
                 ->chart([3, 6, 4, 8, 5, 7, 9]),
             
-            // 9. إجمالي مبيعات
-            Stat::make('إجمالي المبيعات', number_format($totalSalesAmount, 2) . ' ر.س')
-                ->description('اليوم: ' . number_format($todaySalesAmount, 2) . ' ر.س')
+            // 9. Total Sales
+            Stat::make('Total Sales', 'SAR ' . number_format($totalSalesAmount, 2))
+                ->description('Today: SAR ' . number_format($todaySalesAmount, 2))
                 ->descriptionIcon('heroicon-m-arrow-trending-up')
                 ->color('success')
                 ->chart([1000, 1500, 800, 2200, 1200, 1800, 2500]),
             
-            // 10. إجمالي مشتريات
-            Stat::make('إجمالي المشتريات', number_format($totalPurchaseAmount, 2) . ' ر.س')
-                ->description('اليوم: ' . number_format($todayPurchaseAmount, 2) . ' ر.س')
+            // 10. Total Purchases
+            Stat::make('Total Purchases', 'SAR ' . number_format($totalPurchaseAmount, 2))
+                ->description('Today: SAR ' . number_format($todayPurchaseAmount, 2))
                 ->descriptionIcon('heroicon-m-arrow-trending-down')
                 ->color('danger')
                 ->chart([800, 1200, 600, 1800, 900, 1400, 2000]),
             
-            // 11. الأرباح التقديرية
-            Stat::make('الأرباح التقديرية', number_format($estimatedProfit, 2) . ' ر.س')
-                ->description($estimatedProfit >= 0 ? 'ربح' : 'خسارة')
+            // 11. Estimated Profit
+            Stat::make('Estimated Profit', 'SAR ' . number_format($estimatedProfit, 2))
+                ->description($estimatedProfit >= 0 ? 'Profit' : 'Loss')
                 ->descriptionIcon($estimatedProfit >= 0 ? 'heroicon-m-arrow-up' : 'heroicon-m-arrow-down')
                 ->color($estimatedProfit >= 0 ? 'success' : 'danger')
                 ->chart([200, 300, 200, 400, 300, 400, 500]),
             
-            // 12. المستخدمين
-            Stat::make('المستخدمين', $totalUsers)
-                ->description('إجمالي المستخدمين في النظام')
+            // 12. System Users
+            Stat::make('System Users', $totalUsers)
+                ->description('Total users in system')
                 ->descriptionIcon('heroicon-m-user-group')
                 ->color('primary')
                 ->chart([1, 1, 2, 2, 3, 3, $totalUsers]),
