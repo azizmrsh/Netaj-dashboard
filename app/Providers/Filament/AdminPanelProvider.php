@@ -50,17 +50,9 @@ class AdminPanelProvider extends PanelProvider
             ->pages([
                 Pages\Dashboard::class,
             ])
-            ->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\\Filament\\Widgets')
+            // ->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\\Filament\\Widgets')
             ->widgets([
-                //SystemOverviewWidget::class,
-                //RecentActivitiesWidget::class,
-                //SalesChartWidget::class,
-                //PurchaseChartWidget::class,
-                //TopProductsWidget::class,
-                //TopCustomersWidget::class,
-                //InventoryStatusWidget::class,
-                //FinancialSummaryWidget::class,
-                //SystemHealthWidget::class,
+                // All widgets are disabled for dashboard
             ])
             ->middleware([
                 EncryptCookies::class,
