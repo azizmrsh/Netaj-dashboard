@@ -1,4 +1,4 @@
-<div class="fi-wi-stats-overview-stat relative rounded-xl bg-white p-6 shadow-sm ring-1 ring-gray-950/5 dark:bg-gray-900 dark:ring-white/10" style="width: calc(50% - 0.5rem); display: inline-block; vertical-align: top; margin-right: 1rem;">
+<div class="fi-wi-stats-overview-stat relative rounded-xl bg-white p-6 shadow-sm ring-1 ring-gray-950/5 dark:bg-gray-900 dark:ring-white/10">
     <div class="grid gap-y-2">
         <div class="flex items-center gap-2">
             <div class="flex items-center gap-2">
