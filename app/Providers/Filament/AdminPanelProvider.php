@@ -52,7 +52,7 @@ class AdminPanelProvider extends PanelProvider
             ])
             ->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\\Filament\\Widgets')
             ->widgets([
-                SystemOverviewWidget::class,
+                //SystemOverviewWidget::class,
                 RecentActivitiesWidget::class,
                 SalesChartWidget::class,
                 PurchaseChartWidget::class,
