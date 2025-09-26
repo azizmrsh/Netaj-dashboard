@@ -20,6 +20,16 @@ use Illuminate\Session\Middleware\StartSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
 use Jeffgreco13\FilamentBreezy\BreezyCore;
 use App\Filament\Widgets\RoleStatsWidget;
+use App\Filament\Widgets\SystemOverviewWidget;
+use App\Filament\Widgets\RecentActivitiesWidget;
+use App\Filament\Widgets\SalesChartWidget;
+use App\Filament\Widgets\PurchaseChartWidget;
+use App\Filament\Widgets\TopProductsWidget;
+use App\Filament\Widgets\TopCustomersWidget;
+use App\Filament\Widgets\InventoryStatusWidget;
+use App\Filament\Widgets\FinancialSummaryWidget;
+
+use App\Filament\Widgets\SystemHealthWidget;
 use Hasnayeen\Themes\ThemesPlugin;
 use Hasnayeen\Themes\Http\Middleware\SetTheme;
 
@@ -42,9 +52,15 @@ class AdminPanelProvider extends PanelProvider
             ])
             ->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\\Filament\\Widgets')
             ->widgets([
-                Widgets\AccountWidget::class,
-                //RoleStatsWidget::class,
-                Widgets\FilamentInfoWidget::class,
+                SystemOverviewWidget::class,
+                RecentActivitiesWidget::class,
+                SalesChartWidget::class,
+                PurchaseChartWidget::class,
+                TopProductsWidget::class,
+                TopCustomersWidget::class,
+                InventoryStatusWidget::class,
+                FinancialSummaryWidget::class,
+                SystemHealthWidget::class,
             ])
             ->middleware([
                 EncryptCookies::class,
