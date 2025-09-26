@@ -16,4 +16,9 @@ class ListDeliveryDocuments extends ListRecords
             Actions\CreateAction::make(),
         ];
     }
+
+    protected function getHeaderWidgets(): array
+    {
+        return DeliveryDocumentResource::getWidgets();
+    }
 }

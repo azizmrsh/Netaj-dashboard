@@ -611,6 +611,13 @@ class DeliveryDocumentResource extends Resource
         ];
     }
 
+    public static function getWidgets(): array
+    {
+        return [
+            \App\Filament\Widgets\DeliveryDocumentStatsWidget::class,
+        ];
+    }
+
     public static function getPages(): array
     {
         return [
