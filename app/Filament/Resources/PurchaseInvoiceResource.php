@@ -67,13 +67,8 @@ class PurchaseInvoiceResource extends Resource
                             ->required()
                             ->unique(ignoreRecord: true)
                             ->maxLength(255)
-                            ->default(function () {
-                                $last = \App\Models\PurchaseInvoice::orderBy('id', 'desc')->first();
-                                return '1' . ($last ? $last->id + 1 : 1);
-                            })
-                            ->disabled()
-                            ->dehydrated(),
-                            //->placeholder('Auto-generated sequential number starting from 1'),
+                            ->default(fn () => PurchaseInvoice::count() + 1),
+                            //->placeholder('Auto-generated sequential number'),
                         DateTimePicker::make('date_and_time')
                             ->label('Invoice Date & Time')
                             ->required()
