@@ -127,10 +127,14 @@ class SalesInvoiceResource extends Resource
                                     ->maxLength(255)
                                     ->placeholder('Customer tax registration number'),
                             ]),
-                        TextInput::make('payment_method')
+                        Select::make('payment_method')
                             ->label('Payment Method')
-                            ->maxLength(255)
-                            ->placeholder('Example: Cash, Credit Card, Bank Transfer'),
+                            ->options([
+                                'cash' => 'Cash',
+                                'bank_transfer' => 'Bank Transfer',
+                                'check' => 'Check',
+                            ])
+                            ->required(),
                         DatePicker::make('due_date')
                             ->label('Due Date')
                             ->placeholder('Invoice due date'),
