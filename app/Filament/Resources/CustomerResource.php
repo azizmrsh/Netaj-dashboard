@@ -48,9 +48,13 @@ class CustomerResource extends Resource
                             ->email()
                             ->maxLength(255),
                         
-                        Forms\Components\Toggle::make('is_active')
-                            ->label('Active')
-                            ->default(true),
+                        Forms\Components\Select::make('is_active')
+                            ->label('Status')
+                            ->options([
+                                1 => 'Active',
+                                0 => 'Inactive',
+                            ])
+                            ->default(1),
                     ])
                     ->columns(2),
                 
