@@ -67,7 +67,7 @@ class PurchaseInvoiceResource extends Resource
                             ->required()
                             ->unique(ignoreRecord: true)
                             ->maxLength(255)
-                            ->default(fn () => PurchaseInvoice::count() + 1),
+                            ->default(fn () => PurchaseInvoice::max('id') + 1),
                             //->placeholder('Auto-generated sequential number'),
                         DateTimePicker::make('date_and_time')
                             ->label('Invoice Date & Time')

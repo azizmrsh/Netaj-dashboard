@@ -62,7 +62,7 @@ class SalesInvoiceResource extends Resource
                             ->required()
                             ->unique(ignoreRecord: true)
                             ->maxLength(255)
-                            ->default(fn () => SalesInvoice::count() + 1),
+                            ->default(fn () => SalesInvoice::max('id') + 1),
                             //->placeholder('Auto-generated sequential number'),
                         DateTimePicker::make('invoice_date')
                             ->label('Invoice Date & Time')
