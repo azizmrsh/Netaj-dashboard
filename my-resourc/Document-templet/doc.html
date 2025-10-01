@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>سند تسليم</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      margin: 0;
+      padding: 20px;
+      background-color: #fff;
+      color: #000;
+    }
+
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 15px;
+      padding-bottom: 10px;
+      border-bottom: 2px solid #d4af37; /* خط ذهبي رفيع فقط */
+    }
+
+    .header-left {
+      text-align: left;
+      font-size: 12px;
+      line-height: 1.6;
+      width: 30%;
+    }
+
+    .header-center {
+      width: 40%;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .logo-placeholder {
+      width: 120px;
+      height: 120px;
+      background-color: #ffffff;
+      border: 1px dashed #ccc;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      color: #999;
+      margin-bottom: 5px;
+    }
+
+    .header-center h2 {
+      font-size: 14px;
+      margin: 5px 0;
+      font-weight: bold;
+    }
+
+    .header-right {
+      text-align: right;
+      font-size: 12px;
+      line-height: 1.6;
+      width: 30%;
+    }
+
+    .title-section {
+      text-align: center;
+      margin: 15px 0;
+    }
+
+    .title-section h1 {
+      font-size: 20px;
+      font-weight: bold;
+      margin: 0;
+    }
+
+    .title-section p {
+      font-size: 14px;
+      margin: 5px 0 0;
+    }
+
+    .date-line {
+      display: flex;
+      justify-content: space-between;
+      margin: 15px 0;
+      font-size: 14px;
+    }
+
+    .intro-text {
+      text-align: center;
+      margin: 15px 0;
+      font-size: 14px;
+      line-height: 1.6;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 20px;
+    }
+
+    th, td {
+      border: 1px solid #000;
+      padding: 8px 6px;
+      text-align: center;
+      font-size: 13px;
+    }
+
+    th {
+      background-color: #d4af37;
+      color: #000;
+      font-weight: bold;
+    }
+
+    .section-title {
+      font-weight: bold;
+      margin-top: 20px;
+      margin-bottom: 10px;
+      text-align: right;
+      font-size: 14px;
+    }
+
+    .signature-section {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 5px;
+      margin-top: 20px;
+    }
+
+    .signature-box {
+      border-top: 1px solid #000;
+      padding-top: 5px;
+      text-align: center;
+      font-size: 12px;
+      height: 80px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .footer {
+      margin-top: 30px;
+      text-align: center;
+      font-size: 12px;
+      padding-top: 10px;
+      border-top: 1px solid #000;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Header -->
+  <div class="header">
+    <div class="header-left">
+      <strong>Netaj Almotatwrah Commercial Company</strong><br>
+      Building No. - Street: 3030 - Qaiser Al Kateb Street<br>
+      District - City: 6208 Madain Al Fahd - Jeddah<br>
+      State - Country: Makka - Kingdom of Saudi Arabia<br>
+      Postal code: 22347<br>
+      E-mail: info@advanced-netaj.com<br>
+      Commercial Registration Number: 4030579090<br>
+      VAT Number: 3125445290003
+    </div>
+
+    <div class="header-center">
+      <div class="logo-placeholder">[مكان الشعار]</div>
+      <h2>ADVANCED PRODUCTS COMMERCIAL CO.</h2>
+      <h2>Delivery Document</h2>
+      <h2>سند تسليم</h2>
+    </div>
+
+    <div class="header-right">
+      <strong>شركة نتاج المتوازرة التجارية</strong><br>
+      رقم السجل التجاري: ٤٠٣٠٥٧٩٠٩٠<br>
+      رقم ضريبة القيمة المضافة: ٣١٢٥٤٤٥٢٩٠٠٠٣<br>
+      البريد الإلكتروني: info@advanced-netaj.com<br>
+      الرمز البريدي: ٢٢٣٤٧<br>
+      العنوان: شارع قيصر الكاتب ٣٠٣٠، حي مدين الفهد ٦٢٠٨، جدة<br>
+      المنطقة - الدولة: مكة - المملكة العربية السعودية
+    </div>
+  </div>
+
+  <!-- Title Section -->
+  <div class="title-section">
+    <h1>سند تسليم</h1>
+    <p>Delivery Document</p>
+  </div>
+
+  <!-- Date Line -->
+  <div class="date-line">
+    <div>التاريخ: ..........................................</div>
+    <div>Date: ..........................................</div>
+  </div>
+
+  <!-- Intro Text -->
+  <div class="intro-text">
+    <p>تم تسليم المواد للعميل حسب المعلومات التالية:</p>
+    <p>The following materials are listed in the table below:</p>
+  </div>
+
+  <!-- Client Information -->
+  <div class="section-title">معلومات العميل: Client Information</div>
+  <table>
+    <tr>
+      <th>اسم العميل<br>Client Name</th>
+      <th>رقم أمر الشراء<br>Purchase Order No</th>
+      <th>اسم المشروع والموقع<br>Project Name and Location</th>
+      <th>رقم الجوال<br>Mobile No</th>
+    </tr>
+    <tr>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td></td>
+    </tr>
+  </table>
+
+  <!-- Transporter Information -->
+  <div class="section-title">معلومات الناقل: Transporter Information</div>
+  <table>
+    <tr>
+      <th>اسم الناقل<br>Transporter Name</th>
+      <th>رقم المستند<br>Document No</th>
+      <th>رقم السيارة<br>Car Number</th>
+      <th>اسم السائق<br>Driver Name</th>
+      <th>رقم الهوية<br>ID Number</th>
+      <th>رقم الجوال<br>Mobile No</th>
+    </tr>
+    <tr>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td></td>
+    </tr>
+  </table>
+
+  <!-- Materials Table -->
+  <div class="section-title">المواد التالية حسب الجدول أدناه: The following materials are listed in the table below:</div>
+  <table>
+    <thead>
+      <tr>
+        <th>م<br>S.No</th>
+        <th>رمز المنتج<br>Product Code</th>
+        <th>الوصف<br>Description</th>
+        <th>درجة الأداء / نوع التعديل<br>Performance Grade / Modification Type</th>
+        <th>الوحدة<br>Unit</th>
+        <th>الكمية<br>Quantity</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td>1</td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td>2</td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td>3</td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td>4</td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td>5</td><td></td><td></td><td></td><td></td><td></td></tr>
+    </tbody>
+  </table>
+
+  <!-- Signature Section -->
+  <div class="signature-section">
+    <div class="signature-box">اسم وتوقيع مندوب المبيعات<br>Sales Executive Name & Signature</div>
+    <div class="signature-box">اسم وتوقيع موظف المستودع<br>Warehouse officer's name & signature</div>
+    <div class="signature-box">اسم وتوقيع المستلم<br>Recipient's Name & Signature</div>
+    <div class="signature-box">اسم المحاسب ورقم الفاتورة<br>Accountant's Name & Invoice No</div>
+  </div>
+
+  <!-- Footer -->
+  <div class="footer">
+    Delivery Document - سند تسليم
+  </div>
+
+</body>
+</html>
