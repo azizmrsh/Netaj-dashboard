@@ -56,10 +56,10 @@ class CustomerResource extends Resource
                 
                 Forms\Components\Section::make('Company Information')
                     ->schema([
-                        Forms\Components\TextInput::make('name_company')
-                            ->label('Company Name')
-                            ->maxLength(255),
-                        
+                        //Forms\Components\TextInput::make('name_company')
+                        //    ->label('Company Name')
+                        //    ->maxLength(255),
+                        //
                         Forms\Components\TextInput::make('tax_number')
                             ->label('Tax Number')
                             ->maxLength(255),
@@ -72,7 +72,7 @@ class CustomerResource extends Resource
                             ->label('National Number')
                             ->maxLength(255),
                     ])
-                    ->columns(2),
+                    ->columns(3),
                 
                 Forms\Components\Section::make('Address Information')
                     ->schema([
