@@ -25,6 +25,8 @@ class TransporterResource extends Resource
 
     protected static ?string $pluralModelLabel = 'Transporters';
 
+    protected static ?int $navigationSort = 5;
+
     public static function form(Form $form): Form
     {
         return $form
