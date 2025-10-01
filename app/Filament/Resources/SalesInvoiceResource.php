@@ -62,7 +62,12 @@ class SalesInvoiceResource extends Resource
                             ->required()
                             ->unique(ignoreRecord: true)
                             ->maxLength(255)
-                            ->placeholder('Example: INV-2024-001'),
+                            ->default(function () {
+                                $last = \App\Models\PurchaseInvoice::orderBy('id', 'desc')->first();
+                                return '1' . ($last ? $last->id + 1 : 1);
+                            })
+                            ->disabled()
+                            ->dehydrated(),
                         DateTimePicker::make('invoice_date')
                             ->label('Invoice Date & Time')
                             ->required()
