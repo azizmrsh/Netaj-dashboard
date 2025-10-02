@@ -48,18 +48,22 @@ class CustomerResource extends Resource
                             ->email()
                             ->maxLength(255),
                         
-                        Forms\Components\Toggle::make('is_active')
-                            ->label('Active')
-                            ->default(true),
+                        Forms\Components\Select::make('is_active')
+                            ->label('Status')
+                            ->options([
+                                1 => 'Active',
+                                0 => 'Inactive',
+                            ])
+                            ->default(1),
                     ])
                     ->columns(2),
                 
                 Forms\Components\Section::make('Company Information')
                     ->schema([
-                        Forms\Components\TextInput::make('name_company')
-                            ->label('Company Name')
-                            ->maxLength(255),
-                        
+                        //Forms\Components\TextInput::make('name_company')
+                        //    ->label('Company Name')
+                        //    ->maxLength(255),
+                        //
                         Forms\Components\TextInput::make('tax_number')
                             ->label('Tax Number')
                             ->maxLength(255),
@@ -72,7 +76,7 @@ class CustomerResource extends Resource
                             ->label('National Number')
                             ->maxLength(255),
                     ])
-                    ->columns(2),
+                    ->columns(3),
                 
                 Forms\Components\Section::make('Address Information')
                     ->schema([

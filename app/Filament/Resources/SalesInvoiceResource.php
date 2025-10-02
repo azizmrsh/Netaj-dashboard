@@ -62,7 +62,8 @@ class SalesInvoiceResource extends Resource
                             ->required()
                             ->unique(ignoreRecord: true)
                             ->maxLength(255)
-                            ->placeholder('Example: INV-2024-001'),
+                            ->default(fn () => SalesInvoice::max('id') + 1),
+                            //->placeholder('Auto-generated sequential number'),
                         DateTimePicker::make('invoice_date')
                             ->label('Invoice Date & Time')
                             ->required()
@@ -126,10 +127,14 @@ class SalesInvoiceResource extends Resource
                                     ->maxLength(255)
                                     ->placeholder('Customer tax registration number'),
                             ]),
-                        TextInput::make('payment_method')
+                        Select::make('payment_method')
                             ->label('Payment Method')
-                            ->maxLength(255)
-                            ->placeholder('Example: Cash, Credit Card, Bank Transfer'),
+                            ->options([
+                                'cash' => 'Cash',
+                                'bank_transfer' => 'Bank Transfer',
+                                'check' => 'Check',
+                            ])
+                            ->required(),
                         DatePicker::make('due_date')
                             ->label('Due Date')
                             ->placeholder('Invoice due date'),

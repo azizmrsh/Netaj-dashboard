@@ -67,7 +67,8 @@ class PurchaseInvoiceResource extends Resource
                             ->required()
                             ->unique(ignoreRecord: true)
                             ->maxLength(255)
-                            ->placeholder('Example: INV-2024-001'),
+                            ->default(fn () => PurchaseInvoice::max('id') + 1),
+                            //->placeholder('Auto-generated sequential number'),
                         DateTimePicker::make('date_and_time')
                             ->label('Invoice Date & Time')
                             ->required()
@@ -133,9 +134,12 @@ class PurchaseInvoiceResource extends Resource
                             ]),
                         TextInput::make('payment_terms')
                             ->label('Payment Terms')
-                            ->required()
-                            ->maxLength(255)
-                            ->placeholder('Example: Cash, 30 days credit'),
+                            ->options([
+                                'cash' => 'Cash',
+                                'bank_transfer' => 'Bank Transfer',
+                                'check' => 'Check',
+                            ])
+                            ->required(),
                         TextInput::make('place_of_supply')
                             ->label('Place of Supply')
                             ->maxLength(255)
