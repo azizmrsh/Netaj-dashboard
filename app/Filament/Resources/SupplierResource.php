@@ -5,6 +5,7 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\SupplierResource\Pages;
 use App\Filament\Resources\SupplierResource\RelationManagers;
 use App\Models\Supplier;
+use App\Models\Customer;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -44,6 +45,26 @@ class SupplierResource extends Resource
                             ->maxLength(255),
                         Forms\Components\Toggle::make('is_active')
                             ->default(true),
+                    ])->columns(2),
+                
+                Forms\Components\Section::make('Customer Relationship')
+                    ->schema([
+                        Forms\Components\Toggle::make('is_customer')
+                            ->label('Is also a Customer')
+                            ->live()
+                            ->afterStateUpdated(function ($state, Forms\Set $set) {
+                                if (!$state) {
+                                    $set('customer_id', null);
+                                }
+                            }),
+                        
+                        Forms\Components\Select::make('customer_id')
+                            ->label('Linked Customer')
+                            ->options(Customer::pluck('name', 'id'))
+                            ->searchable()
+                            ->preload()
+                            ->visible(fn (Forms\Get $get): bool => $get('is_customer'))
+                            ->helperText('Select the customer record this supplier is linked to'),
                     ])->columns(2),
                 
                 Forms\Components\Section::make('Address & Location')
@@ -92,6 +113,16 @@ class SupplierResource extends Resource
                 Tables\Columns\TextColumn::make('phone')
                     ->searchable()
                     ->copyable(),
+                Tables\Columns\IconColumn::make('is_customer')
+                    ->label('Is Customer')
+                    ->boolean()
+                    ->sortable()
+                    ->toggleable(),
+                Tables\Columns\TextColumn::make('customer.name')
+                    ->label('Linked Customer')
+                    ->searchable()
+                    ->toggleable()
+                    ->placeholder('Not linked'),
                 Tables\Columns\TextColumn::make('country')
                     ->searchable()
                     ->toggleable(),
@@ -116,6 +147,15 @@ class SupplierResource extends Resource
                 Tables\Filters\Filter::make('has_company')
                     ->query(fn (Builder $query): Builder => $query->whereNotNull('name_company'))
                     ->label('Has Company Name'),
+                Tables\Filters\TernaryFilter::make('is_customer')
+                    ->label('Is Customer')
+                    ->boolean()
+                    ->trueLabel('Is Customer')
+                    ->falseLabel('Not Customer')
+                    ->native(false),
+                Tables\Filters\Filter::make('has_customer_link')
+                    ->label('Has Customer Link')
+                    ->query(fn (Builder $query): Builder => $query->whereNotNull('customer_id')),
             ])
             ->actions([
                 Tables\Actions\ViewAction::make(),
