@@ -4,130 +4,214 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>سند تسليم</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700&display=swap" rel="stylesheet">
   <style>
+    @page {
+      size: A4;
+      margin: 15mm;
+    }
+
     body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      font-family: 'Cairo', Arial, sans-serif;
       margin: 0;
-      padding: 20px;
-      background-color: #fff;
-      color: #000;
+      padding: 25px;
+      background-color: #ffffff;
+      color: #333;
+      font-size: 16px;
+      line-height: 1.8;
+      direction: rtl;
+    }
+
+    .container {
+      max-width: 100%;
+      margin: 0 auto;
+      background-color: white;
+      padding: 0;
     }
 
     .header {
       display: flex;
       justify-content: space-between;
       align-items: flex-start;
-      margin-bottom: 15px;
-      padding-bottom: 10px;
-      border-bottom: 2px solid #d4af37; /* خط ذهبي رفيع فقط */
+      margin-bottom: 25px;
+      padding-bottom: 15px;
+      border-bottom: 3px solid #d4af37;
     }
 
     .header-left {
       text-align: right;
-      font-size: 12px;
-      line-height: 1.6;
-      width: 30%;
+      font-size: 14px;
+      line-height: 1.8;
+      width: 32%;
+      direction: rtl;
     }
 
     .header-center {
-      width: 40%;
+      width: 36%;
       text-align: center;
       display: flex;
       flex-direction: column;
       align-items: center;
     }
 
-    .logo-placeholder {
-      width: 120px;
-      height: 120px;
-      background-color: #ffffff;
-      border: 1px dashed #ccc;
+    .logo-container {
+      width: 140px;
+      height: 140px;
+      margin-bottom: 10px;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 12px;
-      color: #999;
-      margin-bottom: 5px;
+    }
+
+    .logo-container svg {
+      max-width: 100%;
+      max-height: 100%;
     }
 
     .header-center h2 {
-      font-size: 14px;
-      margin: 5px 0;
-      font-weight: bold;
+      font-size: 16px;
+      margin: 8px 0;
+      font-weight: 600;
     }
 
     .header-right {
       text-align: left;
-      font-size: 12px;
-      line-height: 1.6;
-      width: 30%;
+      font-size: 14px;
+      line-height: 1.8;
+      width: 32%;
+      direction: ltr;
     }
 
     .date-line {
       display: flex;
       justify-content: space-between;
-      margin: 15px 0;
-      font-size: 14px;
+      margin: 25px 0;
+      font-size: 16px;
+      font-weight: 500;
+    }
+
+    .date-line .arabic {
+      direction: rtl;
+      text-align: right;
+    }
+
+    .date-line .english {
+      direction: ltr;
+      text-align: left;
     }
 
     .intro-text {
       text-align: right;
-      margin: 15px 0;
-      font-size: 14px;
-      line-height: 1.6;
+      margin: 25px 0;
+      font-size: 16px;
+      line-height: 1.8;
+      direction: rtl;
+    }
+
+    .intro-text .english {
+      direction: ltr;
+      text-align: left;
+      margin-top: 10px;
     }
 
     table {
       width: 100%;
       border-collapse: collapse;
-      margin-bottom: 20px;
+      margin-bottom: 25px;
+      font-size: 14px;
     }
 
     th, td {
-      border: 1px solid #000;
-      padding: 8px 6px;
+      border: 2px solid #000;
+      padding: 12px 8px;
       text-align: center;
-      font-size: 13px;
+      vertical-align: middle;
     }
 
     th {
-      background-color: #fff;
+      background-color: #f8f9fa;
       color: #000;
-      font-weight: bold;
+      font-weight: 600;
+      font-size: 15px;
     }
 
     .section-title {
-      font-weight: bold;
-      margin-top: 20px;
-      margin-bottom: 10px;
+      font-weight: 600;
+      margin-top: 25px;
+      margin-bottom: 15px;
       text-align: right;
-      font-size: 14px;
+      font-size: 16px;
+      direction: rtl;
+    }
+
+    .section-title .english {
+      direction: ltr;
+      text-align: left;
+      margin-top: 5px;
+      font-weight: 500;
     }
 
     .signature-section {
       display: grid;
       grid-template-columns: repeat(4, 1fr);
-      gap: 5px;
-      margin-top: 20px;
+      gap: 10px;
+      margin-top: 30px;
     }
 
     .signature-box {
-      border-top: 1px solid #000;
-      padding-top: 5px;
+      border: 2px solid #000;
+      padding: 15px 10px;
       text-align: center;
-      font-size: 12px;
-      height: 80px;
+      font-size: 14px;
+      height: 100px;
       display: flex;
       align-items: center;
       justify-content: center;
+      background-color: #f8f9fa;
+      font-weight: 500;
     }
 
     .footer {
-      margin-top: 30px;
+      margin-top: 40px;
       text-align: center;
-      font-size: 12px;
-      padding-top: 10px;
-      border-top: 1px solid #000;
+      font-size: 14px;
+      padding-top: 15px;
+      border-top: 2px solid #000;
+      font-weight: 600;
+    }
+
+    /* Bilingual text styling */
+    .bilingual {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .bilingual .arabic {
+      direction: rtl;
+      text-align: right;
+      flex: 1;
+    }
+
+    .bilingual .english {
+      direction: ltr;
+      text-align: left;
+      flex: 1;
+    }
+
+    /* Table header bilingual styling */
+    th .bilingual {
+      flex-direction: column;
+      gap: 5px;
+    }
+
+    th .bilingual .arabic {
+      font-weight: 600;
+    }
+
+    th .bilingual .english {
+      font-weight: 500;
+      font-size: 13px;
     }
   </style>
 </head>
