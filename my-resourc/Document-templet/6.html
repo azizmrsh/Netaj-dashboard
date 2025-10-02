@@ -1,0 +1,834 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>سند تسليم</title>
+<link href="https://fonts.googleapis.com/css2?family=Segoe+UI:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* تحسينات الطباعة */
+@media print {
+    @page {
+        size: A4;
+        margin: 0;
+    }
+    body {
+        margin: 0;
+        padding: 0;
+        direction: rtl;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+    }
+    .container {
+        width: 210mm;
+        min-height: 297mm;
+        margin: 0 auto;
+        padding: 10mm;
+        box-sizing: border-box;
+        border: 1px solid #ccc;
+        position: relative;
+        page-break-inside: avoid;
+    }
+    .print-button {
+        display: none;
+    }
+    /* إضافة تحكم في تكسر الجداول */
+    table {
+        page-break-inside: auto;
+    }
+    tr {
+        page-break-inside: avoid;
+        page-break-after: auto;
+    }
+}
+
+@media screen {
+    body {
+        margin: 0;
+        padding: 20px;
+        background-color: #f0f0f0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+    }
+    .container {
+        width: 210mm;
+        min-height: 297mm;
+        background-color: white;
+        box-shadow: 0 0 20px rgba(0,0,0,0.1);
+        padding: 10mm;
+        box-sizing: border-box;
+        position: relative;
+    }
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', 'Cairo', Arial, sans-serif;
+    margin: 0;
+    background-color: #ffffff;
+    color: #333;
+    font-size: 12px; /* زيادة حجم الخط الأساسي */
+    line-height: 1.3;
+    direction: rtl;
+}
+
+.container {
+    max-width: 100%;
+    margin: 0 auto;
+    background-color: white;
+    display: flex;
+    flex-direction: column;
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 10px;
+    padding-bottom: 10px;
+    border-bottom: 3px solid #d4af37;
+}
+
+.header-left {
+    text-align: right;
+    font-size: 11px; /* زيادة حجم الخط */
+    line-height: 1.4;
+    width: 32%;
+    direction: rtl;
+}
+
+.header-center {
+    width: 36%;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+}
+
+.logo-container {
+    width: 70px;
+    height: 70px;
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid #d4af37;
+    border-radius: 4px;
+    background-color: #f9f9f9;
+    overflow: hidden;
+}
+
+.logo-image {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.header-center h2 {
+    font-size: 14px; /* زيادة حجم الخط */
+    margin: 3px 0;
+    font-weight: 600;
+    line-height: 1.2;
+    font-family: 'Segoe UI', 'Cairo', Arial, sans-serif;
+}
+
+.header-right {
+    text-align: left;
+    font-size: 11px; /* زيادة حجم الخط */
+    line-height: 1.4;
+    width: 32%;
+    direction: ltr;
+}
+
+.date-line {
+    display: flex;
+    justify-content: space-between;
+    margin: 6px 0;
+    font-size: 12px; /* زيادة حجم الخط */
+    font-weight: 500;
+    padding: 6px;
+    border: 1px solid #ddd;
+    border-radius: 3px;
+}
+
+.date-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.date-input {
+    width: 130px;
+    padding: 4px 6px;
+    border: 1px solid #ccc;
+    border-radius: 3px;
+    font-family: 'Segoe UI', 'Cairo', Arial, sans-serif;
+    font-size: 12px; /* زيادة حجم الخط */
+    text-align: center;
+    background-color: #f9f9f9;
+}
+
+.intro-text {
+    text-align: center;
+    margin: 6px 0;
+    font-size: 13px; /* زيادة حجم الخط */
+    line-height: 1.4;
+    direction: rtl;
+    padding: 6px;
+}
+
+/* Table styling with RTL direction */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 10px;
+    font-size: 11px; /* زيادة حجم الخط */
+    direction: rtl;
+}
+
+th, td {
+    border: 1px solid #333;
+    padding: 3px 2px; /* زيادة المسافات الداخلية قليلاً */
+    text-align: center;
+    vertical-align: middle;
+}
+
+th {
+    color: #000;
+    font-weight: 600;
+    font-size: 10px; /* زيادة حجم الخط */
+    background-color: #f5f5f5;
+}
+
+/* Alternating row colors */
+tbody tr:nth-child(odd) {
+    background-color: #f8f8f8;
+}
+
+tbody tr:nth-child(even) {
+    background-color: #ffffff;
+}
+
+.section-title {
+    font-weight: 600;
+    margin-top: 8px;
+    margin-bottom: 5px;
+    text-align: center;
+    font-size: 14px; /* زيادة حجم الخط */
+    padding: 5px;
+}
+
+/* Signature table styling */
+.signature-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 12px;
+    margin-bottom: 12px;
+    font-size: 11px; /* زيادة حجم الخط */
+    direction: rtl;
+}
+
+.signature-table th {
+    background-color: #f5f5f5;
+    font-weight: 600;
+    padding: 3px 2px; /* زيادة المسافات الداخلية قليلاً */
+    font-size: 10px; /* زيادة حجم الخط */
+}
+
+.signature-table td {
+    height: 40px;
+    padding: 3px 2px; /* زيادة المسافات الداخلية قليلاً */
+    vertical-align: bottom;
+}
+
+.signature-table .name-field {
+    height: 22px;
+    padding: 3px;
+    vertical-align: middle;
+}
+
+.footer {
+    margin-top: auto;
+    text-align: center;
+    font-size: 13px; /* زيادة حجم الخط */
+    padding: 8px;
+    border-top: 2px solid #d4af37;
+    font-weight: 600;
+}
+
+/* Bilingual text styling */
+.bilingual {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+}
+
+.bilingual .arabic {
+    direction: rtl;
+    text-align: right;
+    flex: 1;
+    padding-right: 2px;
+    font-size: inherit;
+    font-family: 'Segoe UI', 'Cairo', Arial, sans-serif;
+}
+
+.bilingual .english {
+    direction: ltr;
+    text-align: left;
+    flex: 1;
+    padding-left: 2px;
+    font-size: inherit;
+    font-family: 'Segoe UI', 'Cairo', Arial, sans-serif;
+}
+
+/* Table header bilingual styling */
+th .bilingual {
+    flex-direction: column;
+    gap: 1px; /* زيادة المسافة بين السطور قليلاً */
+}
+
+th .bilingual .arabic {
+    font-weight: 600;
+    font-size: 10px; /* زيادة حجم الخط */
+}
+
+th .bilingual .english {
+    font-weight: 500;
+    font-size: 9px; /* زيادة حجم الخط */
+}
+
+/* Company info styling */
+.company-info {
+    margin-bottom: 3px;
+}
+
+.company-info strong {
+    font-weight: 600;
+    font-size: 13px; /* زيادة حجم الخط */
+    display: block;
+    margin-bottom: 5px;
+    font-family: 'Segoe UI', 'Cairo', Arial, sans-serif;
+}
+
+.company-info .info-details {
+    font-size: 11px; /* زيادة حجم الخط */
+    line-height: 1.4;
+    font-family: 'Segoe UI', 'Cairo', Arial, sans-serif;
+}
+
+.print-button {
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    padding: 10px 20px;
+    background-color: #d4af37;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+    z-index: 1000;
+}
+
+.print-button:hover {
+    background-color: #b8942a;
+}
+
+/* تحسين عرض الجداول */
+.table-container {
+    width: 100%;
+    overflow: hidden;
+    margin-bottom: 8px;
+}
+
+/* زيادة حجم الخط في حقول الإدخال */
+input[type="text"], input[type="date"], input[type="number"] {
+    font-size: 11px; /* زيادة حجم الخط */
+    padding: 3px;
+    width: 100%;
+    border: none;
+    background: transparent;
+    text-align: center;
+    outline: none;
+}
+
+/* تعديل خاص لجدول الناقل */
+.transporter-table th {
+    font-size: 9px; /* زيادة حجم الخط */
+    padding: 2px;
+}
+
+.transporter-table th .bilingual .arabic {
+    font-size: 9px; /* زيادة حجم الخط */
+}
+
+.transporter-table th .bilingual .english {
+    font-size: 8px; /* زيادة حجم الخط */
+}
+
+/* تحسينات للطباعة */
+@media print {
+    .header {
+        page-break-after: avoid;
+    }
+    
+    .section-title {
+        page-break-after: avoid;
+    }
+    
+    .signature-table {
+        page-break-before: avoid;
+    }
+    
+    input {
+        border: none !important;
+        background: transparent !important;
+    }
+    
+    /* إخفاء حدود الحقول عند الطباعة */
+    input[type="text"], input[type="date"], input[type="number"] {
+        border: none;
+        box-shadow: none;
+    }
+}
+
+/* تحسينات للعرض على الشاشة */
+@media screen {
+    input[type="text"], input[type="date"], input[type="number"] {
+        border: 1px solid #ddd;
+        background-color: #f9f9f9;
+    }
+}
+
+/* تحسينات إضافية لتحقيق التوازن مع الخط الأكبر */
+.compact-row {
+    margin-bottom: 4px;
+}
+
+.compact-table {
+    margin-bottom: 6px;
+}
+
+/* تقليل المسافات في بعض العناصر لتوفير المساحة */
+.compact-section {
+    margin-top: 4px;
+    margin-bottom: 4px;
+}
+</style>
+</head>
+<body>
+<button class="print-button" onclick="window.print()">طباعة PDF</button>
+
+<div class="container">
+<!-- Header -->
+<div class="header">
+<div class="header-left">
+<div class="company-info">
+<strong>شركة نتاج المتوازرة التجارية</strong>
+<div class="info-details">
+رقم السجل التجاري: ٤٠٣٠٥٧٩٠٩٠<br>
+رقم ضريبة القيمة المضافة: ٣١٢٥٤٤٥٢٩٠٠٠٣<br>
+البريد الإلكتروني: info@advanced-netaj.com<br>
+الرمز البريدي: ٢٢٣٤٧<br>
+العنوان: شارع قيصر الكاتب ٣٠٣٠، حي مدين الفهد ٦٢٠٨، جدة<br>
+المنطقة - الدولة: مكة - المملكة العربية السعودية
+</div>
+</div>
+</div>
+
+<div class="header-center">
+<div class="logo-container">
+<img src="logo.jpg" alt="شعار الشركة" class="logo-image" onerror="this.style.display='none'">
+</div>
+<h2>ADVANCED PRODUCTS COMMERCIAL CO.</h2>
+<h2>Delivery Document</h2>
+<h2>سند تسليم</h2>
+</div>
+
+<div class="header-right">
+<div class="company-info">
+<strong>Netaj Almotatwrah Commercial Company</strong>
+<div class="info-details">
+Building No. - Street: 3030 - Qaiser Al Kateb Street<br>
+District - City: 6208 Madain Al Fahd - Jeddah<br>
+State - Country: Makka - Kingdom of Saudi Arabia<br>
+Postal code: 22347<br>
+E-mail: info@advanced-netaj.com<br>
+Commercial Registration Number: 4030579090<br>
+VAT Number: 3125445290003
+</div>
+</div>
+</div>
+</div>
+
+<!-- Date Line -->
+<div class="date-line">
+<div class="date-item arabic-date">
+<span class="arabic">التاريخ&nbsp;:</span>
+<input type="text" class="date-input" placeholder="__/__/____">
+</div>
+<div class="date-item english-date">
+<input type="text" class="date-input" placeholder="__/__/____">
+<span class="english">Date&nbsp;&nbsp;:</span>
+</div>
+</div>
+
+<!-- Intro Text -->
+<div class="intro-text">
+<div class="bilingual">
+<div class="arabic">تم تسليم المواد للعميل حسب المعلومات التالية:</div>
+<div class="english">The following materials are listed in the table below:</div>
+</div>
+</div>
+
+<!-- Client Information -->
+<div class="section-title compact-section">
+<div class="bilingual">
+<div class="arabic">معلومات العميل</div>
+<div class="english">Client Information</div>
+</div>
+</div>
+<div class="table-container compact-table">
+<table>
+<tr>
+<th>
+<div class="bilingual">
+<div class="arabic">رقم الجوال</div>
+<div class="english">Mobile No</div>
+</div>
+</th>
+<th>
+<div class="bilingual">
+<div class="arabic">المشروع</div>
+<div class="english">Project</div>
+</div>
+</th>
+<th>
+<div class="bilingual">
+<div class="arabic">أمر الشراء</div>
+<div class="english">PO No</div>
+</div>
+</th>
+<th>
+<div class="bilingual">
+<div class="arabic">اسم العميل</div>
+<div class="english">Client Name</div>
+</div>
+</th>
+</tr>
+<tr>
+<td><input type="text"></td>
+<td><input type="text"></td>
+<td><input type="text"></td>
+<td><input type="text"></td>
+</tr>
+</table>
+</div>
+
+<!-- Transporter Information -->
+<div class="section-title compact-section">
+<div class="bilingual">
+<div class="arabic">معلومات الناقل</div>
+<div class="english">Transporter Information</div>
+</div>
+</div>
+<div class="table-container compact-table">
+<table class="transporter-table">
+<tr>
+<th width="16%">
+<div class="bilingual">
+<div class="arabic">جوال</div>
+<div class="english">Mobile</div>
+</div>
+</th>
+<th width="16%">
+<div class="bilingual">
+<div class="arabic">هوية</div>
+<div class="english">ID</div>
+</div>
+</th>
+<th width="17%">
+<div class="bilingual">
+<div class="arabic">سائق</div>
+<div class="english">Driver</div>
+</div>
+</th>
+<th width="17%">
+<div class="bilingual">
+<div class="arabic">سيارة</div>
+<div class="english">Car</div>
+</div>
+</th>
+<th width="17%">
+<div class="bilingual">
+<div class="arabic">مستند</div>
+<div class="english">Doc</div>
+</div>
+</th>
+<th width="17%">
+<div class="bilingual">
+<div class="arabic">ناقل</div>
+<div class="english">Trans</div>
+</div>
+</th>
+</tr>
+<tr>
+<td><input type="text"></td>
+<td><input type="text"></td>
+<td><input type="text"></td>
+<td><input type="text"></td>
+<td><input type="text"></td>
+<td><input type="text"></td>
+</tr>
+</table>
+</div>
+
+<!-- Materials Table -->
+<div class="section-title compact-section">
+<div class="bilingual">
+<div class="arabic">المواد التالية حسب الجدول أدناه</div>
+<div class="english">The following materials are listed in the table below</div>
+</div>
+</div>
+<div class="table-container compact-table">
+<table>
+<thead>
+<tr>
+<th>
+<div class="bilingual">
+<div class="arabic">الكمية</div>
+<div class="english">Quantity</div>
+</div>
+</th>
+<th>
+<div class="bilingual">
+<div class="arabic">الوحدة</div>
+<div class="english">Unit</div>
+</div>
+</th>
+<th>
+<div class="bilingual">
+<div class="arabic">درجة الأداء</div>
+<div class="english">Performance Grade</div>
+</div>
+</th>
+<th>
+<div class="bilingual">
+<div class="arabic">الوصف</div>
+<div class="english">Description</div>
+</div>
+</th>
+<th>
+<div class="bilingual">
+<div class="arabic">رمز المنتج</div>
+<div class="english">Product Code</div>
+</div>
+</th>
+<th width="8%">
+<div class="bilingual">
+<div class="arabic">م</div>
+<div class="english">S.No</div>
+</div>
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><input type="text"></td>
+<td><input type="text"></td>
+<td><input type="text"></td>
+<td><input type="text"></td>
+<td><input type="text"></td>
+<td>1</td>
+</tr>
+<tr>
+<td><input type="text"></td>
+<td><input type="text"></td>
+<td><input type="text"></td>
+<td><input type="text"></td>
+<td><input type="text"></td>
+<td>2</td>
+</tr>
+<tr>
+<td><input type="text"></td>
+<td><input type="text"></td>
+<td><input type="text"></td>
+<td><input type="text"></td>
+<td><input type="text"></td>
+<td>3</td>
+</tr>
+<tr>
+<td><input type="text"></td>
+<td><input type="text"></td>
+<td><input type="text"></td>
+<td><input type="text"></td>
+<td><input type="text"></td>
+<td>4</td>
+</tr>
+<tr>
+<td><input type="text"></td>
+<td><input type="text"></td>
+<td><input type="text"></td>
+<td><input type="text"></td>
+<td><input type="text"></td>
+<td>5</td>
+</tr>
+</tbody>
+</table>
+</div>
+
+<!-- Signature Table - 4 columns and 3 rows -->
+<div class="table-container compact-table">
+<table class="signature-table">
+<tr>
+<th width="25%">
+<div class="bilingual">
+<div class="arabic">اسم وتوقيع المستلم</div>
+<div class="english">Recipient's Name & Signature</div>
+</div>
+</th>
+<th width="25%">
+<div class="bilingual">
+<div class="arabic">اسم وتوقيع مندوب المبيعات</div>
+<div class="english">Sales Executive Name & Signature</div>
+</div>
+</th>
+<th width="25%">
+<div class="bilingual">
+<div class="arabic">اسم وتوقيع موظف المستودع</div>
+<div class="english">Warehouse officer's name & signature</div>
+</div>
+</th>
+<th width="25%">
+<div class="bilingual">
+<div class="arabic">اسم المحاسب ورقم الفاتورة</div>
+<div class="english">Accountant's Name & Invoice No</div>
+</div>
+</th>
+</tr>
+<tr>
+<td class="name-field">
+<input type="text" placeholder="الاسم">
+</td>
+<td class="name-field">
+<input type="text" placeholder="الاسم">
+</td>
+<td class="name-field">
+<input type="text" placeholder="الاسم">
+</td>
+<td class="name-field">
+<input type="text" placeholder="الاسم">
+</td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+</table>
+</div>
+
+<!-- Footer -->
+<div class="footer">
+<div class="bilingual">
+<div class="arabic">سند تسليم</div>
+<div class="english">Delivery Document</div>
+</div>
+</div>
+</div>
+
+<script>
+// دالة لملء النموذج تلقائياً من قاعدة البيانات
+function fillForm(data) {
+    // مثال على البيانات
+    const sampleData = {
+        date: '01/01/2023',
+        client: {
+            mobile: '0551234567',
+            project: 'مشروع تجريبي',
+            poNo: 'PO-2023-001',
+            name: 'شركة العميل المحدودة'
+        },
+        transporter: {
+            mobile: '0557654321',
+            id: '1234567890',
+            driver: 'أحمد محمد',
+            car: 'ABC-123',
+            doc: 'DOC-001',
+            trans: 'شركة النقل السريع'
+        },
+        materials: [
+            { quantity: '10', unit: 'كرتون', grade: 'A', description: 'منتج تجريبي 1', code: 'P001' },
+            { quantity: '5', unit: 'علبة', grade: 'B', description: 'منتج تجريبي 2', code: 'P002' },
+            { quantity: '20', unit: 'قطعة', grade: 'A', description: 'منتج تجريبي 3', code: 'P003' },
+            { quantity: '', unit: '', grade: '', description: '', code: '' },
+            { quantity: '', unit: '', grade: '', description: '', code: '' }
+        ],
+        signatures: {
+            recipient: 'محمد أحمد',
+            sales: 'خالد إبراهيم',
+            warehouse: 'سعيد علي',
+            accountant: 'عمر حسن - INV-2023-001'
+        }
+    };
+    
+    // استخدام البيانات الحالية أو البيانات الممررة
+    const formData = data || sampleData;
+    
+    // ملء التاريخ
+    document.querySelectorAll('.date-input').forEach(input => {
+        input.value = formData.date;
+    });
+    
+    // ملء معلومات العميل
+    document.querySelectorAll('table:first-of-type input')[0].value = formData.client.mobile;
+    document.querySelectorAll('table:first-of-type input')[1].value = formData.client.project;
+    document.querySelectorAll('table:first-of-type input')[2].value = formData.client.poNo;
+    document.querySelectorAll('table:first-of-type input')[3].value = formData.client.name;
+    
+    // ملء معلومات الناقل
+    document.querySelectorAll('.transporter-table input')[0].value = formData.transporter.mobile;
+    document.querySelectorAll('.transporter-table input')[1].value = formData.transporter.id;
+    document.querySelectorAll('.transporter-table input')[2].value = formData.transporter.driver;
+    document.querySelectorAll('.transporter-table input')[3].value = formData.transporter.car;
+    document.querySelectorAll('.transporter-table input')[4].value = formData.transporter.doc;
+    document.querySelectorAll('.transporter-table input')[5].value = formData.transporter.trans;
+    
+    // ملء المواد
+    const materialInputs = document.querySelectorAll('table:last-of-type input');
+    formData.materials.forEach((material, index) => {
+        if (index < 5) {
+            materialInputs[index * 5].value = material.quantity;
+            materialInputs[index * 5 + 1].value = material.unit;
+            materialInputs[index * 5 + 2].value = material.grade;
+            materialInputs[index * 5 + 3].value = material.description;
+            materialInputs[index * 5 + 4].value = material.code;
+        }
+    });
+    
+    // ملء التواقيع
+    document.querySelectorAll('.signature-table .name-field input')[0].value = formData.signatures.recipient;
+    document.querySelectorAll('.signature-table .name-field input')[1].value = formData.signatures.sales;
+    document.querySelectorAll('.signature-table .name-field input')[2].value = formData.signatures.warehouse;
+    document.querySelectorAll('.signature-table .name-field input')[3].value = formData.signatures.accountant;
+}
+
+// استدعاء الدالة لملء النموذج عند تحميل الصفحة
+document.addEventListener('DOMContentLoaded', function() {
+    fillForm();
+});
+</script>
+</body>
+</html>
