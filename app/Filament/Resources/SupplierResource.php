@@ -47,26 +47,26 @@ class SupplierResource extends Resource
                             ->default(true),
                     ])->columns(2),
                 
-                Forms\Components\Section::make('Customer Relationship')
-                    ->schema([
-                        Forms\Components\Toggle::make('is_customer')
-                            ->label('Is also a Customer')
-                            ->live()
-                            ->afterStateUpdated(function ($state, Forms\Set $set) {
-                                if (!$state) {
-                                    $set('customer_id', null);
-                                }
-                            }),
-                        
-                        Forms\Components\Select::make('customer_id')
-                            ->label('Linked Customer')
-                            ->options(Customer::pluck('name', 'id'))
-                            ->searchable()
-                            ->preload()
-                            ->visible(fn (Forms\Get $get): bool => $get('is_customer'))
-                            ->helperText('Select the customer record this supplier is linked to'),
-                    ])->columns(2),
-                
+                //Forms\Components\Section::make('Customer Relationship')
+                //    ->schema([
+                //        Forms\Components\Toggle::make('is_customer')
+                //            ->label('Is also a Customer')
+                //            ->live()
+                //            ->afterStateUpdated(function ($state, Forms\Set $set) {
+                //                if (!$state) {
+                //                    $set('customer_id', null);
+                //                }
+                //            }),
+                //        
+                //        Forms\Components\Select::make('customer_id')
+                //            ->label('Linked Customer')
+                //            ->options(Customer::pluck('name', 'id'))
+                //            ->searchable()
+                //            ->preload()
+                //            ->visible(fn (Forms\Get $get): bool => $get('is_customer'))
+                //            ->helperText('Select the customer record this supplier is linked to'),
+                //    ])->columns(2),
+                //
                 Forms\Components\Section::make('Address & Location')
                     ->schema([
                         Forms\Components\TextInput::make('country')
