@@ -5,6 +5,7 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\CustomerResource\Pages;
 use App\Filament\Resources\CustomerResource\RelationManagers;
 use App\Models\Customer;
+use App\Models\Supplier;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -31,75 +32,70 @@ class CustomerResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\Section::make('Basic Customer Information')
+                Forms\Components\Section::make('Basic Information')
                     ->schema([
                         Forms\Components\TextInput::make('name')
-                            ->label('Customer Name')
                             ->required()
                             ->maxLength(255),
-                        
-                        Forms\Components\TextInput::make('phone')
-                            ->label('Phone Number')
-                            ->tel()
+                        Forms\Components\TextInput::make('name_company')
+                            ->label('Company Name')
                             ->maxLength(255),
-                        
                         Forms\Components\TextInput::make('email')
-                            ->label('Email Address')
                             ->email()
+                            ->required()
                             ->maxLength(255),
-                        
-                        Forms\Components\Select::make('is_active')
-                            ->label('Status')
-                            ->options([
-                                1 => 'Active',
-                                0 => 'Inactive',
-                            ])
-                            ->default(1),
-                    ])
-                    ->columns(2),
+                        Forms\Components\TextInput::make('phone')
+                            ->tel()
+                            ->required()
+                            ->maxLength(255),
+                        Forms\Components\Toggle::make('is_active')
+                            ->default(true),
+                    ])->columns(2),
                 
-                Forms\Components\Section::make('Company Information')
-                    ->schema([
-                        //Forms\Components\TextInput::make('name_company')
-                        //    ->label('Company Name')
-                        //    ->maxLength(255),
-                        //
-                        Forms\Components\TextInput::make('tax_number')
-                            ->label('Tax Number')
-                            ->maxLength(255),
+                //Forms\Components\Section::make('Supplier Relationship')
+                    //->schema([
+                        //Forms\Components\Toggle::make('is_supplier')
+                        //    ->label('Is also a Supplier')
+                        //    ->live()
+                        //    ->afterStateUpdated(function ($state, Forms\Set $set) {
+                        //        if (!$state) {
+                        //            $set('supplier_id', null);
+                        //        }
+                        //    }),
                         
-                        Forms\Components\TextInput::make('commercial_registration_number')
-                            ->label('Commercial Registration Number')
-                            ->maxLength(255),
-                        
-                        Forms\Components\TextInput::make('national_number')
-                            ->label('National Number')
-                            ->maxLength(255),
-                    ])
-                    ->columns(3),
+                    //    Forms\Components\Select::make('supplier_id')
+                    //        ->label('Linked Supplier')
+                    //        ->options(Supplier::pluck('name', 'id'))
+                    //       ->searchable()
+                    //        ->preload()
+                    // /       ->visible(fn (Forms\Get $get): bool => $get('is_supplier'))
+                    //        ->helperText('Select the supplier record this customer is linked to'),
+                    //])->columns(2),
                 
-                Forms\Components\Section::make('Address Information')
+                Forms\Components\Section::make('Address & Location')
                     ->schema([
                         Forms\Components\TextInput::make('country')
-                            ->label('Country')
                             ->maxLength(255),
-                        
                         Forms\Components\TextInput::make('zip_code')
-                            ->label('Zip Code')
                             ->maxLength(255),
-                        
                         Forms\Components\Textarea::make('address')
-                            ->label('Address')
-                            ->rows(3)
                             ->columnSpanFull(),
-                    ])
-                    ->columns(2),
+                    ])->columns(2),
+                
+                Forms\Components\Section::make('Legal Information')
+                    ->schema([
+                        Forms\Components\TextInput::make('tax_number')
+                            ->maxLength(255),
+                        Forms\Components\TextInput::make('national_number')
+                            ->maxLength(255),
+                        Forms\Components\TextInput::make('commercial_registration_number')
+                            ->label('Commercial Registration')
+                            ->maxLength(255),
+                    ])->columns(2),
                 
                 Forms\Components\Section::make('Notes')
                     ->schema([
                         Forms\Components\Textarea::make('note')
-                            ->label('Notes')
-                            ->rows(4)
                             ->columnSpanFull(),
                     ]),
             ]);
@@ -110,59 +106,61 @@ class CustomerResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('name')
-                    ->label('Customer Name')
                     ->searchable()
                     ->sortable(),
-                
-                Tables\Columns\TextColumn::make('phone')
-                    ->label('Phone Number')
-                    ->searchable(),
-                
-                Tables\Columns\TextColumn::make('email')
-                    ->label('Email Address')
-                    ->searchable(),
-                
                 Tables\Columns\TextColumn::make('name_company')
-                    ->label('Company Name')
+                    ->label('Company')
+                    ->searchable()
+                    ->toggleable(),
+                Tables\Columns\TextColumn::make('email')
+                    ->searchable()
+                    ->copyable(),
+                Tables\Columns\TextColumn::make('phone')
+                    ->searchable()
+                    ->copyable(),
+                Tables\Columns\IconColumn::make('is_supplier')
+                    ->label('Is Supplier')
+                    ->boolean()
+                    ->sortable()
+                    ->toggleable(),
+                Tables\Columns\TextColumn::make('supplier.name')
+                    ->label('Linked Supplier')
+                    ->searchable()
+                    ->toggleable()
+                    ->placeholder('Not linked'),
+                Tables\Columns\TextColumn::make('country')
+                    ->searchable()
+                    ->toggleable(),
+                Tables\Columns\TextColumn::make('tax_number')
                     ->searchable()
                     ->toggleable(isToggledHiddenByDefault: true),
-                
-                Tables\Columns\TextColumn::make('country')
-                    ->label('Country')
-                    ->toggleable(isToggledHiddenByDefault: true),
-                
                 Tables\Columns\IconColumn::make('is_active')
-                    ->label('Status')
                     ->boolean()
                     ->sortable(),
-                
                 Tables\Columns\TextColumn::make('created_at')
-                    ->label('Created At')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
-                
                 Tables\Columns\TextColumn::make('updated_at')
-                    ->label('Updated At')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
                 Tables\Filters\TernaryFilter::make('is_active')
-                    ->label('Status')
-                    ->boolean()
-                    ->trueLabel('Active')
-                    ->falseLabel('Inactive')
-                    ->native(false),
-                
+                    ->label('Active Status'),
                 Tables\Filters\Filter::make('has_company')
-                    ->label('Has Company')
-                    ->query(fn (Builder $query): Builder => $query->whereNotNull('name_company')),
-                
-                Tables\Filters\Filter::make('has_email')
-                    ->label('Has Email')
-                    ->query(fn (Builder $query): Builder => $query->whereNotNull('email')),
+                    ->query(fn (Builder $query): Builder => $query->whereNotNull('name_company'))
+                    ->label('Has Company Name'),
+                Tables\Filters\TernaryFilter::make('is_supplier')
+                    ->label('Is Supplier')
+                    ->boolean()
+                    ->trueLabel('Is Supplier')
+                    ->falseLabel('Not Supplier')
+                    ->native(false),
+                Tables\Filters\Filter::make('has_supplier_link')
+                    ->label('Has Supplier Link')
+                    ->query(fn (Builder $query): Builder => $query->whereNotNull('supplier_id')),
             ])
             ->actions([
                 Tables\Actions\ViewAction::make()
