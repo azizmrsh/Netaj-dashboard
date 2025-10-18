@@ -24,7 +24,7 @@ class CustomerReportExport implements FromCollection, WithHeadings, WithMapping,
     protected $summaryData;
     protected $rate;
 
-    public function __construct(Customer $customer, string $dateFrom, string $dateTo, $reportData, $summaryData = null, $rate = 115)
+    public function __construct(Customer $customer, string $dateFrom, string $dateTo, $reportData, $summaryData = null, $rate = 0)
     {
         $this->customer = $customer;
         $this->dateFrom = $dateFrom;

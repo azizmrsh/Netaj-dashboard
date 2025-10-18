@@ -47,7 +47,7 @@ class CustomerReport extends Page implements Forms\Contracts\HasForms
     public float $totalAmountBeforeTax = 0;
     public float $vatAmount = 0;
     public float $totalAmountAfterTax = 0;
-    public float $rate = 115; // Default rate as shown in blueprint
+    public float $rate = 0; // Default rate, will be set by user input
 
     public function mount(): void
     {
@@ -92,6 +92,14 @@ class CustomerReport extends Page implements Forms\Contracts\HasForms
                     ->step(0.01)
                     ->suffix('units')
                     ->helperText('Enter the opening balance for the selected period'),
+                
+                Forms\Components\TextInput::make('tax_rate')
+                    ->label('Tax Rate (معدل الضريبة)')
+                    ->numeric()
+                    ->default(0)
+                    ->step(0.01)
+                    ->suffix('%')
+                    ->helperText('Enter the tax rate as a percentage (e.g., 15 for 15%)'),
             ])
             ->statePath('data');
     }
@@ -104,6 +112,7 @@ class CustomerReport extends Page implements Forms\Contracts\HasForms
         $this->dateFrom = $data['date_from'];
         $this->dateTo = $data['date_to'];
         $this->openingBalance = $data['opening_balance'] ?? 0;
+        $this->rate = ($data['tax_rate'] ?? 0) / 100 + 1; // Convert percentage to multiplier
         
         if (!$this->selectedCustomer) {
             Notification::make()
