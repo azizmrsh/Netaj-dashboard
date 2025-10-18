@@ -46,7 +46,6 @@ class CustomerResource extends Resource
                             ->maxLength(255),
                         Forms\Components\TextInput::make('email')
                             ->email()
-                            ->required()
                             ->maxLength(255),
                         Forms\Components\TextInput::make('phone')
                             ->tel()
