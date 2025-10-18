@@ -199,7 +199,7 @@ class CustomerReport extends Page implements Forms\Contracts\HasForms
         // Get receipt documents in range
         $receiptDocs = ReceiptDocument::where('id_customer', $customerId)
             ->whereBetween('date_and_time', [$dateFrom, $dateTo])
-            ->with(['receiptDocumentProducts.product', 'transporter'])
+            ->with(['receiptDocumentProducts.product'])
             ->get();
 
         foreach ($receiptDocs as $doc) {
@@ -208,7 +208,7 @@ class CustomerReport extends Page implements Forms\Contracts\HasForms
             
             $transactions->push([
                 'date' => $doc->date_and_time,
-                'document_number' => $doc->transporter->document_no ?? 'REC-' . $doc->id,
+                'document_number' => $doc->document_number ?: 'REC-' . $doc->id,
                 'product_name' => "Receipt: {$products}",
                 'receipts' => $totalQty,
                 'issues' => 0,
@@ -219,7 +219,7 @@ class CustomerReport extends Page implements Forms\Contracts\HasForms
         // Get delivery documents in range
         $deliveryDocs = DeliveryDocument::where('id_customer', $customerId)
             ->whereBetween('date_and_time', [$dateFrom, $dateTo])
-            ->with(['deliveryDocumentProducts.product', 'transporter'])
+            ->with(['deliveryDocumentProducts.product'])
             ->get();
 
         foreach ($deliveryDocs as $doc) {
@@ -228,7 +228,7 @@ class CustomerReport extends Page implements Forms\Contracts\HasForms
             
             $transactions->push([
                 'date' => $doc->date_and_time,
-                'document_number' => $doc->transporter->document_no ?? 'DEL-' . $doc->id,
+                'document_number' => $doc->document_number ?: 'DEL-' . $doc->id,
                 'product_name' => "Delivery: {$products}",
                 'receipts' => 0,
                 'issues' => $totalQty,
