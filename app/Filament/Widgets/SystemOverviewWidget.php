@@ -5,7 +5,6 @@ namespace App\Filament\Widgets;
 use Filament\Widgets\StatsOverviewWidget as BaseWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
 use App\Models\Customer;
-use App\Models\Supplier;
 use App\Models\Product;
 use App\Models\User;
 use App\Models\SalesInvoice;
@@ -33,13 +32,13 @@ class SystemOverviewWidget extends BaseWidget
                 ->color('info')
                 ->chart([15, 4, 10, 2, 12, 4, 12]),
             
-            Stat::make('Active Customers', Customer::count())
+            Stat::make('Active Customers', Customer::customers()->count())
                 ->description('Registered customers')
                 ->descriptionIcon('heroicon-m-user-group')
                 ->color('warning')
                 ->chart([3, 8, 5, 10, 6, 12, 8]),
             
-            Stat::make('Active Suppliers', Supplier::count())
+            Stat::make('Active Suppliers', Customer::suppliers()->count())
                 ->description('Registered suppliers')
                 ->descriptionIcon('heroicon-m-building-storefront')
                 ->color('danger')

@@ -5,11 +5,11 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\CustomerResource\Pages;
 use App\Filament\Resources\CustomerResource\RelationManagers;
 use App\Models\Customer;
-use App\Models\Supplier;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
+use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
@@ -34,6 +34,12 @@ class CustomerResource extends Resource
             ->schema([
                 Forms\Components\Section::make('Basic Information')
                     ->schema([
+                        Forms\Components\Select::make('type')
+                            ->label('Type')
+                            ->options(Customer::getTypes())
+                            ->default(Customer::TYPE_CUSTOMER)
+                            ->required()
+                            ->helperText('Select whether this is a customer, supplier, or both'),
                         Forms\Components\TextInput::make('name')
                             ->required()
                             ->maxLength(255),
@@ -51,26 +57,6 @@ class CustomerResource extends Resource
                         Forms\Components\Toggle::make('is_active')
                             ->default(true),
                     ])->columns(2),
-                
-                //Forms\Components\Section::make('Supplier Relationship')
-                    //->schema([
-                        //Forms\Components\Toggle::make('is_supplier')
-                        //    ->label('Is also a Supplier')
-                        //    ->live()
-                        //    ->afterStateUpdated(function ($state, Forms\Set $set) {
-                        //        if (!$state) {
-                        //            $set('supplier_id', null);
-                        //        }
-                        //    }),
-                        
-                    //    Forms\Components\Select::make('supplier_id')
-                    //        ->label('Linked Supplier')
-                    //        ->options(Supplier::pluck('name', 'id'))
-                    //       ->searchable()
-                    //        ->preload()
-                    // /       ->visible(fn (Forms\Get $get): bool => $get('is_supplier'))
-                    //        ->helperText('Select the supplier record this customer is linked to'),
-                    //])->columns(2),
                 
                 Forms\Components\Section::make('Address & Location')
                     ->schema([
@@ -108,6 +94,17 @@ class CustomerResource extends Resource
                 Tables\Columns\TextColumn::make('name')
                     ->searchable()
                     ->sortable(),
+                Tables\Columns\TextColumn::make('type_display')
+                    ->label('Type')
+                    ->badge()
+                    ->color(fn (string $state): string => match ($state) {
+                        'Customer' => 'success',
+                        'Supplier' => 'warning',
+                        'Customer & Supplier' => 'info',
+                        default => 'gray',
+                    })
+                    ->sortable()
+                    ->searchable(),
                 Tables\Columns\TextColumn::make('name_company')
                     ->label('Company')
                     ->searchable()
@@ -118,16 +115,6 @@ class CustomerResource extends Resource
                 Tables\Columns\TextColumn::make('phone')
                     ->searchable()
                     ->copyable(),
-                Tables\Columns\IconColumn::make('is_supplier')
-                    ->label('Is Supplier')
-                    ->boolean()
-                    ->sortable()
-                    ->toggleable(),
-                Tables\Columns\TextColumn::make('supplier.name')
-                    ->label('Linked Supplier')
-                    ->searchable()
-                    ->toggleable()
-                    ->placeholder('Not linked'),
                 Tables\Columns\TextColumn::make('country')
                     ->searchable()
                     ->toggleable(),
@@ -148,25 +135,48 @@ class CustomerResource extends Resource
             ])
             ->filters([
                 Tables\Filters\TernaryFilter::make('is_active')
-                    ->label('Active Status'),
-                Tables\Filters\Filter::make('has_company')
-                    ->query(fn (Builder $query): Builder => $query->whereNotNull('name_company'))
-                    ->label('Has Company Name'),
-                Tables\Filters\TernaryFilter::make('is_supplier')
-                    ->label('Is Supplier')
+                    ->label('Active Status')
                     ->boolean()
-                    ->trueLabel('Is Supplier')
-                    ->falseLabel('Not Supplier')
+                    ->trueLabel('Active only')
+                    ->falseLabel('Inactive only')
                     ->native(false),
-                Tables\Filters\Filter::make('has_supplier_link')
-                    ->label('Has Supplier Link')
-                    ->query(fn (Builder $query): Builder => $query->whereNotNull('supplier_id')),
+                
+                Tables\Filters\Filter::make('has_company')
+                    ->label('Has Company')
+                    ->query(fn (Builder $query): Builder => $query->whereNotNull('name_company')),
+                
+                Tables\Filters\SelectFilter::make('type')
+                    ->label('Type')
+                    ->options([
+                        Customer::TYPE_CUSTOMER => 'Customer',
+                        Customer::TYPE_SUPPLIER => 'Supplier',
+                        Customer::TYPE_BOTH => 'Both',
+                    ])
+                    ->native(false),
+                
+                Tables\Filters\Filter::make('customers_only')
+                    ->label('Customers Only')
+                    ->query(fn (Builder $query): Builder => $query->customers()),
+                
+                Tables\Filters\Filter::make('suppliers_only')
+                    ->label('Suppliers Only')
+                    ->query(fn (Builder $query): Builder => $query->suppliers()),
+                
+                Tables\Filters\Filter::make('both_only')
+                    ->label('Customer & Supplier')
+                    ->query(fn (Builder $query): Builder => $query->both()),
             ])
             ->actions([
                 Tables\Actions\ViewAction::make()
                     ->label('View'),
                 Tables\Actions\EditAction::make()
                     ->label('Edit'),
+                Tables\Actions\Action::make('report')
+                    ->label('Report')
+                    ->icon('heroicon-o-document-chart-bar')
+                    ->color('info')
+                    ->url(fn (Customer $record): string => route('filament.admin.resources.customers.report', ['customer' => $record->id]))
+                    ->openUrlInNewTab(),
                 Tables\Actions\DeleteAction::make()
                     ->label('Delete'),
             ])
@@ -201,6 +211,7 @@ class CustomerResource extends Resource
             'index' => Pages\ListCustomers::route('/'),
             'create' => Pages\CreateCustomer::route('/create'),
             'edit' => Pages\EditCustomer::route('/{record}/edit'),
+            'report' => Pages\CustomerReport::route('/{customer}/report'),
         ];
     }
 }

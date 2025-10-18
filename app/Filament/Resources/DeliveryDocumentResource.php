@@ -48,13 +48,23 @@ class DeliveryDocumentResource extends Resource
                                     ->required()
                                     ->label('Date and Time'),
                                 Forms\Components\Select::make('id_customer')
-                                    ->relationship('customer', 'name')
+                                    ->relationship('customer', 'name', fn ($query) => $query->customers())
                                     ->required()
                                     ->searchable()
                                     ->preload()
                                     ->createOptionForm([
-                                        Forms\Components\Section::make('Basic Customer Information')
+                                        Forms\Components\Section::make('Basic Information')
                                             ->schema([
+                                                Forms\Components\Select::make('type')
+                                                    ->label('Type')
+                                                    ->options([
+                                                        Customer::TYPE_CUSTOMER => 'Customer',
+                                                        Customer::TYPE_BOTH => 'Customer & Supplier',
+                                                    ])
+                                                    ->default(Customer::TYPE_CUSTOMER)
+                                                    ->required()
+                                                    ->helperText('Select customer type'),
+                                                
                                                 Forms\Components\TextInput::make('name')
                                                     ->label('Customer Name')
                                                     ->required()
@@ -593,7 +603,15 @@ class DeliveryDocumentResource extends Resource
                     ]),
             ])
             ->actions([
+                Tables\Actions\ViewAction::make(),
                 Tables\Actions\EditAction::make(),
+                Tables\Actions\Action::make('print')
+                    ->label('Print')
+                    ->icon('heroicon-o-printer')
+                    ->color('info')
+                    ->url(fn (DeliveryDocument $record): string => route('delivery-documents.print', $record))
+                    ->openUrlInNewTab(),
+                Tables\Actions\DeleteAction::make(),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
@@ -603,7 +621,10 @@ class DeliveryDocumentResource extends Resource
                         ->timeFormat('Y-m-d_H-i-s')
                         ->defaultFormat('xlsx'),
                 ]),
-            ]);
+            ])
+            ->defaultSort('date_and_time', 'desc')
+            ->striped()
+            ->paginated([10, 25, 50, 100]);
     }
 
     public static function getRelations(): array
@@ -625,6 +646,7 @@ class DeliveryDocumentResource extends Resource
         return [
             'index' => Pages\ListDeliveryDocuments::route('/'),
             'create' => Pages\CreateDeliveryDocument::route('/create'),
+            'view' => Pages\ViewDeliveryDocument::route('/{record}'),
             'edit' => Pages\EditDeliveryDocument::route('/{record}/edit'),
         ];
     }

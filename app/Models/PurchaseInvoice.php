@@ -51,9 +51,9 @@ class PurchaseInvoice extends Model
     /**
      * Get the supplier through the receipt document.
      */
-    public function supplier(): BelongsTo
+    public function supplier()
     {
-        return $this->receiptDocument()->getRelated()->supplier();
+        return $this->receiptDocument->supplier ?? null;
     }
 
     /**
@@ -130,7 +130,7 @@ class PurchaseInvoice extends Model
     public function scopeBySupplier($query, $supplierId)
     {
         return $query->whereHas('receiptDocument', function ($q) use ($supplierId) {
-            $q->where('id_supplier', $supplierId);
+            $q->where('id_customer', $supplierId);
         });
     }
 }

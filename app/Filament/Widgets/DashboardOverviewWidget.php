@@ -8,7 +8,6 @@ use App\Models\Product;
 use App\Models\PurchaseInvoice;
 use App\Models\ReceiptDocument;
 use App\Models\SalesInvoice;
-use App\Models\Supplier;
 use App\Models\Transporter;
 use App\Models\User;
 use Spatie\Permission\Models\Role;
@@ -48,10 +47,10 @@ class DashboardOverviewWidget extends BaseWidget
         // حساب الإحصائيات الأساسية
         $totalProducts = Product::count();
         $activeProducts = Product::where('is_active', true)->count();
-        $totalCustomers = Customer::count();
-        $activeCustomers = Customer::where('is_active', true)->count();
-        $totalSuppliers = Supplier::count();
-        $activeSuppliers = Supplier::where('is_active', true)->count();
+        $totalCustomers = Customer::customers()->count();
+        $activeCustomers = Customer::customers()->where('is_active', true)->count();
+        $totalSuppliers = Customer::suppliers()->count();
+        $activeSuppliers = Customer::suppliers()->where('is_active', true)->count();
         $totalTransporters = Transporter::count();
         $activeTransporters = Transporter::where('is_active', true)->count();
         $totalUsers = User::count();

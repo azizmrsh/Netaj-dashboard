@@ -6,7 +6,6 @@ use Filament\Widgets\Widget;
 use App\Models\User;
 use App\Models\Product;
 use App\Models\Customer;
-use App\Models\Supplier;
 
 class QuickStatsWidget extends Widget
 {
@@ -19,8 +18,8 @@ class QuickStatsWidget extends Widget
         return [
             'users_count' => User::count(),
             'products_count' => Product::count(),
-            'customers_count' => Customer::count(),
-            'suppliers_count' => Supplier::count(),
+            'customers_count' => Customer::customers()->count(),
+            'suppliers_count' => Customer::suppliers()->count(),
         ];
     }
 }

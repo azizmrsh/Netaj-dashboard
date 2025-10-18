@@ -5,7 +5,7 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\ReceiptDocumentResource\Pages;
 use App\Filament\Resources\ReceiptDocumentResource\RelationManagers;
 use App\Models\ReceiptDocument;
-use App\Models\Supplier;
+use App\Models\Customer;
 use App\Models\Transporter;
 use App\Models\Product;
 use Filament\Forms;
@@ -46,14 +46,24 @@ class ReceiptDocumentResource extends Resource
                                 Forms\Components\DateTimePicker::make('date_and_time')
                                     ->required()
                                     ->label('Date and Time'),
-                                Forms\Components\Select::make('id_supplier')
-                                    ->relationship('supplier', 'name')
+                                Forms\Components\Select::make('id_customer')
+                                    ->relationship('supplier', 'name', fn ($query) => $query->suppliers())
                                     ->required()
                                     ->searchable()
                                     ->preload()
                                     ->createOptionForm([
-                                        Forms\Components\Section::make('Basic Supplier Information')
+                                        Forms\Components\Section::make('Basic Information')
                                             ->schema([
+                                                Forms\Components\Select::make('type')
+                                                    ->label('Type')
+                                                    ->options([
+                                                        Customer::TYPE_SUPPLIER => 'Supplier',
+                                                        Customer::TYPE_BOTH => 'Customer & Supplier',
+                                                    ])
+                                                    ->default(Customer::TYPE_SUPPLIER)
+                                                    ->required()
+                                                    ->helperText('Select supplier type'),
+                                                
                                                 Forms\Components\TextInput::make('name')
                                                     ->label('Supplier Name')
                                                     ->required()
@@ -275,12 +285,14 @@ class ReceiptDocumentResource extends Resource
                                             ->numeric()
                                             ->minValue(0)
                                             ->step(0.01)
+                                            ->default(0)
                                             ->label('Unit Price'),
                                         Forms\Components\TextInput::make('tax_rate')
                                             ->numeric()
                                             ->minValue(0)
                                             ->maxValue(100)
                                             ->step(0.01)
+                                            ->default(0)
                                             ->suffix('%')
                                             ->label('Tax Rate'),
                                     ]),
@@ -430,6 +442,7 @@ class ReceiptDocumentResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
+            ->modifyQueryUsing(fn (Builder $query) => $query->withCount('receiptDocumentProducts'))
             ->columns([
                 Tables\Columns\TextColumn::make('date_and_time')
                     ->dateTime()
@@ -485,7 +498,7 @@ class ReceiptDocumentResource extends Resource
                     ->toggledHiddenByDefault(),
             ])
             ->filters([
-                SelectFilter::make('id_supplier')
+                SelectFilter::make('id_customer')
                     ->relationship('supplier', 'name')
                     ->label('Supplier')
                     ->searchable()

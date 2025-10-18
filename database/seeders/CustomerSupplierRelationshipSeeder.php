@@ -5,7 +5,6 @@ namespace Database\Seeders;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use App\Models\Customer;
-use App\Models\Supplier;
 
 class CustomerSupplierRelationshipSeeder extends Seeder
 {
@@ -27,10 +26,11 @@ class CustomerSupplierRelationshipSeeder extends Seeder
             'is_active' => true,
             'national_number' => '12345678901234',
             'commercial_registration_number' => 'CR123456',
+            'type' => Customer::TYPE_CUSTOMER,
         ]);
 
         // إنشاء مورد عادي
-        $supplier1 = Supplier::create([
+        $supplier1 = Customer::create([
             'name' => 'سارة أحمد',
             'phone' => '0987654321',
             'email' => 'sara@example.com',
@@ -42,9 +42,10 @@ class CustomerSupplierRelationshipSeeder extends Seeder
             'is_active' => true,
             'national_number' => '98765432109876',
             'commercial_registration_number' => 'CR987654',
+            'type' => Customer::TYPE_SUPPLIER,
         ]);
 
-        // إنشاء عميل يصبح مورد أيضاً
+        // إنشاء عميل ومورد في نفس الوقت
         $customer2 = Customer::create([
             'name' => 'محمد علي',
             'phone' => '0555666777',
@@ -57,22 +58,12 @@ class CustomerSupplierRelationshipSeeder extends Seeder
             'is_active' => true,
             'national_number' => '55566677788899',
             'commercial_registration_number' => 'CR555666',
+            'type' => Customer::TYPE_BOTH,
+            'note' => 'عميل ومورد في نفس الوقت',
         ]);
 
-        // إنشاء مورد مرتبط بالعميل السابق
-        $supplier2 = new Supplier();
-        $supplier2->copyFromCustomer($customer2);
-        $supplier2->note = 'مورد تم إنشاؤه من عميل موجود';
-        $supplier2->save();
-
-        // تحديث العميل ليشير إلى المورد
-        $customer2->update([
-            'is_supplier' => true,
-            'supplier_id' => $supplier2->id,
-        ]);
-
-        // إنشاء مورد يصبح عميل أيضاً
-        $supplier3 = Supplier::create([
+        // إنشاء مورد وعميل في نفس الوقت
+        $supplier3 = Customer::create([
             'name' => 'فاطمة حسن',
             'phone' => '0777888999',
             'email' => 'fatima@example.com',
@@ -84,24 +75,14 @@ class CustomerSupplierRelationshipSeeder extends Seeder
             'is_active' => true,
             'national_number' => '77788899900011',
             'commercial_registration_number' => 'CR777888',
-        ]);
-
-        // إنشاء عميل مرتبط بالمورد السابق
-        $customer3 = new Customer();
-        $customer3->copyFromSupplier($supplier3);
-        $customer3->note = 'عميل تم إنشاؤه من مورد موجود';
-        $customer3->save();
-
-        // تحديث المورد ليشير إلى العميل
-        $supplier3->update([
-            'is_customer' => true,
-            'customer_id' => $customer3->id,
+            'type' => Customer::TYPE_BOTH,
+            'note' => 'مورد وعميل في نفس الوقت',
         ]);
 
         echo "تم إنشاء البيانات التجريبية بنجاح:\n";
-        echo "- عميل عادي: {$customer1->name}\n";
-        echo "- مورد عادي: {$supplier1->name}\n";
-        echo "- عميل ومورد: {$customer2->name} (ID: {$customer2->id}) <-> {$supplier2->name} (ID: {$supplier2->id})\n";
-        echo "- مورد وعميل: {$supplier3->name} (ID: {$supplier3->id}) <-> {$customer3->name} (ID: {$customer3->id})\n";
+        echo "- عميل عادي: {$customer1->name} (النوع: " . $customer1->getTypeLabel() . ")\n";
+        echo "- مورد عادي: {$supplier1->name} (النوع: " . $supplier1->getTypeLabel() . ")\n";
+        echo "- عميل ومورد: {$customer2->name} (النوع: " . $customer2->getTypeLabel() . ")\n";
+        echo "- مورد وعميل: {$supplier3->name} (النوع: " . $supplier3->getTypeLabel() . ")\n";
     }
 }

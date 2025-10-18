@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use App\Models\Customer;
 
 class ReceiptDocument extends Model
 {
@@ -18,7 +19,7 @@ class ReceiptDocument extends Model
      */
     protected $fillable = [
         'date_and_time',
-        'id_supplier',
+        'id_customer',
         'id_transporter',
         'purchasing_officer_name',
         'purchasing_officer_signature',
@@ -45,7 +46,7 @@ class ReceiptDocument extends Model
      */
     public function supplier(): BelongsTo
     {
-        return $this->belongsTo(Supplier::class, 'id_supplier');
+        return $this->belongsTo(Customer::class, 'id_customer');
     }
 
     /**

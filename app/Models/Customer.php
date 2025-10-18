@@ -3,10 +3,19 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 
 class Customer extends Model
 {
+    // Type constants for better code readability
+    public const TYPE_CUSTOMER = 'customer';
+    public const TYPE_SUPPLIER = 'supplier';
+    public const TYPE_BOTH = 'both';
+
     protected $fillable = [
+        'type',
         'name',
         'phone',
         'email',
@@ -19,49 +28,152 @@ class Customer extends Model
         'is_active',
         'national_number',
         'commercial_registration_number',
-        'is_supplier',
-        'supplier_id',
     ];
 
     protected $casts = [
         'is_active' => 'boolean',
-        'is_supplier' => 'boolean',
     ];
 
     /**
-     * Get the supplier that this customer is linked to.
+     * Scope to get only customers (type = 'customer')
      */
-    public function supplier()
+    public function scopeCustomers(Builder $query): Builder
     {
-        return $this->belongsTo(Supplier::class);
+        return $query->where('type', self::TYPE_CUSTOMER);
     }
 
     /**
-     * Check if this customer is also a supplier.
+     * Scope to get only suppliers (type = 'supplier')
+     */
+    public function scopeSuppliers(Builder $query): Builder
+    {
+        return $query->where('type', self::TYPE_SUPPLIER);
+    }
+
+    /**
+     * Scope to get records of type 'both'
+     */
+    public function scopeBoth(Builder $query): Builder
+    {
+        return $query->where('type', self::TYPE_BOTH);
+    }
+
+    /**
+     * Scope for receipt documents - parties that can be suppliers (type = 'supplier' or 'both')
+     */
+    public function scopeForReceipts(Builder $query): Builder
+    {
+        return $query->whereIn('type', [self::TYPE_SUPPLIER, self::TYPE_BOTH]);
+    }
+
+    /**
+     * Scope for delivery documents - parties that can be customers (type = 'customer' or 'both')
+     */
+    public function scopeForDeliveries(Builder $query): Builder
+    {
+        return $query->whereIn('type', [self::TYPE_CUSTOMER, self::TYPE_BOTH]);
+    }
+
+    /**
+     * Check if this record is a customer (type = 'customer' or 'both')
+     */
+    public function isCustomer(): bool
+    {
+        return in_array($this->type, [self::TYPE_CUSTOMER, self::TYPE_BOTH]);
+    }
+
+    /**
+     * Check if this record is a supplier (type = 'supplier' or 'both')
      */
     public function isSupplier(): bool
     {
-        return $this->is_supplier && $this->supplier_id !== null;
+        return in_array($this->type, [self::TYPE_SUPPLIER, self::TYPE_BOTH]);
     }
 
     /**
-     * Copy data from a supplier to this customer.
+     * Check if this record can handle both customer and supplier operations
      */
-    public function copyFromSupplier(Supplier $supplier): void
+    public function isBoth(): bool
     {
-        $this->fill([
-            'name' => $supplier->name,
-            'phone' => $supplier->phone,
-            'email' => $supplier->email,
-            'name_company' => $supplier->name_company,
-            'country' => $supplier->country,
-            'address' => $supplier->address,
-            'tax_number' => $supplier->tax_number,
-            'zip_code' => $supplier->zip_code,
-            'national_number' => $supplier->national_number,
-            'commercial_registration_number' => $supplier->commercial_registration_number,
-            'is_supplier' => true,
-            'supplier_id' => $supplier->id,
-        ]);
+        return $this->type === self::TYPE_BOTH;
+    }
+
+    /**
+     * Get the display name for the type
+     */
+    public function getTypeDisplayAttribute(): string
+    {
+        return match($this->type) {
+            self::TYPE_CUSTOMER => 'Customer',
+            self::TYPE_SUPPLIER => 'Supplier',
+            self::TYPE_BOTH => 'Customer & Supplier',
+            default => 'Unknown'
+        };
+    }
+
+    /**
+     * Get the label for the type (alias for getTypeDisplayAttribute)
+     */
+    public function getTypeLabel(): string
+    {
+        return $this->getTypeDisplayAttribute();
+    }
+
+    /**
+     * Get all available types
+     */
+    public static function getTypes(): array
+    {
+        return [
+            self::TYPE_CUSTOMER => 'Customer',
+            self::TYPE_SUPPLIER => 'Supplier',
+            self::TYPE_BOTH => 'Customer & Supplier',
+        ];
+    }
+
+    /**
+     * Get delivery documents for this customer (when acting as customer)
+     */
+    public function deliveryDocuments(): HasMany
+    {
+        return $this->hasMany(DeliveryDocument::class, 'id_customer');
+    }
+
+    /**
+     * Get receipt documents for this customer (when acting as supplier)
+     */
+    public function receiptDocuments(): HasMany
+    {
+        return $this->hasMany(ReceiptDocument::class, 'id_customer');
+    }
+
+    /**
+     * Get all delivery document products through delivery documents
+     */
+    public function deliveryDocumentProducts(): HasManyThrough
+    {
+        return $this->hasManyThrough(
+            DeliveryDocumentProduct::class,
+            DeliveryDocument::class,
+            'id_customer', // Foreign key on delivery_documents table
+            'delivery_document_id', // Foreign key on delivery_document_products table
+            'id', // Local key on customers table
+            'id' // Local key on delivery_documents table
+        );
+    }
+
+    /**
+     * Get all receipt document products through receipt documents
+     */
+    public function receiptDocumentProducts(): HasManyThrough
+    {
+        return $this->hasManyThrough(
+            ReceiptDocumentProduct::class,
+            ReceiptDocument::class,
+            'id_customer', // Foreign key on receipt_documents table
+            'receipt_document_id', // Foreign key on receipt_document_products table
+            'id', // Local key on customers table
+            'id' // Local key on receipt_documents table
+        );
     }
 }
