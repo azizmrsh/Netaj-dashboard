@@ -34,6 +34,11 @@ class CustomerReport extends Page implements Forms\Contracts\HasForms
     public ?string $dateTo = null;
     public ?float $openingBalance = 0;
     public Collection $reportData;
+
+    public function __construct()
+    {
+        $this->reportData = collect();
+    }
     
     // Summary calculations
     public float $totalReceipts = 0;
