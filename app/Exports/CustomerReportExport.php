@@ -21,18 +21,29 @@ class CustomerReportExport implements FromCollection, WithHeadings, WithMapping,
     protected $dateFrom;
     protected $dateTo;
     protected $reportData;
+    protected $summaryData;
+    protected $rate;
 
-    public function __construct(Customer $customer, string $dateFrom, string $dateTo, $reportData)
+    public function __construct(Customer $customer, string $dateFrom, string $dateTo, $reportData, $summaryData = null, $rate = 115)
     {
         $this->customer = $customer;
         $this->dateFrom = $dateFrom;
         $this->dateTo = $dateTo;
         $this->reportData = $reportData;
+        $this->summaryData = $summaryData;
+        $this->rate = $rate;
     }
 
     public function collection()
     {
-        return collect($this->reportData);
+        $data = collect($this->reportData);
+        
+        // Add summary data if provided
+        if ($this->summaryData) {
+            $data = $data->concat($this->summaryData);
+        }
+        
+        return $data;
     }
 
     public function headings(): array
@@ -40,22 +51,41 @@ class CustomerReportExport implements FromCollection, WithHeadings, WithMapping,
         return [
             'التاريخ',
             'رقم المستند',
-            'الوصف',
+            'اسم المنتج',
             'الوارد (كمية)',
             'الصادر (كمية)',
             'الرصيد',
+            'السعر (ريال)',
+            'القيمة (ريال)',
         ];
     }
 
     public function map($row): array
     {
+        // Check if this is a summary row
+        if (isset($row['is_summary']) && $row['is_summary']) {
+            return [
+                $row['date'] ?? '',
+                $row['document_no'] ?? '',
+                $row['description'] ?? '',
+                is_numeric($row['receipts_qty']) ? $row['receipts_qty'] : $row['receipts_qty'],
+                is_numeric($row['issues_qty']) ? $row['issues_qty'] : $row['issues_qty'],
+                is_numeric($row['balance']) ? $row['balance'] : $row['balance'],
+                $row['rate'] ?? '',
+                is_numeric($row['value']) ? $row['value'] : $row['value'],
+            ];
+        }
+        
+        // Regular data row
         return [
-            $row['date'] ? Carbon::parse($row['date'])->format('Y-m-d H:i') : '',
+            $row['date'] ? Carbon::parse($row['date'])->format('Y-m-d') : '',
             $row['document_no'] ?? '',
             $row['description'] ?? '',
             $row['receipts_qty'] ?? 0,
             $row['issues_qty'] ?? 0,
             $row['balance'] ?? 0,
+            $row['is_opening_balance'] ? '' : $this->rate,
+            $row['is_opening_balance'] ? '' : ($row['balance'] * $this->rate),
         ];
     }
 
@@ -64,8 +94,12 @@ class CustomerReportExport implements FromCollection, WithHeadings, WithMapping,
         // Set RTL direction for Arabic text
         $sheet->setRightToLeft(true);
         
+        // Get the last row number
+        $lastRow = $sheet->getHighestRow();
+        $headerRow = 4; // After the info rows
+        
         // Style the header row
-        $sheet->getStyle('A1:F1')->applyFromArray([
+        $sheet->getStyle("A{$headerRow}:H{$headerRow}")->applyFromArray([
             'font' => [
                 'bold' => true,
                 'color' => ['rgb' => 'FFFFFF'],
@@ -88,13 +122,12 @@ class CustomerReportExport implements FromCollection, WithHeadings, WithMapping,
         ]);
 
         // Auto-size columns
-        foreach (range('A', 'F') as $column) {
+        foreach (range('A', 'H') as $column) {
             $sheet->getColumnDimension($column)->setAutoSize(true);
         }
 
         // Add borders to all data cells
-        $lastRow = $sheet->getHighestRow();
-        $sheet->getStyle("A1:F{$lastRow}")->applyFromArray([
+        $sheet->getStyle("A{$headerRow}:H{$lastRow}")->applyFromArray([
             'borders' => [
                 'allBorders' => [
                     'borderStyle' => Border::BORDER_THIN,
@@ -107,6 +140,20 @@ class CustomerReportExport implements FromCollection, WithHeadings, WithMapping,
             ],
         ]);
 
+        // Style summary rows (last 3 rows) with yellow background
+        if ($this->summaryData && count($this->summaryData) > 0) {
+            $summaryStartRow = $lastRow - count($this->summaryData) + 1;
+            $sheet->getStyle("A{$summaryStartRow}:H{$lastRow}")->applyFromArray([
+                'fill' => [
+                    'fillType' => Fill::FILL_SOLID,
+                    'startColor' => ['rgb' => 'FEF3C7'], // Light yellow
+                ],
+                'font' => [
+                    'bold' => true,
+                ],
+            ]);
+        }
+
         // Add customer info at the top
         $sheet->insertNewRowBefore(1, 3);
         $sheet->setCellValue('A1', 'تقرير العميل: ' . $this->customer->name);
@@ -114,7 +161,7 @@ class CustomerReportExport implements FromCollection, WithHeadings, WithMapping,
         $sheet->setCellValue('A3', 'تاريخ التقرير: ' . now()->format('Y-m-d H:i'));
 
         // Style the info rows
-        $sheet->getStyle('A1:F3')->applyFromArray([
+        $sheet->getStyle('A1:H3')->applyFromArray([
             'font' => [
                 'bold' => true,
                 'size' => 11,
@@ -125,9 +172,9 @@ class CustomerReportExport implements FromCollection, WithHeadings, WithMapping,
         ]);
 
         // Merge cells for info rows
-        $sheet->mergeCells('A1:F1');
-        $sheet->mergeCells('A2:F2');
-        $sheet->mergeCells('A3:F3');
+        $sheet->mergeCells('A1:H1');
+        $sheet->mergeCells('A2:H2');
+        $sheet->mergeCells('A3:H3');
 
         return $sheet;
     }

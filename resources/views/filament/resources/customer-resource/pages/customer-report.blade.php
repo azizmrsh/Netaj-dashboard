@@ -76,6 +76,12 @@
                             <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                                 Balance
                             </th>
+                            <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                                Rate (SAR)
+                            </th>
+                            <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                                Value (SAR)
+                            </th>
                         </tr>
                     </thead>
                     <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
@@ -99,14 +105,52 @@
                             <td class="px-6 py-4 whitespace-nowrap text-sm font-bold text-right {{ $row['balance'] >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400' }}">
                                 {{ number_format($row['balance'], 2) }}
                             </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100 text-right">
+                                {{ $row['is_opening_balance'] ? '-' : number_format($rate, 2) }}
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100 text-right">
+                                {{ $row['is_opening_balance'] ? '-' : number_format($row['balance'] * $rate, 2) }}
+                            </td>
                         </tr>
                         @empty
                         <tr>
-                            <td colspan="6" class="px-6 py-4 text-center text-sm text-gray-500 dark:text-gray-400">
+                            <td colspan="8" class="px-6 py-4 text-center text-sm text-gray-500 dark:text-gray-400">
                                 No data found for the selected period.
                             </td>
                         </tr>
                         @endforelse
+                        
+                        <!-- Summary Section -->
+                        @if($reportData->isNotEmpty())
+                        @foreach($this->getSummaryData() as $summaryRow)
+                        <tr class="bg-yellow-50 dark:bg-yellow-900/20 border-t-2 border-yellow-300 dark:border-yellow-600">
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">
+                                {{ $summaryRow['date'] }}
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">
+                                {{ $summaryRow['document_no'] }}
+                            </td>
+                            <td class="px-6 py-4 text-sm font-bold text-gray-900 dark:text-gray-100">
+                                {{ $summaryRow['description'] }}
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-bold text-gray-900 dark:text-gray-100 text-right">
+                                {{ is_numeric($summaryRow['receipts_qty']) ? number_format($summaryRow['receipts_qty'], 2) : $summaryRow['receipts_qty'] }}
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-bold text-gray-900 dark:text-gray-100 text-right">
+                                {{ is_numeric($summaryRow['issues_qty']) ? number_format($summaryRow['issues_qty'], 2) : $summaryRow['issues_qty'] }}
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-bold text-gray-900 dark:text-gray-100 text-right">
+                                {{ is_numeric($summaryRow['balance']) ? number_format($summaryRow['balance'], 2) : $summaryRow['balance'] }}
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-bold text-gray-900 dark:text-gray-100 text-right">
+                                {{ $summaryRow['rate'] }}
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-bold text-gray-900 dark:text-gray-100 text-right">
+                                {{ is_numeric($summaryRow['value']) ? number_format($summaryRow['value'], 2) : $summaryRow['value'] }}
+                            </td>
+                        </tr>
+                        @endforeach
+                        @endif
                     </tbody>
                 </table>
             </div>

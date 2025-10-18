@@ -34,6 +34,15 @@ class CustomerReport extends Page implements Forms\Contracts\HasForms
     public ?string $dateTo = null;
     public ?float $openingBalance = 0;
     public Collection $reportData;
+    
+    // Summary calculations
+    public float $totalReceipts = 0;
+    public float $totalIssues = 0;
+    public float $finalBalance = 0;
+    public float $totalAmountBeforeTax = 0;
+    public float $vatAmount = 0;
+    public float $totalAmountAfterTax = 0;
+    public float $rate = 115; // Default rate as shown in blueprint
 
     public function mount(): void
     {
@@ -130,9 +139,17 @@ class CustomerReport extends Page implements Forms\Contracts\HasForms
             'is_opening_balance' => true,
         ]);
 
+        // Initialize totals
+        $this->totalReceipts = 0;
+        $this->totalIssues = 0;
+
         // Add transactions with running balance
         foreach ($transactions as $transaction) {
             $runningBalance += $transaction['receipts_qty'] - $transaction['issues_qty'];
+            
+            // Accumulate totals
+            $this->totalReceipts += $transaction['receipts_qty'];
+            $this->totalIssues += $transaction['issues_qty'];
             
             $reportData->push([
                 'date' => $transaction['date'],
@@ -144,6 +161,12 @@ class CustomerReport extends Page implements Forms\Contracts\HasForms
                 'is_opening_balance' => false,
             ]);
         }
+
+        // Calculate final balance and amounts
+        $this->finalBalance = $runningBalance;
+        $this->totalAmountBeforeTax = $this->finalBalance * $this->rate;
+        $this->vatAmount = $this->totalAmountBeforeTax * 0.15; // 15% VAT
+        $this->totalAmountAfterTax = $this->totalAmountBeforeTax + $this->vatAmount;
 
         $this->reportData = $reportData;
     }
@@ -212,35 +235,72 @@ class CustomerReport extends Page implements Forms\Contracts\HasForms
         return $transactions->sortBy('sort_date')->values();
     }
 
-    public function exportToExcel()
+    public function export()
     {
-        if (!$this->selectedCustomer || !$this->showResults) {
+        $customer = Customer::find($this->customer_id);
+        $dateFrom = $this->date_from;
+        $dateTo = $this->date_to;
+        
+        if (!$customer || !$dateFrom || !$dateTo) {
             Notification::make()
-                ->title('يرجى إنشاء التقرير أولاً')
+                ->title('خطأ')
+                ->body('يرجى تحديد العميل والفترة الزمنية')
                 ->danger()
                 ->send();
             return;
         }
 
-        try {
-            $fileName = 'customer_report_' . $this->selectedCustomer->name . '_' . now()->format('Y-m-d_H-i-s') . '.xlsx';
-            
-            return Excel::download(
-                new CustomerReportExport(
-                    $this->selectedCustomer,
-                    $this->dateFrom,
-                    $this->dateTo,
-                    $this->reportData
-                ),
-                $fileName
-            );
-        } catch (\Exception $e) {
-            Notification::make()
-                ->title('حدث خطأ أثناء تصدير التقرير')
-                ->body($e->getMessage())
-                ->danger()
-                ->send();
-        }
+        $this->calculateReportData();
+        $summaryData = $this->getSummaryData();
+        
+        $fileName = 'customer_report_' . $customer->name . '_' . $dateFrom . '_to_' . $dateTo . '.xlsx';
+        
+        return Excel::download(
+            new CustomerReportExport($customer, $dateFrom, $dateTo, $this->reportData, $summaryData, $this->rate),
+            $fileName
+        );
+    }
+
+    public function getSummaryData(): Collection
+    {
+        return collect([
+            [
+                'date' => '',
+                'document_no' => '',
+                'description' => 'Total Receipts',
+                'receipts_qty' => $this->totalReceipts,
+                'issues_qty' => '*',
+                'balance' => '*',
+                'rate' => 'Total Amount Before Tax',
+                'value' => $this->totalAmountBeforeTax,
+                'is_summary' => true,
+                'summary_type' => 'total_receipts'
+            ],
+            [
+                'date' => '',
+                'document_no' => '',
+                'description' => 'Total of Issues',
+                'receipts_qty' => '*',
+                'issues_qty' => $this->totalIssues,
+                'balance' => '*',
+                'rate' => 'Add VAT',
+                'value' => $this->vatAmount,
+                'is_summary' => true,
+                'summary_type' => 'total_issues'
+            ],
+            [
+                'date' => '',
+                'document_no' => '',
+                'description' => 'Balance',
+                'receipts_qty' => '*',
+                'issues_qty' => '*',
+                'balance' => $this->finalBalance,
+                'rate' => 'Total Amount after Tax',
+                'value' => $this->totalAmountAfterTax,
+                'is_summary' => true,
+                'summary_type' => 'balance'
+            ]
+        ]);
     }
 
     protected function getHeaderActions(): array
