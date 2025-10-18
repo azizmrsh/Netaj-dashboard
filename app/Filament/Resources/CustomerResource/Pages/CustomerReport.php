@@ -131,11 +131,13 @@ class CustomerReport extends Page implements Forms\Contracts\HasForms
         // Add opening balance row
         $reportData->push([
             'date' => $dateFrom->format('Y-m-d'),
-            'document_no' => 'OPENING BALANCE',
-            'description' => 'Opening Balance',
-            'receipts_qty' => 0,
-            'issues_qty' => 0,
+            'document_number' => 'OPENING BALANCE',
+            'product_name' => 'Opening Balance',
+            'receipts' => 0,
+            'issues' => 0,
             'balance' => $runningBalance,
+            'rate' => $this->rate,
+            'value' => $runningBalance * $this->rate,
             'is_opening_balance' => true,
         ]);
 
@@ -145,19 +147,21 @@ class CustomerReport extends Page implements Forms\Contracts\HasForms
 
         // Add transactions with running balance
         foreach ($transactions as $transaction) {
-            $runningBalance += $transaction['receipts_qty'] - $transaction['issues_qty'];
+            $runningBalance += $transaction['receipts'] - $transaction['issues'];
             
             // Accumulate totals
-            $this->totalReceipts += $transaction['receipts_qty'];
-            $this->totalIssues += $transaction['issues_qty'];
+            $this->totalReceipts += $transaction['receipts'];
+            $this->totalIssues += $transaction['issues'];
             
             $reportData->push([
                 'date' => $transaction['date'],
-                'document_no' => $transaction['document_no'],
-                'description' => $transaction['description'],
-                'receipts_qty' => $transaction['receipts_qty'],
-                'issues_qty' => $transaction['issues_qty'],
+                'document_number' => $transaction['document_number'],
+                'product_name' => $transaction['product_name'],
+                'receipts' => $transaction['receipts'],
+                'issues' => $transaction['issues'],
                 'balance' => $runningBalance,
+                'rate' => $this->rate,
+                'value' => $runningBalance * $this->rate,
                 'is_opening_balance' => false,
             ]);
         }
@@ -195,7 +199,7 @@ class CustomerReport extends Page implements Forms\Contracts\HasForms
         // Get receipt documents in range
         $receiptDocs = ReceiptDocument::where('id_customer', $customerId)
             ->whereBetween('date_and_time', [$dateFrom, $dateTo])
-            ->with(['receiptDocumentProducts.product'])
+            ->with(['receiptDocumentProducts.product', 'transporter'])
             ->get();
 
         foreach ($receiptDocs as $doc) {
@@ -204,10 +208,10 @@ class CustomerReport extends Page implements Forms\Contracts\HasForms
             
             $transactions->push([
                 'date' => $doc->date_and_time,
-                'document_no' => $doc->document_number,
-                'description' => "Receipt: {$products}",
-                'receipts_qty' => $totalQty,
-                'issues_qty' => 0,
+                'document_number' => $doc->transporter->document_no ?? 'REC-' . $doc->id,
+                'product_name' => "Receipt: {$products}",
+                'receipts' => $totalQty,
+                'issues' => 0,
                 'sort_date' => $doc->date_and_time,
             ]);
         }
@@ -215,7 +219,7 @@ class CustomerReport extends Page implements Forms\Contracts\HasForms
         // Get delivery documents in range
         $deliveryDocs = DeliveryDocument::where('id_customer', $customerId)
             ->whereBetween('date_and_time', [$dateFrom, $dateTo])
-            ->with(['deliveryDocumentProducts.product'])
+            ->with(['deliveryDocumentProducts.product', 'transporter'])
             ->get();
 
         foreach ($deliveryDocs as $doc) {
@@ -224,10 +228,10 @@ class CustomerReport extends Page implements Forms\Contracts\HasForms
             
             $transactions->push([
                 'date' => $doc->date_and_time,
-                'document_no' => $doc->document_number,
-                'description' => "Delivery: {$products}",
-                'receipts_qty' => 0,
-                'issues_qty' => $totalQty,
+                'document_number' => $doc->transporter->document_no ?? 'DEL-' . $doc->id,
+                'product_name' => "Delivery: {$products}",
+                'receipts' => 0,
+                'issues' => $totalQty,
                 'sort_date' => $doc->date_and_time,
             ]);
         }
@@ -237,9 +241,9 @@ class CustomerReport extends Page implements Forms\Contracts\HasForms
 
     public function export()
     {
-        $customer = Customer::find($this->customer_id);
-        $dateFrom = $this->date_from;
-        $dateTo = $this->date_to;
+        $customer = $this->selectedCustomer;
+        $dateFrom = $this->dateFrom;
+        $dateTo = $this->dateTo;
         
         if (!$customer || !$dateFrom || !$dateTo) {
             Notification::make()
@@ -266,39 +270,75 @@ class CustomerReport extends Page implements Forms\Contracts\HasForms
         return collect([
             [
                 'date' => '',
-                'document_no' => '',
-                'description' => 'Total Receipts',
-                'receipts_qty' => $this->totalReceipts,
-                'issues_qty' => '*',
-                'balance' => '*',
-                'rate' => 'Total Amount Before Tax',
+                'document_number' => '',
+                'product_name' => 'Total Receipts',
+                'receipts' => $this->totalReceipts,
+                'issues' => '',
+                'balance' => '',
+                'rate' => '',
+                'value' => '',
+                'is_summary' => true,
+                'label' => 'Total Receipts'
+            ],
+            [
+                'date' => '',
+                'document_number' => '',
+                'product_name' => 'Total of Issues',
+                'receipts' => '',
+                'issues' => $this->totalIssues,
+                'balance' => '',
+                'rate' => '',
+                'value' => '',
+                'is_summary' => true,
+                'label' => 'Total of Issues'
+            ],
+            [
+                'date' => '',
+                'document_number' => '',
+                'product_name' => 'Balance',
+                'receipts' => '',
+                'issues' => '',
+                'balance' => $this->finalBalance,
+                'rate' => '',
+                'value' => '',
+                'is_summary' => true,
+                'label' => 'Balance'
+            ],
+            [
+                'date' => '',
+                'document_number' => '',
+                'product_name' => 'Total Amount Before Tax',
+                'receipts' => '',
+                'issues' => '',
+                'balance' => '',
+                'rate' => '',
                 'value' => $this->totalAmountBeforeTax,
                 'is_summary' => true,
-                'summary_type' => 'total_receipts'
+                'label' => 'Total Amount Before Tax'
             ],
             [
                 'date' => '',
-                'document_no' => '',
-                'description' => 'Total of Issues',
-                'receipts_qty' => '*',
-                'issues_qty' => $this->totalIssues,
-                'balance' => '*',
-                'rate' => 'Add VAT',
+                'document_number' => '',
+                'product_name' => 'Add VAT',
+                'receipts' => '',
+                'issues' => '',
+                'balance' => '',
+                'rate' => '',
                 'value' => $this->vatAmount,
                 'is_summary' => true,
-                'summary_type' => 'total_issues'
+                'label' => 'Add VAT'
             ],
             [
                 'date' => '',
-                'document_no' => '',
-                'description' => 'Balance',
-                'receipts_qty' => '*',
-                'issues_qty' => '*',
-                'balance' => $this->finalBalance,
-                'rate' => 'Total Amount after Tax',
+                'document_number' => '',
+                'product_name' => 'Total Amount after Tax',
+                'receipts' => '',
+                'issues' => '',
+                'balance' => '',
+                'rate' => '',
                 'value' => $this->totalAmountAfterTax,
                 'is_summary' => true,
-                'summary_type' => 'balance'
+                'label' => 'Total Amount after Tax'
             ]
         ]);
     }

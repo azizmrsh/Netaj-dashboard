@@ -32,7 +32,7 @@
                     
                     <div class="flex space-x-3">
                         <x-filament::button 
-                            wire:click="exportToExcel" 
+                            wire:click="export" 
                             color="success" 
                             outlined
                             class="no-print"
@@ -91,16 +91,16 @@
                                 {{ \Carbon\Carbon::parse($row['date'])->format('Y-m-d') }}
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm font-medium {{ $row['is_opening_balance'] ? 'text-blue-600 dark:text-blue-400' : 'text-gray-900 dark:text-gray-100' }}">
-                                {{ $row['document_no'] }}
+                                {{ $row['document_number'] }}
                             </td>
                             <td class="px-6 py-4 text-sm text-gray-900 dark:text-gray-100">
-                                {{ $row['description'] }}
+                                {{ $row['product_name'] }}
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100 text-right">
-                                {{ $row['receipts_qty'] > 0 ? number_format($row['receipts_qty'], 2) : '-' }}
+                                {{ $row['receipts'] > 0 ? number_format($row['receipts'], 2) : '-' }}
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100 text-right">
-                                {{ $row['issues_qty'] > 0 ? number_format($row['issues_qty'], 2) : '-' }}
+                                {{ $row['issues'] > 0 ? number_format($row['issues'], 2) : '-' }}
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm font-bold text-right {{ $row['balance'] >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400' }}">
                                 {{ number_format($row['balance'], 2) }}
@@ -128,16 +128,16 @@
                                 {{ $summaryRow['date'] }}
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">
-                                {{ $summaryRow['document_no'] }}
+                                {{ $summaryRow['document_number'] }}
                             </td>
                             <td class="px-6 py-4 text-sm font-bold text-gray-900 dark:text-gray-100">
-                                {{ $summaryRow['description'] }}
+                                {{ $summaryRow['product_name'] }}
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm font-bold text-gray-900 dark:text-gray-100 text-right">
-                                {{ is_numeric($summaryRow['receipts_qty']) ? number_format($summaryRow['receipts_qty'], 2) : $summaryRow['receipts_qty'] }}
+                                {{ is_numeric($summaryRow['receipts']) ? number_format($summaryRow['receipts'], 2) : $summaryRow['receipts'] }}
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm font-bold text-gray-900 dark:text-gray-100 text-right">
-                                {{ is_numeric($summaryRow['issues_qty']) ? number_format($summaryRow['issues_qty'], 2) : $summaryRow['issues_qty'] }}
+                                {{ is_numeric($summaryRow['issues']) ? number_format($summaryRow['issues'], 2) : $summaryRow['issues'] }}
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm font-bold text-gray-900 dark:text-gray-100 text-right">
                                 {{ is_numeric($summaryRow['balance']) ? number_format($summaryRow['balance'], 2) : $summaryRow['balance'] }}
