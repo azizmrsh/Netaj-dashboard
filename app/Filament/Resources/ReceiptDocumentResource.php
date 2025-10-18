@@ -462,11 +462,11 @@ class ReceiptDocumentResource extends Resource
                 Tables\Columns\TextColumn::make('material_source')
                     ->searchable()
                     ->label('Material Source'),
-                Tables\Columns\TextColumn::make('receiptDocumentProducts_count')
-                    ->counts('receiptDocumentProducts')
+                Tables\Columns\TextColumn::make('receipt_document_products_count')
                     ->label('Products Count')
                     ->badge()
-                    ->color('success'),
+                    ->color('success')
+                    ->getStateUsing(fn ($record) => $record->receiptDocumentProducts()->count()),
                 Tables\Columns\TextColumn::make('total_amount')
                     ->label('Total Amount')
                     ->money('USD')

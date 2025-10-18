@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -9,6 +10,7 @@ use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 
 class Customer extends Model
 {
+    use HasFactory;
     // Type constants for better code readability
     public const TYPE_CUSTOMER = 'customer';
     public const TYPE_SUPPLIER = 'supplier';
