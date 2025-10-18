@@ -20,6 +20,7 @@ class ReceiptDocument extends Model
      * The attributes that are mass assignable.
      */
     protected $fillable = [
+        'document_number',
         'date_and_time',
         'id_customer',
         'id_transporter',

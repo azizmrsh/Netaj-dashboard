@@ -132,7 +132,7 @@ class PurchaseInvoiceResource extends Resource
                                     ->maxLength(255)
                                     ->placeholder('Supplier tax registration number'),
                             ]),
-                        TextInput::make('payment_terms')
+                        Select::make('payment_terms')
                             ->label('Payment Terms')
                             ->options([
                                 'cash' => 'Cash',
