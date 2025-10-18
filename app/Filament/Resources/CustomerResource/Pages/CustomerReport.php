@@ -62,7 +62,7 @@ class CustomerReport extends Page implements Forms\Contracts\HasForms
             ->schema([
                 Forms\Components\Select::make('customer_id')
                     ->label('Customer')
-                    ->options(Customer::customers()->pluck('name', 'id'))
+                    ->options(Customer::where('is_active', true)->pluck('name', 'id'))
                     ->searchable()
                     ->required()
                     ->live()

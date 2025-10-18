@@ -48,7 +48,7 @@ class DeliveryDocumentResource extends Resource
                                     ->required()
                                     ->label('Date and Time'),
                                 Forms\Components\Select::make('id_customer')
-                                    ->relationship('customer', 'name', fn ($query) => $query->customers())
+                                    ->relationship('customer', 'name', fn ($query) => $query->forDeliveries())
                                     ->required()
                                     ->searchable()
                                     ->preload()
@@ -57,10 +57,7 @@ class DeliveryDocumentResource extends Resource
                                             ->schema([
                                                 Forms\Components\Select::make('type')
                                                     ->label('Type')
-                                                    ->options([
-                                                        Customer::TYPE_CUSTOMER => 'Customer',
-                                                        Customer::TYPE_BOTH => 'Customer & Supplier',
-                                                    ])
+                                                    ->options(Customer::getTypes())
                                                     ->default(Customer::TYPE_CUSTOMER)
                                                     ->required()
                                                     ->helperText('Select customer type'),
@@ -86,12 +83,8 @@ class DeliveryDocumentResource extends Resource
                                             ])
                                             ->columns(2),
                                         
-                                        Forms\Components\Section::make('Company Information')
+                                        Forms\Components\Section::make('Legal Information')
                                             ->schema([
-                                                Forms\Components\TextInput::make('name_company')
-                                                    ->label('Company Name')
-                                                    ->maxLength(255),
-                                                
                                                 Forms\Components\TextInput::make('tax_number')
                                                     ->label('Tax Number')
                                                     ->maxLength(255),

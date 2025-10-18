@@ -75,7 +75,7 @@ class PurchaseInvoice extends Model
             ReceiptDocumentProduct::class,
             ReceiptDocument::class,
             'id',
-            'id_receipt_documents',
+            'receipt_document_id',
             'id_receipt_documents',
             'id'
         );
@@ -89,10 +89,10 @@ class PurchaseInvoice extends Model
         return $this->hasManyThrough(
             Product::class,
             ReceiptDocumentProduct::class,
-            'id_receipt_documents', // Foreign key on receipt_document_products table
+            'receipt_document_id', // Foreign key on receipt_document_products table
             'id', // Foreign key on products table
             'id_receipt_documents', // Local key on purchase_invoices table
-            'id_product' // Local key on receipt_document_products table
+            'product_id' // Local key on receipt_document_products table
         );
     }
 

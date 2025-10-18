@@ -47,7 +47,7 @@ class ReceiptDocumentResource extends Resource
                                     ->required()
                                     ->label('Date and Time'),
                                 Forms\Components\Select::make('id_customer')
-                                    ->relationship('supplier', 'name', fn ($query) => $query->suppliers())
+                                    ->relationship('supplier', 'name', fn ($query) => $query->forReceipts())
                                     ->required()
                                     ->searchable()
                                     ->preload()
@@ -56,16 +56,13 @@ class ReceiptDocumentResource extends Resource
                                             ->schema([
                                                 Forms\Components\Select::make('type')
                                                     ->label('Type')
-                                                    ->options([
-                                                        Customer::TYPE_SUPPLIER => 'Supplier',
-                                                        Customer::TYPE_BOTH => 'Customer & Supplier',
-                                                    ])
+                                                    ->options(Customer::getTypes())
                                                     ->default(Customer::TYPE_SUPPLIER)
                                                     ->required()
-                                                    ->helperText('Select supplier type'),
+                                                    ->helperText('Select customer type'),
                                                 
                                                 Forms\Components\TextInput::make('name')
-                                                    ->label('Supplier Name')
+                                                    ->label('Customer Name')
                                                     ->required()
                                                     ->maxLength(255),
                                                 
@@ -85,12 +82,8 @@ class ReceiptDocumentResource extends Resource
                                             ])
                                             ->columns(2),
                                         
-                                        Forms\Components\Section::make('Company Information')
+                                        Forms\Components\Section::make('Legal Information')
                                             ->schema([
-                                                Forms\Components\TextInput::make('name_company')
-                                                    ->label('Company Name')
-                                                    ->maxLength(255),
-                                                
                                                 Forms\Components\TextInput::make('tax_number')
                                                     ->label('Tax Number')
                                                     ->maxLength(255),

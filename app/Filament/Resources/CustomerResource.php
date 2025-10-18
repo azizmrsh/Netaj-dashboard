@@ -41,10 +41,8 @@ class CustomerResource extends Resource
                             ->required()
                             ->helperText('Select whether this is a customer, supplier, or both'),
                         Forms\Components\TextInput::make('name')
+                            ->label('Customer Name')
                             ->required()
-                            ->maxLength(255),
-                        Forms\Components\TextInput::make('name_company')
-                            ->label('Company Name')
                             ->maxLength(255),
                         Forms\Components\TextInput::make('email')
                             ->email()
@@ -92,6 +90,7 @@ class CustomerResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('name')
+                    ->label('Customer Name')
                     ->searchable()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('type_display')
@@ -102,13 +101,7 @@ class CustomerResource extends Resource
                         'Supplier' => 'warning',
                         'Customer & Supplier' => 'info',
                         default => 'gray',
-                    })
-                    ->sortable()
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('name_company')
-                    ->label('Company')
-                    ->searchable()
-                    ->toggleable(),
+                    }),
                 Tables\Columns\TextColumn::make('email')
                     ->searchable()
                     ->copyable(),
@@ -140,10 +133,6 @@ class CustomerResource extends Resource
                     ->trueLabel('Active only')
                     ->falseLabel('Inactive only')
                     ->native(false),
-                
-                Tables\Filters\Filter::make('has_company')
-                    ->label('Has Company')
-                    ->query(fn (Builder $query): Builder => $query->whereNotNull('name_company')),
                 
                 Tables\Filters\SelectFilter::make('type')
                     ->label('Type')
