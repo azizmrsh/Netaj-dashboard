@@ -106,10 +106,10 @@
                                 {{ number_format($row['balance'], 2) }}
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100 text-right">
-                                {{ $row['is_opening_balance'] ? '-' : number_format($rate, 2) }}
+                                {{ $row['rate'] > 0 ? number_format($row['rate'], 2) : '-' }}
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100 text-right">
-                                {{ $row['is_opening_balance'] ? '-' : number_format($row['balance'] * $rate, 2) }}
+                                {{ $row['value'] > 0 ? number_format($row['value'], 2) : '-' }}
                             </td>
                         </tr>
                         @empty
@@ -125,28 +125,28 @@
                         @foreach($this->getSummaryData() as $summaryRow)
                         <tr class="bg-yellow-50 dark:bg-yellow-900/20 border-t-2 border-yellow-300 dark:border-yellow-600">
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">
-                                {{ $summaryRow['date'] }}
+                                *
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">
-                                {{ $summaryRow['document_number'] }}
+                                *
                             </td>
                             <td class="px-6 py-4 text-sm font-bold text-gray-900 dark:text-gray-100">
                                 {{ $summaryRow['product_name'] }}
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm font-bold text-gray-900 dark:text-gray-100 text-right">
-                                {{ is_numeric($summaryRow['receipts']) ? number_format($summaryRow['receipts'], 2) : $summaryRow['receipts'] }}
+                                {{ is_numeric($summaryRow['receipts']) && $summaryRow['receipts'] != 0 ? number_format($summaryRow['receipts'], 2) : '*' }}
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm font-bold text-gray-900 dark:text-gray-100 text-right">
-                                {{ is_numeric($summaryRow['issues']) ? number_format($summaryRow['issues'], 2) : $summaryRow['issues'] }}
+                                {{ is_numeric($summaryRow['issues']) && $summaryRow['issues'] != 0 ? number_format($summaryRow['issues'], 2) : '*' }}
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm font-bold text-gray-900 dark:text-gray-100 text-right">
-                                {{ is_numeric($summaryRow['balance']) ? number_format($summaryRow['balance'], 2) : $summaryRow['balance'] }}
+                                {{ is_numeric($summaryRow['balance']) && $summaryRow['balance'] != 0 ? number_format($summaryRow['balance'], 2) : '*' }}
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm font-bold text-gray-900 dark:text-gray-100 text-right">
-                                {{ $summaryRow['rate'] }}
+                                *
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm font-bold text-gray-900 dark:text-gray-100 text-right">
-                                {{ is_numeric($summaryRow['value']) ? number_format($summaryRow['value'], 2) : $summaryRow['value'] }}
+                                {{ is_numeric($summaryRow['value']) && $summaryRow['value'] != 0 ? number_format($summaryRow['value'], 2) : '*' }}
                             </td>
                         </tr>
                         @endforeach

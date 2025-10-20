@@ -354,7 +354,6 @@ class DeliveryDocumentResource extends Resource
                                     ->required()
                                     ->label('Purchase Order Number'),
                                 Forms\Components\TextInput::make('project_name_and_location')
-                                    ->required()
                                     ->label('Project Name and Location'),
                             ]),
                     ])->columns(2),

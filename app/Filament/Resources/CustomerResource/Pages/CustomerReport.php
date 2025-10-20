@@ -129,8 +129,8 @@ class CustomerReport extends Page implements Forms\Contracts\HasForms
     protected function calculateReportData(): void
     {
         $customerId = $this->selectedCustomer->id;
-        $dateFrom = Carbon::parse($this->dateFrom);
-        $dateTo = Carbon::parse($this->dateTo);
+        $dateFrom = Carbon::parse($this->dateFrom)->startOfDay();
+        $dateTo = Carbon::parse($this->dateTo)->endOfDay();
 
         // Use manual opening balance input
         $openingBalance = $this->openingBalance;
@@ -150,8 +150,8 @@ class CustomerReport extends Page implements Forms\Contracts\HasForms
             'receipts' => 0,
             'issues' => 0,
             'balance' => $runningBalance,
-            'rate' => $this->rate,
-            'value' => $runningBalance * $this->rate,
+            'rate' => 0,
+            'value' => 0,
             'is_opening_balance' => true,
         ]);
 
@@ -167,6 +167,9 @@ class CustomerReport extends Page implements Forms\Contracts\HasForms
             $this->totalReceipts += $transaction['receipts'];
             $this->totalIssues += $transaction['issues'];
             
+            // Calculate value: only for issues (deliveries), not balance
+            $value = $transaction['issues'] > 0 ? $transaction['issues'] * $this->rate : 0;
+            
             $reportData->push([
                 'date' => $transaction['date'],
                 'document_number' => $transaction['document_number'],
@@ -174,15 +177,17 @@ class CustomerReport extends Page implements Forms\Contracts\HasForms
                 'receipts' => $transaction['receipts'],
                 'issues' => $transaction['issues'],
                 'balance' => $runningBalance,
-                'rate' => $this->rate,
-                'value' => $runningBalance * $this->rate,
+                'rate' => $transaction['issues'] > 0 ? $this->rate : 0,
+                'value' => $value,
                 'is_opening_balance' => false,
             ]);
         }
 
         // Calculate final balance and amounts
         $this->finalBalance = $runningBalance;
-        $this->totalAmountBeforeTax = $this->finalBalance * $this->rate;
+        
+        // Total amount is sum of all delivery values (issues × rate)
+        $this->totalAmountBeforeTax = $this->totalIssues * $this->rate;
         $this->vatAmount = $this->totalAmountBeforeTax * 0.15; // 15% VAT
         $this->totalAmountAfterTax = $this->totalAmountBeforeTax + $this->vatAmount;
 

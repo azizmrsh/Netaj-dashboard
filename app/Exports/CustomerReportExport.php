@@ -65,14 +65,14 @@ class CustomerReportExport implements FromCollection, WithHeadings, WithMapping,
         // Check if this is a summary row
         if (isset($row['is_summary']) && $row['is_summary']) {
             return [
-                '', // Date
-                '', // Document No
+                '*', // Date
+                '*', // Document No
                 $row['label'] ?? '', // Product Name (used for summary labels)
-                isset($row['receipts']) && is_numeric($row['receipts']) && $row['receipts'] > 0 ? number_format((float)$row['receipts'], 2) : '', // Receipts
-                isset($row['issues']) && is_numeric($row['issues']) && $row['issues'] > 0 ? number_format((float)$row['issues'], 2) : '', // Issues
-                isset($row['balance']) && is_numeric($row['balance']) && $row['balance'] > 0 ? number_format((float)$row['balance'], 2) : '', // Balance
-                '', // Rate
-                isset($row['value']) && is_numeric($row['value']) && $row['value'] > 0 ? number_format((float)$row['value'], 2) : '', // Value
+                isset($row['receipts']) && is_numeric($row['receipts']) && $row['receipts'] != 0 ? number_format((float)$row['receipts'], 2) : '*', // Receipts
+                isset($row['issues']) && is_numeric($row['issues']) && $row['issues'] != 0 ? number_format((float)$row['issues'], 2) : '*', // Issues
+                isset($row['balance']) && is_numeric($row['balance']) && $row['balance'] != 0 ? number_format((float)$row['balance'], 2) : '*', // Balance
+                '*', // Rate
+                isset($row['value']) && is_numeric($row['value']) && $row['value'] != 0 ? number_format((float)$row['value'], 2) : '*', // Value
             ];
         }
 
