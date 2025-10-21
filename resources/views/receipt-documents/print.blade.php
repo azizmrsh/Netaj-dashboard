@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>سند تسليم - {{ $deliveryDocument->purchase_order_no ?? 'غير محدد' }}</title>
+<title>سند استلام - {{ $receiptDocument->document_number ?? 'غير محدد' }}</title>
 <link href="https://fonts.googleapis.com/css2?family=Segoe+UI:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
@@ -388,10 +388,10 @@ input[type="text"], input[type="date"], input[type="number"] {
 .compact-table { margin-bottom: 4px; }
 .compact-section { margin-top: 3px; margin-bottom: 3px; }
 
-.client-table th:nth-child(1) { width: 15%; }
-.client-table th:nth-child(2) { width: 35%; }
-.client-table th:nth-child(3) { width: 20%; }
-.client-table th:nth-child(4) { width: 30%; }
+.supplier-table th:nth-child(1) { width: 15%; }
+.supplier-table th:nth-child(2) { width: 30%; }
+.supplier-table th:nth-child(3) { width: 30%; }
+.supplier-table th:nth-child(4) { width: 25%; }
 
 .transporter-table th:nth-child(1) { width: 12%; }
 .transporter-table th:nth-child(2) { width: 12%; }
@@ -404,8 +404,8 @@ input[type="text"], input[type="date"], input[type="number"] {
 .materials-table th:nth-child(2) { width: 10%; }
 .materials-table th:nth-child(3) { width: 15%; }
 .materials-table th:nth-child(4) { width: 15%; }
-.materials-table th:nth-child(5) { width: 30%; }
-.materials-table th:nth-child(6) { width: 13%; }
+.materials-table th:nth-child(5) { width: 33%; }
+.materials-table th:nth-child(6) { width: 10%; }
 .materials-table th:nth-child(7) { width: 5%; }
 
 .signature-table th:nth-child(1) { width: 25%; }
@@ -465,8 +465,8 @@ input[type="text"], input[type="date"], input[type="number"] {
 <img src="{{ asset('images/logo.svg') }}" alt="Company Logo" style="width: 100%; height: 100%; object-fit: contain;">
 </div>
 <h2>Netaj Almotatwrah Commercial Company</h2>
-<h2>Delivery Document</h2>
-<h2>سند تسليم</h2>
+<h2>Receipt Document</h2>
+<h2>سند استلام</h2>
 </div>
 
 <div class="header-right">
@@ -489,13 +489,13 @@ VAT Number: 3001234567890
 <div class="date-line">
 <div class="date-item arabic-date">
 <span class="arabic">التاريخ&nbsp;:</span>
-<input type="text" class="date-input" value="{{ \Carbon\Carbon::parse($deliveryDocument->date_and_time)->format('Y/m/d') }}" readonly>
+<input type="text" class="date-input" value="{{ \Carbon\Carbon::parse($receiptDocument->date_and_time)->format('Y/m/d') }}" readonly>
 </div>
 <div class="date-item center-item">
-<span style="font-weight: 600; font-size: 13px;">{{ $deliveryDocument->document_number ?? 'DEL-' . $deliveryDocument->id }}</span>
+<span style="font-weight: 600; font-size: 13px;">{{ $receiptDocument->document_number ?? 'REC-' . $receiptDocument->id }}</span>
 </div>
 <div class="date-item english-date">
-<input type="text" class="date-input" value="{{ \Carbon\Carbon::parse($deliveryDocument->date_and_time)->format('Y/m/d') }}" readonly>
+<input type="text" class="date-input" value="{{ \Carbon\Carbon::parse($receiptDocument->date_and_time)->format('Y/m/d') }}" readonly>
 <span class="english">:Date&nbsp;&nbsp;</span>
 </div>
 </div>
@@ -503,51 +503,51 @@ VAT Number: 3001234567890
 <!-- Intro Text -->
 <div class="intro-text">
 <div class="bilingual">
-<div class="arabic">تم تسليم المواد للعميل حسب المعلومات التالية:</div>
-<div class="english">The following materials are listed in the table below:</div>
+<div class="arabic">تم استلام المواد من المورد حسب المعلومات التالية:</div>
+<div class="english">The following materials were received from the supplier as detailed below:</div>
 </div>
 </div>
 
-<!-- Client Information -->
+<!-- Supplier Information -->
 <div class="section-title compact-section">
 <div class="bilingual">
-<div class="arabic">معلومات العميل</div>
-<div class="english">Client Information</div>
+<div class="arabic">معلومات المورد</div>
+<div class="english">Supplier Information</div>
 </div>
 </div>
 <div class="table-container compact-table">
-<table class="client-table">
+<table class="supplier-table">
 <tr>
 <th>
 <div class="bilingual">
-<div class="arabic">رقم الجوال</div>
-<div class="english">Mobile No</div>
+<div class="arabic">رقم الهاتف</div>
+<div class="english">Phone No</div>
 </div>
 </th>
 <th>
 <div class="bilingual">
-<div class="arabic">إسم المشروع و موقعه</div>
-<div class="english">Project name and location</div>
+<div class="arabic">مصدر المواد</div>
+<div class="english">Material Source</div>
 </div>
 </th>
 <th>
 <div class="bilingual">
-<div class="arabic">أمر الشراء</div>
-<div class="english">Purchase order No</div>
+<div class="arabic">رقم الفاتورة</div>
+<div class="english">Invoice No</div>
 </div>
 </th>
 <th>
 <div class="bilingual">
-<div class="arabic">اسم العميل</div>
-<div class="english">Client Name</div>
+<div class="arabic">اسم المورد</div>
+<div class="english">Supplier Name</div>
 </div>
 </th>
 </tr>
 <tr>
-<td>{{ $deliveryDocument->customer->phone ?? '' }}</td>
-<td>{{ $deliveryDocument->project_name_and_location ?? '' }}</td>
-<td>{{ $deliveryDocument->purchase_order_no ?? '' }}</td>
-<td>{{ $deliveryDocument->customer->name ?? '' }}</td>
+<td>{{ $receiptDocument->supplier->phone ?? '' }}</td>
+<td>{{ $receiptDocument->material_source ?? '' }}</td>
+<td>{{ $receiptDocument->purchase_invoice_no ?? '' }}</td>
+<td>{{ $receiptDocument->supplier->name ?? '' }}</td>
 </tr>
 </table>
 </div>
@@ -600,12 +600,12 @@ VAT Number: 3001234567890
 </th>
 </tr>
 <tr>
-<td>{{ $deliveryDocument->transporter->phone ?? '' }}</td>
-<td>{{ $deliveryDocument->transporter->id_number ?? '' }}</td>
-<td>{{ $deliveryDocument->transporter->driver_name ?? '' }}</td>
-<td>{{ $deliveryDocument->transporter->car_no ?? '' }}</td>
-<td>{{ $deliveryDocument->transporter->document_no ?? '' }}</td>
-<td>{{ $deliveryDocument->transporter->name ?? '' }}</td>
+<td>{{ $receiptDocument->transporter->phone ?? '' }}</td>
+<td>{{ $receiptDocument->transporter->id_number ?? '' }}</td>
+<td>{{ $receiptDocument->transporter->driver_name ?? '' }}</td>
+<td>{{ $receiptDocument->transporter->car_no ?? '' }}</td>
+<td>{{ $receiptDocument->transporter->document_no ?? '' }}</td>
+<td>{{ $receiptDocument->transporter->name ?? '' }}</td>
 </tr>
 </table>
 </div>
@@ -635,7 +635,7 @@ VAT Number: 3001234567890
 </th>
 <th>
 <div class="bilingual">
-<div class="arabic">نوع التعديل</div>
+<div class="arabic">نوع المحسن</div>
 <div class="english">Modification Type</div>
 </div>
 </th>
@@ -666,18 +666,7 @@ VAT Number: 3001234567890
 </tr>
 </thead>
 <tbody>
-@php
-    $subtotal = 0;
-    $totalTax = 0;
-@endphp
-@foreach($deliveryDocument->deliveryDocumentProducts as $index => $item)
-    @php
-        $itemTotal = $item->quantity * ($item->unit_price ?? 0);
-        $itemTax = $itemTotal * (($item->tax_rate ?? 0) / 100);
-        $itemTotalWithTax = $itemTotal + $itemTax;
-        $subtotal += $itemTotal;
-        $totalTax += $itemTax;
-    @endphp
+@foreach($receiptDocument->receiptDocumentProducts as $index => $item)
     <tr>
         <td>{{ number_format($item->quantity, 3) }}</td>
         <td>{{ $item->product->unit ?? '' }}</td>
@@ -688,7 +677,7 @@ VAT Number: 3001234567890
         <td>{{ $index + 1 }}</td>
     </tr>
 @endforeach
-@for($i = count($deliveryDocument->deliveryDocumentProducts); $i < 5; $i++)
+@for($i = count($receiptDocument->receiptDocumentProducts); $i < 5; $i++)
     <tr>
         <td></td>
         <td></td>
@@ -721,8 +710,8 @@ VAT Number: 3001234567890
 </th>
 <th>
 <div class="bilingual">
-<div class="arabic">اسم وتوقيع مندوب المبيعات</div>
-<div class="english">Sales Executive Name & Signature</div>
+<div class="arabic">اسم وتوقيع مسؤول المشتريات</div>
+<div class="english">Purchasing Officer Name & Signature</div>
 </div>
 </th>
 <th>
@@ -733,10 +722,10 @@ VAT Number: 3001234567890
 </th>
 </tr>
 <tr>
-<td class="name-field">{{ $deliveryDocument->accountant_name ?? '' }}</td>
-<td class="name-field">{{ $deliveryDocument->warehouse_officer_name ?? '' }}</td>
-<td class="name-field">{{ $deliveryDocument->purchasing_officer_name ?? '' }}</td>
-<td class="name-field">{{ $deliveryDocument->recipient_name ?? '' }}</td>
+<td class="name-field">{{ $receiptDocument->accountant_name ?? '' }}</td>
+<td class="name-field">{{ $receiptDocument->warehouse_officer_name ?? '' }}</td>
+<td class="name-field">{{ $receiptDocument->purchasing_officer_name ?? '' }}</td>
+<td class="name-field">{{ $receiptDocument->recipient_name ?? '' }}</td>
 </tr>
 <tr>
 <td></td>
@@ -750,8 +739,8 @@ VAT Number: 3001234567890
 <!-- Footer -->
 <div class="footer">
 <div class="bilingual">
-<div class="arabic">سند تسليم</div>
-<div class="english">Delivery Document</div>
+<div class="arabic">سند استلام</div>
+<div class="english">Receipt Document</div>
 </div>
 </div>
 </div>

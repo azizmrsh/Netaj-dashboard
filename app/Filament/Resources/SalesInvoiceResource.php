@@ -532,6 +532,12 @@ class SalesInvoiceResource extends Resource
                     ]),
             ])
             ->actions([
+                Tables\Actions\Action::make('print')
+                    ->label('Print')
+                    ->icon('heroicon-o-printer')
+                    ->color('success')
+                    ->url(fn (SalesInvoice $record): string => route('sales-invoices.print', $record))
+                    ->openUrlInNewTab(),
                 EditAction::make(),
                 ViewAction::make(),
                 DeleteAction::make(),
