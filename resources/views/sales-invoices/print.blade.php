@@ -3,86 +3,35 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>فاتورة مبيعات - {{ $salesInvoice->invoice_no ?? 'غير محدد' }}</title>
-<link href="https://fonts.googleapis.com/css2?family=Segoe+UI:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<title>فاتورة مبيعات - {{ $salesInvoice->customer_name ?? 'غير محدد' }} - {{ \Carbon\Carbon::parse($salesInvoice->invoice_date)->format('Y-m-d') }}</title>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700&family=Segoe+UI:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
-/* تحسينات الطباعة */
-@media print {
-    @page {
-        size: A4;
-        margin: 0;
-    }
-    body {
-        margin: 0;
-        padding: 0;
-        direction: rtl;
-        -webkit-print-color-adjust: exact;
-        print-color-adjust: exact;
-    }
-    .container {
-        width: 210mm;
-        min-height: 297mm;
-        margin: 0 auto;
-        padding: 10mm;
-        box-sizing: border-box;
-        border: 1px solid #ccc;
-        position: relative;
-        page-break-inside: avoid;
-    }
-    .print-button {
-        display: none;
-    }
-    table {
-        page-break-inside: auto;
-    }
-    tr {
-        page-break-inside: avoid;
-        page-break-after: auto;
-    }
-}
-
-@media screen {
-    body {
-        margin: 0;
-        padding: 20px;
-        background-color: #f0f0f0;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        min-height: 100vh;
-    }
-    .container {
-        width: 210mm;
-        min-height: 297mm;
-        background-color: white;
-        box-shadow: 0 0 20px rgba(0,0,0,0.1);
-        padding: 10mm;
-        box-sizing: border-box;
-        position: relative;
-    }
-}
-
-* {
-    box-sizing: border-box;
-}
-
+* { box-sizing: border-box; margin: 0; padding: 0; }
 body {
-    font-family: 'Segoe UI', 'Cairo', Arial, sans-serif;
-    margin: 0;
-    background-color: #ffffff;
-    color: #333;
-    font-size: 13px;
-    line-height: 1.3;
+    font-family: 'Cairo', 'Segoe UI', Arial, sans-serif;
+    font-size: 11px;
+    color: #000;
+    background: #fff;
     direction: rtl;
+    line-height: 1.3;
 }
-
 .container {
-    max-width: 100%;
+    width: 210mm;
+    min-height: 297mm;
+    padding: 10mm;
     margin: 0 auto;
-    background-color: white;
-    display: flex;
-    flex-direction: column;
+    position: relative;
+    background: #fff;
+}
+@media print {
+    @page { size: A4; margin: 0; }
+    body { margin: 0; background: #fff; }
+    .container { padding: 10mm; }
+    .no-print { display: none !important; }
+}
+@media screen {
+    body { background: #f0f0f0; padding: 20px; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
+    .container { box-shadow: 0 0 15px rgba(0,0,0,0.1); }
 }
 
 .header {
@@ -141,293 +90,6 @@ body {
     direction: ltr;
 }
 
-.date-line {
-    display: flex;
-    justify-content: space-between;
-    margin: 4px 0;
-    font-size: 12px;
-    font-weight: 500;
-    padding: 4px;
-    border: 1px solid #ddd;
-    border-radius: 3px;
-}
-
-.date-item {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-}
-
-.date-item.center-item {
-    flex: 1;
-    justify-content: center;
-    font-weight: 600;
-}
-
-.date-input {
-    width: 120px;
-    padding: 3px 5px;
-    border: 1px solid #ccc;
-    border-radius: 3px;
-    font-family: 'Segoe UI', 'Cairo', Arial, sans-serif;
-    font-size: 12px;
-    text-align: center;
-    background-color: #f9f9f9;
-}
-
-.intro-text {
-    text-align: center;
-    margin: 4px 0;
-    font-size: 13px;
-    line-height: 1.3;
-    direction: rtl;
-    padding: 4px;
-}
-
-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-bottom: 6px;
-    font-size: 11px;
-    direction: rtl;
-    table-layout: fixed;
-}
-
-th, td {
-    border: 1px solid #333;
-    padding: 4px 3px;
-    text-align: center;
-    vertical-align: middle;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-}
-
-th {
-    color: #000;
-    font-weight: 600;
-    font-size: 10px;
-    background-color: #f5f5f5;
-}
-
-tbody tr:nth-child(odd) {
-    background-color: #f8f8f8;
-}
-
-tbody tr:nth-child(even) {
-    background-color: #ffffff;
-}
-
-.section-title {
-    font-weight: 600;
-    margin-top: 6px;
-    margin-bottom: 3px;
-    text-align: center;
-    font-size: 13px;
-    padding: 4px;
-}
-
-.signature-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 8px;
-    margin-bottom: 8px;
-    font-size: 11px;
-    direction: rtl;
-}
-
-.signature-table th {
-    background-color: #f5f5f5;
-    font-weight: 600;
-    padding: 4px 3px;
-    font-size: 10px;
-}
-
-.signature-table td {
-    height: 35px;
-    padding: 4px 3px;
-    vertical-align: bottom;
-}
-
-.signature-table .name-field {
-    height: 20px;
-    padding: 3px;
-    vertical-align: middle;
-}
-
-.footer {
-    margin-top: auto;
-    text-align: center;
-    font-size: 13px;
-    padding: 6px;
-    border-top: 2px solid #d4af37;
-    font-weight: 600;
-}
-
-.bilingual {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    width: 100%;
-}
-
-.bilingual .arabic {
-    direction: rtl;
-    text-align: right;
-    flex: 1;
-    padding-right: 1px;
-    font-size: inherit;
-    font-family: 'Segoe UI', 'Cairo', Arial, sans-serif;
-}
-
-.bilingual .english {
-    direction: ltr;
-    text-align: left;
-    flex: 1;
-    padding-left: 1px;
-    font-size: inherit;
-    font-family: 'Segoe UI', 'Cairo', Arial, sans-serif;
-}
-
-th .bilingual {
-    flex-direction: column;
-    gap: 0px;
-}
-
-th .bilingual .arabic {
-    font-weight: 600;
-    font-size: 10px;
-}
-
-th .bilingual .english {
-    font-weight: 500;
-    font-size: 9px;
-}
-
-.company-info {
-    margin-bottom: 2px;
-}
-
-.company-info strong {
-    font-weight: 600;
-    font-size: 14px;
-    display: block;
-    margin-bottom: 4px;
-    font-family: 'Segoe UI', 'Cairo', Arial, sans-serif;
-}
-
-.company-info .info-details {
-    font-size: 11px;
-    line-height: 1.4;
-    font-family: 'Segoe UI', 'Cairo', Arial, sans-serif;
-}
-
-.print-button {
-    position: fixed;
-    top: 20px;
-    left: 20px;
-    padding: 10px 20px;
-    background-color: #d4af37;
-    color: white;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 16px;
-    z-index: 1000;
-}
-
-.print-button:hover {
-    background-color: #b8942a;
-}
-
-.table-container {
-    width: 100%;
-    overflow: hidden;
-    margin-bottom: 5px;
-}
-
-input[type="text"], input[type="date"], input[type="number"] {
-    font-size: 11px;
-    padding: 3px;
-    width: 100%;
-    border: none;
-    background: transparent;
-    text-align: center;
-    outline: none;
-}
-
-@media print {
-    .header { page-break-after: avoid; }
-    .section-title { page-break-after: avoid; }
-    .signature-table { page-break-before: avoid; }
-    input { border: none !important; background: transparent !important; }
-    input[type="text"], input[type="date"], input[type="number"] { border: none; box-shadow: none; }
-}
-
-@media screen {
-    input[type="text"], input[type="date"], input[type="number"] {
-        border: 1px solid #ddd;
-        background-color: #f9f9f9;
-    }
-}
-
-.compact-row { margin-bottom: 3px; }
-.compact-table { margin-bottom: 4px; }
-.compact-section { margin-top: 3px; margin-bottom: 3px; }
-
-.client-table th:nth-child(1) { width: 20%; }
-.client-table th:nth-child(2) { width: 30%; }
-.client-table th:nth-child(3) { width: 25%; }
-.client-table th:nth-child(4) { width: 25%; }
-
-.invoice-info-table th:nth-child(1) { width: 25%; }
-.invoice-info-table th:nth-child(2) { width: 25%; }
-.invoice-info-table th:nth-child(3) { width: 25%; }
-.invoice-info-table th:nth-child(4) { width: 25%; }
-
-.materials-table th:nth-child(1) { width: 8%; }
-.materials-table th:nth-child(2) { width: 35%; }
-.materials-table th:nth-child(3) { width: 8%; }
-.materials-table th:nth-child(4) { width: 12%; }
-.materials-table th:nth-child(5) { width: 12%; }
-.materials-table th:nth-child(6) { width: 13%; }
-.materials-table th:nth-child(7) { width: 12%; }
-
-.totals-table {
-    width: 50%;
-    margin-left: auto;
-    margin-right: 0;
-    font-size: 12px;
-}
-
-.totals-table td {
-    padding: 5px 8px;
-    font-weight: 500;
-}
-
-.totals-table .label-cell {
-    text-align: right;
-    background-color: #f5f5f5;
-    font-weight: 600;
-}
-
-.totals-table .value-cell {
-    text-align: center;
-    background-color: #fff;
-}
-
-.totals-table .total-row {
-    background-color: #d4af37 !important;
-    color: #000;
-    font-weight: 700;
-    font-size: 13px;
-}
-
-.signature-table th:nth-child(1) { width: 25%; }
-.signature-table th:nth-child(2) { width: 25%; }
-.signature-table th:nth-child(3) { width: 25%; }
-.signature-table th:nth-child(4) { width: 25%; }
-
 .header-content {
     display: flex;
     flex-direction: column;
@@ -453,10 +115,123 @@ input[type="text"], input[type="date"], input[type="number"] {
     justify-content: space-between;
     height: 100%;
 }
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 8px;
+    font-size: 10px;
+}
+th, td {
+    border: 1px solid #d4af37;
+    padding: 5px 3px;
+    text-align: center;
+    vertical-align: middle;
+    font-weight: normal;
+}
+th {
+    background-color: #fff;
+    font-weight: 600;
+    font-size: 9px;
+}
+.bilingual {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+}
+.bilingual .ar { direction: rtl; font-weight: 600; font-size: 9px; }
+.bilingual .en { direction: ltr; font-weight: 500; font-size: 8px; color: #333; }
+
+/* Buyer Info Table - 6 columns in row 1 */
+.client-table-row1 th:nth-child(1) { width: 15%; }
+.client-table-row1 th:nth-child(2) { width: 15%; }
+.client-table-row1 th:nth-child(3) { width: 40%; }
+.client-table-row1 th:nth-child(4) { width: 15%; }
+
+/* 7 columns in row 2 */
+.client-table th:nth-child(1) { width: 12%; }
+.client-table th:nth-child(2) { width: 12%; }
+.client-table th:nth-child(3) { width: 14%; }
+.client-table th:nth-child(4) { width: 14%; }
+.client-table th:nth-child(5) { width: 12%; }
+.client-table th:nth-child(6) { width: 20%; }
+.client-table th:nth-child(7) { width: 12%; }
+
+/* Invoice Details - 7 columns */
+.invoice-details-table th { width: 14.28%; }
+
+/* Items Table */
+.items-table th:nth-child(1) { width: 6%; }
+.items-table th:nth-child(2) { width: 28%; }
+.items-table th:nth-child(3) { width: 8%; }
+.items-table th:nth-child(4) { width: 10%; }
+.items-table th:nth-child(5) { width: 12%; }
+.items-table th:nth-child(6) { width: 8%; }
+.items-table th:nth-child(7) { width: 10%; }
+.items-table th:nth-child(8) { width: 18%; }
+
+.items-table td:nth-child(2) {
+    text-align: right;
+    padding-right: 5px;
+}
+
+/* Totals Table */
+.totals-table {
+    width: 100%;
+}
+.totals-table td {
+    padding: 6px 8px;
+}
+.totals-table .label {
+    background: #fff;
+    text-align: right;
+    font-weight: 600;
+    font-size: 10px;
+}
+.totals-table .value {
+    text-align: center;
+    font-weight: 600;
+}
+.totals-table .total {
+    background: #d4af37 !important;
+    color: #000;
+    font-weight: 700;
+    font-size: 11px;
+}
+
+/* Signature */
+.signature-table {
+    margin-top: 15px;
+    width: 100%;
+}
+.signature-table td {
+    height: 50px;
+    vertical-align: bottom;
+    text-align: center;
+    font-weight: 600;
+    border: 1px solid #d4af37;
+}
+
+.no-print {
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    padding: 10px 20px;
+    background: #d4af37;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+    z-index: 1000;
+}
+.no-print:hover {
+    background: #b8942a;
+}
 </style>
 </head>
 <body>
-<button class="print-button" onclick="window.print()">طباعة PDF</button>
+<button class="no-print" onclick="window.print()">طباعة PDF</button>
 
 <div class="container">
 <!-- Header -->
@@ -465,12 +240,13 @@ input[type="text"], input[type="date"], input[type="number"] {
 <div class="header-content">
 <div class="company-title">شركة نتاج المتطورة التجارية</div>
 <div class="company-details">
-رقم السجل التجاري: ١٢٣٤٥٦٧٨٩٠<br>
-رقم ضريبة القيمة المضافة: ٣٠٠١٢٣٤٥٦٧٨٩٠<br>
-البريد الإلكتروني: info@netaj.com<br>
-الرمز البريدي: ١١٥٦٤<br>
-العنوان: ص.ب: ١٢٣٤٥ الرياض<br>
-المنطقة - الدولة: الرياض - المملكة العربية السعودية
+رقم المبنى - الشارع: ٣٠٣٠ - شارع قيصر الكاتب<br>
+الحي - المدينة: ٦٢٠٨ مداين الفهد - جدة<br>
+الولاية - البلد: مكة المكرمة - المملكة العربية السعودية<br>
+الرمز البريدي: ٢٢٣٤٧<br>
+البريد الإلكتروني: info@advanced-netaj.com<br>
+رقم السجل التجاري: ٤٠٣٠٥٧٩٠٩٠<br>
+رقم ضريبة القيمة المضافة: ٣١٢٥٤٤٥٢٩٠٠٠٠٣
 </div>
 </div>
 </div>
@@ -488,192 +264,89 @@ input[type="text"], input[type="date"], input[type="number"] {
 <div class="header-content">
 <div class="company-title">Netaj Almotatwrah Commercial Company</div>
 <div class="company-details">
-P.O. Box: 12345 Riyadh 11564<br>
-Tel: 011-1234567<br>
-State - Country: Riyadh - Kingdom of Saudi Arabia<br>
-Postal code: 11564<br>
-E-mail: info@netaj.com<br>
-Commercial Registration Number: 1234567890<br>
-VAT Number: 3001234567890
+Building No. - Street: 3030 - Kaiser Al Kateb Street<br>
+District - City: 6208 Madain Al Fahd - Jeddah<br>
+State - Country: Makka - Kingdom of Saudi Arabia<br>
+Postal code: 22347<br>
+E-mail: info@advanced-netaj.com<br>
+Commercial Registration Number: 4030579090<br>
+VAT Number: 3125445290003
 </div>
 </div>
 </div>
 </div>
 
-<!-- Date Line -->
-<div class="date-line">
-<div class="date-item arabic-date">
-<span class="arabic">التاريخ&nbsp;:</span>
-<input type="text" class="date-input" value="{{ \Carbon\Carbon::parse($salesInvoice->invoice_date)->format('Y/m/d') }}" readonly>
-</div>
-<div class="date-item center-item">
-<span style="font-weight: 600; font-size: 13px;">{{ $salesInvoice->invoice_no ?? 'INV-' . $salesInvoice->id }}</span>
-</div>
-<div class="date-item english-date">
-<input type="text" class="date-input" value="{{ \Carbon\Carbon::parse($salesInvoice->invoice_date)->format('Y/m/d') }}" readonly>
-<span class="english">:Date&nbsp;&nbsp;</span>
-</div>
-</div>
-
-<!-- Intro Text -->
-<div class="intro-text">
-<div class="bilingual">
-<div class="arabic">تم بيع المواد للعميل حسب المعلومات التالية:</div>
-<div class="english">The following materials are sold to the client as detailed below:</div>
-</div>
-</div>
-
-<!-- Client Information -->
-<div class="section-title compact-section">
-<div class="bilingual">
-<div class="arabic">معلومات العميل</div>
-<div class="english">Client Information</div>
-</div>
-</div>
-<div class="table-container compact-table">
-<table class="client-table">
+<!-- Buyer Info Table -->
+<table class="client-table-row1">
 <tr>
-<th>
-<div class="bilingual">
-<div class="arabic">رقم الجوال</div>
-<div class="english">Mobile No</div>
-</div>
-</th>
-<th>
-<div class="bilingual">
-<div class="arabic">الرقم الضريبي</div>
-<div class="english">Tax Number</div>
-</div>
-</th>
-<th>
-<div class="bilingual">
-<div class="arabic">العنوان</div>
-<div class="english">Address</div>
-</div>
-</th>
-<th>
-<div class="bilingual">
-<div class="arabic">اسم العميل</div>
-<div class="english">Client Name</div>
-</div>
-</th>
+<th><div class="bilingual"><div class="ar">رقم ضريبة القيمة المضافة</div><div class="en">VAT Number</div></div></th>
+<th><div class="bilingual"><div class="ar">رقم السجل التجاري</div><div class="en">Commercial Registration No</div></div></th>
+<th><div class="bilingual"><div class="ar">اسم المشتري</div><div class="en">Buyer Name</div></div></th>
+<th><div class="bilingual"><div class="ar">رمز العميل</div><div class="en">Customer Code</div></div></th>
 </tr>
 <tr>
-<td>{{ $salesInvoice->customer_phone ?? '' }}</td>
 <td>{{ $salesInvoice->customer_tax_number ?? '' }}</td>
-<td>{{ $salesInvoice->customer_address ?? '' }}</td>
+<td></td>
 <td>{{ $salesInvoice->customer_name ?? '' }}</td>
+<td>{{ $salesInvoice->deliveryDocument->customer->id ?? '' }}</td>
 </tr>
 </table>
-</div>
 
-<!-- Invoice Information -->
-<div class="section-title compact-section">
-<div class="bilingual">
-<div class="arabic">معلومات الفاتورة</div>
-<div class="english">Invoice Information</div>
-</div>
-</div>
-<div class="table-container compact-table">
-<table class="invoice-info-table">
+<table class="client-table">
 <tr>
-<th>
-<div class="bilingual">
-<div class="arabic">طريقة الدفع</div>
-<div class="english">Payment Method</div>
-</div>
-</th>
-<th>
-<div class="bilingual">
-<div class="arabic">الحالة</div>
-<div class="english">Status</div>
-</div>
-</th>
-<th>
-<div class="bilingual">
-<div class="arabic">تاريخ الاستحقاق</div>
-<div class="english">Due Date</div>
-</div>
-</th>
-<th>
-<div class="bilingual">
-<div class="arabic">رقم سند التسليم</div>
-<div class="english">Delivery Document No</div>
-</div>
-</th>
+<th><div class="bilingual"><div class="ar">الرمز البريدي</div><div class="en">Postal Code</div></div></th>
+<th><div class="bilingual"><div class="ar">الدولة</div><div class="en">Country</div></div></th>
+<th><div class="bilingual"><div class="ar">المدينة</div><div class="en">City</div></div></th>
+<th><div class="bilingual"><div class="ar">الحي</div><div class="en">District</div></div></th>
+<th><div class="bilingual"><div class="ar">الرقم الفرعي</div><div class="en">Secondary No</div></div></th>
+<th><div class="bilingual"><div class="ar">الشارع</div><div class="en">Street</div></div></th>
+<th><div class="bilingual"><div class="ar">رقم المبنى</div><div class="en">Building No</div></div></th>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td>{{ $salesInvoice->customer_address ?? '' }}</td>
+<td></td>
+</tr>
+</table>
+
+<!-- Invoice Details -->
+<table class="invoice-details-table">
+<tr>
+<th><div class="bilingual"><div class="ar">طريقة/شروط الدفع</div><div class="en">Mode/Terms of Payment</div></div></th>
+<th><div class="bilingual"><div class="ar">مكان التوريد</div><div class="en">Place of Supply</div></div></th>
+<th><div class="bilingual"><div class="ar">تاريخ التسليم</div><div class="en">Delivery Date</div></div></th>
+<th><div class="bilingual"><div class="ar">رقم التسليم</div><div class="en">Delivery No</div></div></th>
+<th><div class="bilingual"><div class="ar">رقم أمر الشراء</div><div class="en">Buyers Order No.</div></div></th>
+<th><div class="bilingual"><div class="ar">رقم الفاتورة</div><div class="en">Invoice No</div></div></th>
+<th><div class="bilingual"><div class="ar">التاريخ والوقت</div><div class="en">Date and Time</div></div></th>
 </tr>
 <tr>
 <td>{{ $salesInvoice->payment_method ?? '' }}</td>
-<td>
-@php
-$statusLabels = [
-    'draft' => 'مسودة / Draft',
-    'sent' => 'مرسلة / Sent',
-    'paid' => 'مدفوعة / Paid',
-    'cancelled' => 'ملغاة / Cancelled',
-];
-@endphp
-{{ $statusLabels[$salesInvoice->status] ?? $salesInvoice->status }}
-</td>
-<td>{{ $salesInvoice->due_date ? \Carbon\Carbon::parse($salesInvoice->due_date)->format('Y/m/d') : '' }}</td>
+<td></td>
+<td>{{ $salesInvoice->deliveryDocument->date_and_time ? \Carbon\Carbon::parse($salesInvoice->deliveryDocument->date_and_time)->format('Y/m/d') : '' }}</td>
 <td>{{ $salesInvoice->deliveryDocument->document_number ?? 'DEL-' . $salesInvoice->delivery_document_id }}</td>
+<td>{{ $salesInvoice->deliveryDocument->purchase_order_no ?? '' }}</td>
+<td>{{ $salesInvoice->invoice_no ?? 'INV-' . $salesInvoice->id }}</td>
+<td>{{ \Carbon\Carbon::parse($salesInvoice->invoice_date)->format('Y/m/d H:i') }}</td>
 </tr>
 </table>
-</div>
 
-<!-- Materials Table -->
-<div class="section-title compact-section">
-<div class="bilingual">
-<div class="arabic">المواد التالية حسب الجدول أدناه</div>
-<div class="english">The following materials are listed in the table below</div>
-</div>
-</div>
-<div class="table-container compact-table">
-<table class="materials-table">
+<!-- Items Table -->
+<table class="items-table">
 <thead>
 <tr>
-<th>
-<div class="bilingual">
-<div class="arabic">م</div>
-<div class="english">No.</div>
-</div>
-</th>
-<th>
-<div class="bilingual">
-<div class="arabic">الوصف / المنتج</div>
-<div class="english">Description / Product</div>
-</div>
-</th>
-<th>
-<div class="bilingual">
-<div class="arabic">الوحدة</div>
-<div class="english">Unit</div>
-</div>
-</th>
-<th>
-<div class="bilingual">
-<div class="arabic">الكمية</div>
-<div class="english">Quantity</div>
-</div>
-</th>
-<th>
-<div class="bilingual">
-<div class="arabic">سعر الوحدة</div>
-<div class="english">Unit Price</div>
-</div>
-</th>
-<th>
-<div class="bilingual">
-<div class="arabic">المبلغ قبل الضريبة</div>
-<div class="english">Amount Before Tax</div>
-</div>
-</th>
-<th>
-<div class="bilingual">
-<div class="arabic">الضريبة ({{ $salesInvoice->tax_rate ?? 15 }}%)</div>
-<div class="english">Tax ({{ $salesInvoice->tax_rate ?? 15 }}%)</div>
-</div>
-</th>
+<th><div class="bilingual"><div class="ar">الرقم التسلسلي</div><div class="en">Serial No</div></div></th>
+<th><div class="bilingual"><div class="ar">وصف البضائع</div><div class="en">Description of Goods</div></div></th>
+<th><div class="bilingual"><div class="ar">الكمية</div><div class="en">Quantity</div></div></th>
+<th><div class="bilingual"><div class="ar">السعر الوحدة</div><div class="en">Unit price</div></div></th>
+<th><div class="bilingual"><div class="ar">إجمالي المبلغ غير شامل الضريبة</div><div class="en">Subtotal Exclusive of VAT</div></div></th>
+<th><div class="bilingual"><div class="ar">نسبة الضريبة</div><div class="en">VAT Rate</div></div></th>
+<th><div class="bilingual"><div class="ar">مبلغ الضريبة</div><div class="en">VAT Amount</div></div></th>
+<th><div class="bilingual"><div class="ar">إجمالي المبلغ شامل الضريبة</div><div class="en">Subtotal Inclusive of VAT</div></div></th>
 </tr>
 </thead>
 <tbody>
@@ -684,23 +357,26 @@ $statusLabels = [
 @foreach($salesInvoice->deliveryDocumentProducts as $index => $item)
     @php
         $itemTotal = $item->quantity * ($item->unit_price ?? 0);
-        $itemTax = $itemTotal * (($item->tax_rate ?? 0) / 100);
+        $itemTax = $itemTotal * (($item->tax_rate ?? 15) / 100);
+        $itemTotalWithTax = $itemTotal + $itemTax;
         $subtotal += $itemTotal;
         $totalTax += $itemTax;
     @endphp
     <tr>
         <td>{{ $index + 1 }}</td>
-        <td style="text-align: right; padding-right: 8px;">{{ $item->product->name ?? '' }}</td>
-        <td>{{ $item->product->unit ?? '' }}</td>
+        <td style="text-align: right; padding-right: 5px;">{{ $item->product->name ?? '' }}</td>
         <td>{{ number_format($item->quantity, 3) }}</td>
         <td>{{ number_format($item->unit_price ?? 0, 2) }}</td>
         <td>{{ number_format($itemTotal, 2) }}</td>
+        <td>{{ $item->tax_rate ?? 15 }}%</td>
         <td>{{ number_format($itemTax, 2) }}</td>
+        <td>{{ number_format($itemTotalWithTax, 2) }}</td>
     </tr>
 @endforeach
-@for($i = count($salesInvoice->deliveryDocumentProducts); $i < 10; $i++)
+@for($i = count($salesInvoice->deliveryDocumentProducts); $i < 8; $i++)
     <tr>
         <td>{{ $i + 1 }}</td>
+        <td></td>
         <td></td>
         <td></td>
         <td></td>
@@ -711,118 +387,30 @@ $statusLabels = [
 @endfor
 </tbody>
 </table>
-</div>
 
-<!-- Totals Table -->
-<div class="table-container compact-table">
+<!-- Totals -->
 <table class="totals-table">
 <tr>
-<td class="label-cell">
-<div class="bilingual">
-<div class="arabic">المبلغ الإجمالي قبل الضريبة</div>
-<div class="english">Total Amount Before Tax</div>
-</div>
-</td>
-<td class="value-cell">{{ number_format($salesInvoice->subtotal ?? $subtotal, 2) }} ريال</td>
+<td class="label"><div class="bilingual"><div class="ar">إجمالي المبلغ (غير شامل الضريبة)</div><div class="en">Total (Exclusive VAT)</div></div></td>
+<td class="value" colspan="2">{{ number_format($salesInvoice->subtotal ?? $subtotal, 2) }}</td>
 </tr>
 <tr>
-<td class="label-cell">
-<div class="bilingual">
-<div class="arabic">الخصم</div>
-<div class="english">Discount</div>
-</div>
-</td>
-<td class="value-cell">{{ number_format($salesInvoice->discount_amount ?? 0, 2) }} ريال</td>
+<td class="label"><div class="bilingual"><div class="ar">إجمالي ضريبة القيمة المضافة</div><div class="en">VAT Total Amount</div></div></td>
+<td class="value" colspan="2">{{ number_format($salesInvoice->tax_amount ?? $totalTax, 2) }}</td>
 </tr>
 <tr>
-<td class="label-cell">
-<div class="bilingual">
-<div class="arabic">ضريبة القيمة المضافة ({{ $salesInvoice->tax_rate ?? 15 }}%)</div>
-<div class="english">VAT ({{ $salesInvoice->tax_rate ?? 15 }}%)</div>
-</div>
-</td>
-<td class="value-cell">{{ number_format($salesInvoice->tax_amount ?? $totalTax, 2) }} ريال</td>
-</tr>
-<tr class="total-row">
-<td class="label-cell total-row">
-<div class="bilingual">
-<div class="arabic">المبلغ الإجمالي شامل الضريبة</div>
-<div class="english">Total Amount Including Tax</div>
-</div>
-</td>
-<td class="value-cell total-row">{{ number_format($salesInvoice->total_amount ?? ($subtotal + $totalTax - ($salesInvoice->discount_amount ?? 0)), 2) }} ريال</td>
+<td class="label total"><div class="bilingual"><div class="ar">إجمالي المبلغ (شامل الضريبة)</div><div class="en">Invoice Gross (Inclusive VAT)</div></div></td>
+<td class="value total" colspan="2">{{ number_format($salesInvoice->total_amount ?? ($subtotal + $totalTax - ($salesInvoice->discount_amount ?? 0)), 2) }}</td>
 </tr>
 </table>
-</div>
 
-<!-- Notes Section (if exists) -->
-@if($salesInvoice->notes)
-<div class="section-title compact-section">
-<div class="bilingual">
-<div class="arabic">ملاحظات</div>
-<div class="english">Notes</div>
-</div>
-</div>
-<div class="table-container compact-table">
-<table>
-<tr>
-<td style="text-align: right; padding: 8px; min-height: 40px;">{{ $salesInvoice->notes }}</td>
-</tr>
-</table>
-</div>
-@endif
-
-<!-- Signature Table - 4 columns and 3 rows -->
-<div class="table-container compact-table">
+<!-- Signature -->
 <table class="signature-table">
 <tr>
-<th>
-<div class="bilingual">
-<div class="arabic">ختم الشركة</div>
-<div class="english">Company Stamp</div>
-</div>
-</th>
-<th>
-<div class="bilingual">
-<div class="arabic">توقيع المدير المالي</div>
-<div class="english">CFO Signature</div>
-</div>
-</th>
-<th>
-<div class="bilingual">
-<div class="arabic">اسم وتوقيع المحاسب</div>
-<div class="english">Accountant Name & Signature</div>
-</div>
-</th>
-<th>
-<div class="bilingual">
-<div class="arabic">اسم وتوقيع العميل</div>
-<div class="english">Client Name & Signature</div>
-</div>
-</th>
-</tr>
-<tr>
-<td class="name-field"></td>
-<td class="name-field"></td>
-<td class="name-field"></td>
-<td class="name-field">{{ $salesInvoice->customer_name ?? '' }}</td>
-</tr>
-<tr>
-<td></td>
-<td></td>
-<td></td>
-<td></td>
+<td colspan="3" style="text-align: center;"><strong>Customer Seal and Signature</strong><br>ختم وتوقيع العميل</td>
+<td colspan="3" style="text-align: center;"><strong>Netaj Almotatwrah Commercial Co.</strong><br>شركة نتاج المتطورة التجارية<br><strong>Authorised Signatory</strong> المفوض بالتوقيع</td>
 </tr>
 </table>
-</div>
-
-<!-- Footer -->
-<div class="footer">
-<div class="bilingual">
-<div class="arabic">فاتورة مبيعات - فاتورة ضريبية</div>
-<div class="english">Sales Invoice - Tax Invoice</div>
-</div>
-</div>
 </div>
 </body>
 </html>
