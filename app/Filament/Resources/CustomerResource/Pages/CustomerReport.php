@@ -9,6 +9,7 @@ use App\Models\DeliveryDocument;
 use App\Models\ReceiptDocument;
 use App\Models\DeliveryDocumentProduct;
 use App\Models\ReceiptDocumentProduct;
+use App\Models\Product;
 use Filament\Resources\Pages\Page;
 use Filament\Forms;
 use Filament\Forms\Form;
@@ -47,7 +48,8 @@ class CustomerReport extends Page implements Forms\Contracts\HasForms
     public float $totalAmountBeforeTax = 0;
     public float $vatAmount = 0;
     public float $totalAmountAfterTax = 0;
-    public float $rate = 0; // Default rate, will be set by user input
+    public float $unitRate = 115; // Unit price per ton (SAR)
+    public float $taxRate = 15; // Tax rate percentage (%)
 
     public function mount(): void
     {
@@ -75,6 +77,13 @@ class CustomerReport extends Page implements Forms\Contracts\HasForms
                         $this->selectedCustomer = $state ? Customer::find($state) : null;
                     }),
                 
+                Forms\Components\Select::make('product_id')
+                    ->label('Filter by Product - تصفية حسب المنتج (Optional)')
+                    ->options(Product::pluck('name', 'id'))
+                    ->searchable()
+                    ->nullable()
+                    ->helperText('Leave empty to show all products'),
+                
                 Forms\Components\DatePicker::make('date_from')
                     ->label('From Date')
                     ->required()
@@ -93,13 +102,28 @@ class CustomerReport extends Page implements Forms\Contracts\HasForms
                     ->suffix('units')
                     ->helperText('Enter the opening balance for the selected period'),
                 
-                Forms\Components\TextInput::make('tax_rate')
-                    ->label('Tax Rate (معدل الضريبة)')
+                Forms\Components\TextInput::make('unit_rate')
+                    ->label('Unit Rate - سعر الوحدة (SAR/Ton)')
                     ->numeric()
-                    ->default(0)
+                    ->default(115)
+                    ->step(0.01)
+                    ->required()
+                    ->suffix('SAR')
+                    ->helperText('Enter the unit price per ton (e.g., 115 SAR)'),
+                
+                Forms\Components\TextInput::make('tax_rate')
+                    ->label('Tax Rate - معدل الضريبة (%)')
+                    ->numeric()
+                    ->default(15)
                     ->step(0.01)
                     ->suffix('%')
-                    ->helperText('Enter the tax rate as a percentage (e.g., 15 for 15%)'),
+                    ->helperText('Enter the VAT percentage (e.g., 15 for 15%)'),
+                
+                Forms\Components\Toggle::make('separate_products')
+                    ->label('Show products separately - عرض كل منتج في صف منفصل')
+                    ->default(false)
+                    ->inline(false)
+                    ->helperText('When enabled, each product will be shown in a separate row (like Excel format)'),
             ])
             ->statePath('data');
     }
@@ -112,7 +136,8 @@ class CustomerReport extends Page implements Forms\Contracts\HasForms
         $this->dateFrom = $data['date_from'];
         $this->dateTo = $data['date_to'];
         $this->openingBalance = $data['opening_balance'] ?? 0;
-        $this->rate = ($data['tax_rate'] ?? 0) / 100 + 1; // Convert percentage to multiplier
+        $this->unitRate = $data['unit_rate'] ?? 115; // Unit price per ton
+        $this->taxRate = $data['tax_rate'] ?? 15; // Tax rate percentage
         
         if (!$this->selectedCustomer) {
             Notification::make()
@@ -167,8 +192,8 @@ class CustomerReport extends Page implements Forms\Contracts\HasForms
             $this->totalReceipts += $transaction['receipts'];
             $this->totalIssues += $transaction['issues'];
             
-            // Calculate value: only for issues (deliveries), not balance
-            $value = $transaction['issues'] > 0 ? $transaction['issues'] * $this->rate : 0;
+            // Calculate value: only for issues (deliveries), not receipts
+            $value = $transaction['issues'] > 0 ? $transaction['issues'] * $this->unitRate : 0;
             
             $reportData->push([
                 'date' => $transaction['date'],
@@ -177,7 +202,7 @@ class CustomerReport extends Page implements Forms\Contracts\HasForms
                 'receipts' => $transaction['receipts'],
                 'issues' => $transaction['issues'],
                 'balance' => $runningBalance,
-                'rate' => $transaction['issues'] > 0 ? $this->rate : 0,
+                'rate' => $transaction['issues'] > 0 ? $this->unitRate : 0,
                 'value' => $value,
                 'is_opening_balance' => false,
             ]);
@@ -186,9 +211,9 @@ class CustomerReport extends Page implements Forms\Contracts\HasForms
         // Calculate final balance and amounts
         $this->finalBalance = $runningBalance;
         
-        // Total amount is sum of all delivery values (issues × rate)
-        $this->totalAmountBeforeTax = $this->totalIssues * $this->rate;
-        $this->vatAmount = $this->totalAmountBeforeTax * 0.15; // 15% VAT
+        // Total amount is sum of all delivery values (issues × unit rate)
+        $this->totalAmountBeforeTax = $this->totalIssues * $this->unitRate;
+        $this->vatAmount = $this->totalAmountBeforeTax * ($this->taxRate / 100); // Apply tax percentage
         $this->totalAmountAfterTax = $this->totalAmountBeforeTax + $this->vatAmount;
 
         $this->reportData = $reportData;
@@ -214,45 +239,109 @@ class CustomerReport extends Page implements Forms\Contracts\HasForms
     protected function getTransactionsInRange(int $customerId, Carbon $dateFrom, Carbon $dateTo): Collection
     {
         $transactions = collect();
+        $separateProducts = $this->data['separate_products'] ?? false;
+        $productId = $this->data['product_id'] ?? null;
 
         // Get receipt documents in range
-        $receiptDocs = ReceiptDocument::where('id_customer', $customerId)
+        $receiptQuery = ReceiptDocument::where('id_customer', $customerId)
             ->whereBetween('date_and_time', [$dateFrom, $dateTo])
-            ->with(['receiptDocumentProducts.product'])
-            ->get();
+            ->with(['receiptDocumentProducts.product']);
+        
+        if ($productId) {
+            $receiptQuery->whereHas('receiptDocumentProducts', function($q) use ($productId) {
+                $q->where('id_product', $productId);
+            });
+        }
+        
+        $receiptDocs = $receiptQuery->get();
 
         foreach ($receiptDocs as $doc) {
-            $totalQty = $doc->receiptDocumentProducts->sum('quantity');
-            $products = $doc->receiptDocumentProducts->pluck('product.name')->join(', ');
+            $products = $doc->receiptDocumentProducts;
             
-            $transactions->push([
-                'date' => $doc->date_and_time,
-                'document_number' => $doc->document_number ?: 'REC-' . $doc->id,
-                'product_name' => "Receipt: {$products}",
-                'receipts' => $totalQty,
-                'issues' => 0,
-                'sort_date' => $doc->date_and_time,
-            ]);
+            // Filter products if specific product selected
+            if ($productId) {
+                $products = $products->where('id_product', $productId);
+            }
+            
+            if ($separateProducts) {
+                // Show each product in a separate row
+                foreach ($products as $docProduct) {
+                    $transactions->push([
+                        'date' => $doc->date_and_time,
+                        'document_number' => $doc->document_number ?: 'Receipt-' . $doc->id,
+                        'product_name' => $docProduct->product->name,
+                        'receipts' => $docProduct->quantity,
+                        'issues' => 0,
+                        'sort_date' => $doc->date_and_time,
+                    ]);
+                }
+            } else {
+                // Show all products in one row (current behavior)
+                $totalQty = $products->sum('quantity');
+                $productNames = $products->pluck('product.name')->join(', ');
+                
+                if ($totalQty > 0) {
+                    $transactions->push([
+                        'date' => $doc->date_and_time,
+                        'document_number' => $doc->document_number ?: 'Receipt-' . $doc->id,
+                        'product_name' => $productNames,
+                        'receipts' => $totalQty,
+                        'issues' => 0,
+                        'sort_date' => $doc->date_and_time,
+                    ]);
+                }
+            }
         }
 
         // Get delivery documents in range
-        $deliveryDocs = DeliveryDocument::where('id_customer', $customerId)
+        $deliveryQuery = DeliveryDocument::where('id_customer', $customerId)
             ->whereBetween('date_and_time', [$dateFrom, $dateTo])
-            ->with(['deliveryDocumentProducts.product'])
-            ->get();
+            ->with(['deliveryDocumentProducts.product']);
+        
+        if ($productId) {
+            $deliveryQuery->whereHas('deliveryDocumentProducts', function($q) use ($productId) {
+                $q->where('id_product', $productId);
+            });
+        }
+        
+        $deliveryDocs = $deliveryQuery->get();
 
         foreach ($deliveryDocs as $doc) {
-            $totalQty = $doc->deliveryDocumentProducts->sum('quantity');
-            $products = $doc->deliveryDocumentProducts->pluck('product.name')->join(', ');
+            $products = $doc->deliveryDocumentProducts;
             
-            $transactions->push([
-                'date' => $doc->date_and_time,
-                'document_number' => $doc->document_number ?: 'DEL-' . $doc->id,
-                'product_name' => "Delivery: {$products}",
-                'receipts' => 0,
-                'issues' => $totalQty,
-                'sort_date' => $doc->date_and_time,
-            ]);
+            // Filter products if specific product selected
+            if ($productId) {
+                $products = $products->where('id_product', $productId);
+            }
+            
+            if ($separateProducts) {
+                // Show each product in a separate row
+                foreach ($products as $docProduct) {
+                    $transactions->push([
+                        'date' => $doc->date_and_time,
+                        'document_number' => $doc->document_number ?: 'Delivery-' . $doc->id,
+                        'product_name' => $docProduct->product->name,
+                        'receipts' => 0,
+                        'issues' => $docProduct->quantity,
+                        'sort_date' => $doc->date_and_time,
+                    ]);
+                }
+            } else {
+                // Show all products in one row (current behavior)
+                $totalQty = $products->sum('quantity');
+                $productNames = $products->pluck('product.name')->join(', ');
+                
+                if ($totalQty > 0) {
+                    $transactions->push([
+                        'date' => $doc->date_and_time,
+                        'document_number' => $doc->document_number ?: 'Delivery-' . $doc->id,
+                        'product_name' => $productNames,
+                        'receipts' => 0,
+                        'issues' => $totalQty,
+                        'sort_date' => $doc->date_and_time,
+                    ]);
+                }
+            }
         }
 
         return $transactions->sortBy('sort_date')->values();
@@ -279,7 +368,7 @@ class CustomerReport extends Page implements Forms\Contracts\HasForms
         $fileName = 'customer_report_' . $customer->name . '_' . $dateFrom . '_to_' . $dateTo . '.xlsx';
         
         return Excel::download(
-            new CustomerReportExport($customer, $dateFrom, $dateTo, $this->reportData, $summaryData, $this->rate),
+            new CustomerReportExport($customer, $dateFrom, $dateTo, $this->reportData, $summaryData, $this->unitRate),
             $fileName
         );
     }
