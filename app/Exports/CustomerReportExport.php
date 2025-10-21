@@ -106,9 +106,9 @@ class CustomerReportExport implements FromCollection, WithHeadings, WithMapping,
         // Check if this is a summary row
         if (isset($row['is_summary']) && $row['is_summary']) {
             return [
-                '*', // No
-                '*', // Date
-                '*', // Document No
+                '*', // No - النجمة فقط في Summary
+                '*', // Date - النجمة فقط في Summary
+                '*', // Document No - النجمة فقط في Summary
                 $row['receipts_label'] ?? '', // Product Name: "Total Receipts" etc
                 is_numeric($row['receipts'] ?? null) && $row['receipts'] != '*' ? number_format((float)$row['receipts'], 2) : '*',
                 is_numeric($row['issues'] ?? null) && $row['issues'] != '*' ? number_format((float)$row['issues'], 2) : '*',
@@ -126,15 +126,15 @@ class CustomerReportExport implements FromCollection, WithHeadings, WithMapping,
         $isOpeningBalance = isset($row['is_opening_balance']) && $row['is_opening_balance'];
         
         return [
-            $isOpeningBalance ? '*' : $rowNumber,
-            $isOpeningBalance ? '*' : (isset($row['date']) ? Carbon::parse($row['date'])->format('d/m/Y') : ''),
+            $rowNumber, // No - بدون نجمة
+            isset($row['date']) ? Carbon::parse($row['date'])->format('d/m/Y') : '', // Date - بدون نجمة
             $row['document_number'] ?? '',
             $row['product_name'] ?? '',
-            is_numeric($row['receipts'] ?? 0) && ($row['receipts'] ?? 0) > 0 ? number_format((float)$row['receipts'], 2) : ($isOpeningBalance ? '*' : ''),
-            is_numeric($row['issues'] ?? 0) && ($row['issues'] ?? 0) > 0 ? number_format((float)$row['issues'], 2) : ($isOpeningBalance ? '*' : ''),
+            is_numeric($row['receipts'] ?? 0) && ($row['receipts'] ?? 0) > 0 ? number_format((float)$row['receipts'], 2) : '', // بدون نجمة
+            is_numeric($row['issues'] ?? 0) && ($row['issues'] ?? 0) > 0 ? number_format((float)$row['issues'], 2) : '', // بدون نجمة
             is_numeric($row['balance'] ?? 0) ? number_format((float)($row['balance'] ?? 0), 2) : '0.00',
-            is_numeric($row['rate'] ?? 0) && ($row['rate'] ?? 0) > 0 ? number_format((float)$row['rate'], 0) : ($isOpeningBalance ? '*' : ''),
-            is_numeric($row['value'] ?? 0) && ($row['value'] ?? 0) > 0 ? number_format((float)$row['value'], 2) : ($isOpeningBalance ? '*' : ''),
+            is_numeric($row['rate'] ?? 0) && ($row['rate'] ?? 0) > 0 ? number_format((float)$row['rate'], 0) : '', // بدون نجمة
+            is_numeric($row['value'] ?? 0) && ($row['value'] ?? 0) > 0 ? number_format((float)$row['value'], 2) : '', // بدون نجمة
         ];
     }
 

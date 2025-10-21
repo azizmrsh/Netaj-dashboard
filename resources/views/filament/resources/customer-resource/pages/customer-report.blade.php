@@ -94,10 +94,10 @@
                         @forelse($reportData as $index => $row)
                         <tr class="{{ $row['is_opening_balance'] ? 'bg-blue-50 dark:bg-blue-900/20 font-bold' : '' }}">
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">
-                                {{ $row['is_opening_balance'] ? '*' : $index }}
+                                {{ $index }}
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">
-                                {{ $row['is_opening_balance'] ? '*' : \Carbon\Carbon::parse($row['date'])->format('d/m/Y') }}
+                                {{ \Carbon\Carbon::parse($row['date'])->format('d/m/Y') }}
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm font-medium {{ $row['is_opening_balance'] ? 'text-blue-600 dark:text-blue-400' : 'text-gray-900 dark:text-gray-100' }}">
                                 {{ $row['document_number'] }}
@@ -106,19 +106,19 @@
                                 {{ $row['product_name'] }}
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100 text-right">
-                                {{ $row['receipts'] > 0 ? number_format($row['receipts'], 2) : ($row['is_opening_balance'] ? '*' : '') }}
+                                {{ $row['receipts'] > 0 ? number_format($row['receipts'], 2) : '' }}
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100 text-right">
-                                {{ $row['issues'] > 0 ? number_format($row['issues'], 2) : ($row['is_opening_balance'] ? '*' : '') }}
+                                {{ $row['issues'] > 0 ? number_format($row['issues'], 2) : '' }}
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm font-bold text-right {{ $row['balance'] >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400' }}">
                                 {{ number_format($row['balance'], 2) }}
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100 text-right">
-                                {{ $row['rate'] > 0 ? number_format($row['rate'], 2) : ($row['is_opening_balance'] ? '*' : '') }}
+                                {{ $row['rate'] > 0 ? number_format($row['rate'], 2) : '' }}
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100 text-right">
-                                {{ $row['value'] > 0 ? number_format($row['value'], 2) : ($row['is_opening_balance'] ? '*' : '') }}
+                                {{ $row['value'] > 0 ? number_format($row['value'], 2) : '' }}
                             </td>
                         </tr>
                         @empty
