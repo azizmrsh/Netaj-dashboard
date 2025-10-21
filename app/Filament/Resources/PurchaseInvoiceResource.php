@@ -427,6 +427,12 @@ class PurchaseInvoiceResource extends Resource
             ], layout: Tables\Enums\FiltersLayout::AboveContentCollapsible)
             ->filtersFormColumns(2)
             ->actions([
+                Tables\Actions\Action::make('print')
+                    ->label('Print')
+                    ->icon('heroicon-o-printer')
+                    ->color('success')
+                    ->url(fn (PurchaseInvoice $record): string => route('purchase-invoices.print', $record))
+                    ->openUrlInNewTab(),
                 ViewAction::make()
                     ->label('View'),
                 EditAction::make()

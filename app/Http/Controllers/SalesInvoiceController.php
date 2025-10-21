@@ -11,6 +11,7 @@ class SalesInvoiceController extends Controller
     {
         // Load relationships for the sales invoice
         $salesInvoice->load([
+            'deliveryDocument.customer',
             'deliveryDocument',
             'deliveryDocumentProducts.product'
         ]);

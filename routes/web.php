@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\DeliveryDocumentController;
 use App\Http\Controllers\SalesInvoiceController;
 use App\Http\Controllers\ReceiptDocumentController;
+use App\Http\Controllers\PurchaseInvoiceController;
 
 Route::get('/', function () {
     return redirect('/admin/login');
@@ -17,3 +18,6 @@ Route::get('/sales-invoices/{salesInvoice}/print', [SalesInvoiceController::clas
 
 Route::get('/receipt-documents/{receiptDocument}/print', [ReceiptDocumentController::class, 'print'])
     ->name('receipt-documents.print');
+
+Route::get('/purchase-invoices/{purchaseInvoice}/print', [PurchaseInvoiceController::class, 'print'])
+    ->name('purchase-invoices.print');
