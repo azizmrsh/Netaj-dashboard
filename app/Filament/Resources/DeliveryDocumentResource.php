@@ -46,7 +46,8 @@ class DeliveryDocumentResource extends Resource
                             ->schema([
                                 Forms\Components\DateTimePicker::make('date_and_time')
                                     ->required()
-                                    ->label('Date and Time'),
+                                    ->label('Date and Time')
+                                    ->default(now()),
                                 Forms\Components\Select::make('id_customer')
                                     ->relationship('customer', 'name', fn ($query) => $query->forDeliveries())
                                     ->required()
@@ -595,14 +596,14 @@ class DeliveryDocumentResource extends Resource
                     ]),
             ])
             ->actions([
-                Tables\Actions\ViewAction::make(),
-                Tables\Actions\EditAction::make(),
                 Tables\Actions\Action::make('print')
                     ->label('Print')
                     ->icon('heroicon-o-printer')
-                    ->color('info')
+                    ->color('success')
                     ->url(fn (DeliveryDocument $record): string => route('delivery-documents.print', $record))
                     ->openUrlInNewTab(),
+                Tables\Actions\ViewAction::make(),
+                Tables\Actions\EditAction::make(),
                 Tables\Actions\DeleteAction::make(),
             ])
             ->bulkActions([

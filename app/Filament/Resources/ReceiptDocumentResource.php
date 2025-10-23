@@ -45,7 +45,8 @@ class ReceiptDocumentResource extends Resource
                             ->schema([
                                 Forms\Components\DateTimePicker::make('date_and_time')
                                     ->required()
-                                    ->label('Date and Time'),
+                                    ->label('Date and Time')
+                                    ->default(now()),
                                 Forms\Components\Select::make('id_customer')
                                     ->relationship('supplier', 'name', fn ($query) => $query->forReceipts())
                                     ->required()
@@ -440,29 +441,36 @@ class ReceiptDocumentResource extends Resource
                 Tables\Columns\TextColumn::make('date_and_time')
                     ->dateTime()
                     ->sortable()
+                    ->toggleable()
                     ->label('Date & Time'),
                 Tables\Columns\TextColumn::make('supplier.name')
                     ->sortable()
                     ->searchable()
+                    ->toggleable()
                     ->label('Supplier'),
                 Tables\Columns\TextColumn::make('transporter.name')
                     ->sortable()
                     ->searchable()
+                    ->toggleable()
                     ->label('Transporter'),
                 Tables\Columns\TextColumn::make('purchase_invoice_no')
                     ->searchable()
+                    ->toggleable()
                     ->label('Invoice Number'),
                 Tables\Columns\TextColumn::make('material_source')
                     ->searchable()
+                    ->toggleable()
                     ->label('Material Source'),
                 Tables\Columns\TextColumn::make('receipt_document_products_count')
                     ->label('Products Count')
                     ->badge()
                     ->color('success')
+                    ->toggleable()
                     ->getStateUsing(fn ($record) => $record->receiptDocumentProducts()->count()),
                 Tables\Columns\TextColumn::make('total_amount')
                     ->label('Total Amount')
                     ->money('USD')
+                    ->toggleable()
                     ->getStateUsing(function ($record) {
                         return $record->receiptDocumentProducts->sum(function ($product) {
                             return $product->total_with_tax ?? ($product->quantity * $product->unit_price * (1 + ($product->tax_rate / 100)));
@@ -545,7 +553,6 @@ class ReceiptDocumentResource extends Resource
             ->headerActions([
                 FilamentExportHeaderAction::make('export')
                     ->label('Export All')
-                    ->color('success')
                     ->icon('heroicon-o-arrow-down-tray'),
             ])
             ->bulkActions([
@@ -553,7 +560,6 @@ class ReceiptDocumentResource extends Resource
                     Tables\Actions\DeleteBulkAction::make(),
                     FilamentExportBulkAction::make('export')
                         ->label('Export Selected')
-                        ->color('success')
                         ->icon('heroicon-o-arrow-down-tray'),
                 ]),
             ])
