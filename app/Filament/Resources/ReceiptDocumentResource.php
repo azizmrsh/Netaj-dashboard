@@ -453,6 +453,27 @@ class ReceiptDocumentResource extends Resource
                     ->searchable()
                     ->toggleable()
                     ->label('Transporter'),
+                Tables\Columns\TextColumn::make('receiptDocumentProducts')
+                    ->label('Products')
+                    ->formatStateUsing(function ($record) {
+                        return $record->receiptDocumentProducts
+                            ->map(function($item) {
+                                $text = $item->product->name . ' (Qty: ' . $item->quantity;
+                                if ($item->unit_price) {
+                                    $text .= ', Price: $' . number_format($item->unit_price, 2);
+                                }
+                                if ($item->tax_rate) {
+                                    $text .= ', Tax: ' . $item->tax_rate . '%';
+                                }
+                                $text .= ')';
+                                return $text;
+                            })
+                            ->join(', ');
+                    })
+                    ->searchable(false)
+                    ->sortable(false)
+                    ->toggleable()
+                    ->limit(100),
                 Tables\Columns\TextColumn::make('purchase_invoice_no')
                     ->searchable()
                     ->toggleable()

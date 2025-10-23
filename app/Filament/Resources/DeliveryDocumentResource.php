@@ -442,14 +442,17 @@ class DeliveryDocumentResource extends Resource
                 Tables\Columns\TextColumn::make('date_and_time')
                     ->dateTime()
                     ->sortable()
+                    ->toggleable()
                     ->label('Date & Time'),
                 Tables\Columns\TextColumn::make('customer.name')
                     ->sortable()
                     ->searchable()
+                    ->toggleable()
                     ->label('Customer'),
                 Tables\Columns\TextColumn::make('transporter.name')
                     ->sortable()
                     ->searchable()
+                    ->toggleable()
                     ->label('Transporter'),
                 Tables\Columns\TextColumn::make('deliveryDocumentProducts')
                     ->label('Products')
@@ -470,12 +473,15 @@ class DeliveryDocumentResource extends Resource
                     })
                     ->searchable(false)
                     ->sortable(false)
+                    ->toggleable()
                     ->limit(100),
                 Tables\Columns\TextColumn::make('purchase_order_no')
                     ->searchable()
+                    ->toggleable()
                     ->label('PO Number'),
                 Tables\Columns\TextColumn::make('project_name_and_location')
                     ->searchable()
+                    ->toggleable()
                     ->limit(50)
                     ->label('Project'),
                 Tables\Columns\TextColumn::make('purchasing_officer_name')
