@@ -600,12 +600,12 @@ VAT Number: 3001234567890
 </th>
 </tr>
 <tr>
-<td>{{ $deliveryDocument->transporter->phone ?? '' }}</td>
-<td>{{ $deliveryDocument->transporter->id_number ?? '' }}</td>
-<td>{{ $deliveryDocument->transporter->driver_name ?? '' }}</td>
-<td>{{ $deliveryDocument->transporter->car_no ?? '' }}</td>
+<td>{{ $deliveryDocument->driver_phone ?? ($deliveryDocument->transporter->phone ?? '') }}</td>
+<td>{{ $deliveryDocument->driver_id_number ?? ($deliveryDocument->transporter->id_number ?? '') }}</td>
+<td>{{ $deliveryDocument->driver_name ?? ($deliveryDocument->transporter->driver_name ?? $deliveryDocument->transporter->name ?? '') }}</td>
+<td>{{ $deliveryDocument->car_no ?? ($deliveryDocument->transporter->car_no ?? '') }}</td>
 <td>{{ $deliveryDocument->transporter->document_no ?? '' }}</td>
-<td>{{ $deliveryDocument->transporter->name ?? '' }}</td>
+<td>{{ $deliveryDocument->transportCompany->name ?? ($deliveryDocument->transporter->name ?? '') }}</td>
 </tr>
 </table>
 </div>

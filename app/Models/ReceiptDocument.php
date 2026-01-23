@@ -23,7 +23,12 @@ class ReceiptDocument extends Model
         'document_number',
         'date_and_time',
         'id_customer',
+        'transport_company_id',
         'id_transporter',
+        'driver_name',
+        'car_no',
+        'driver_id_number',
+        'driver_phone',
         'purchasing_officer_name',
         'purchasing_officer_signature',
         'warehouse_officer_name',
@@ -58,6 +63,14 @@ class ReceiptDocument extends Model
     public function transporter(): BelongsTo
     {
         return $this->belongsTo(Transporter::class, 'id_transporter');
+    }
+
+    /**
+     * Get the transport company for the receipt document.
+     */
+    public function transportCompany(): BelongsTo
+    {
+        return $this->belongsTo(TransportCompany::class, 'transport_company_id');
     }
 
     /**

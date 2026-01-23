@@ -12,7 +12,8 @@ class ReceiptDocumentController extends Controller
         // Load relationships for the receipt document
         $receiptDocument->load([
             'supplier',
-            'transporter', 
+            'transporter',
+            'transportCompany',
             'receiptDocumentProducts.product'
         ]);
 

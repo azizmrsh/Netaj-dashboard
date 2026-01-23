@@ -12,7 +12,8 @@ class DeliveryDocumentController extends Controller
         // Load relationships for the delivery document
         $deliveryDocument->load([
             'customer',
-            'transporter', 
+            'transporter',
+            'transportCompany',
             'deliveryDocumentProducts.product'
         ]);
 

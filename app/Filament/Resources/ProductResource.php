@@ -97,27 +97,72 @@ class ProductResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('name')
-                    ->searchable(),
                 Tables\Columns\TextColumn::make('product_code')
-                    ->searchable(),
+                    ->label('Product Code')
+                    ->searchable()
+                    ->sortable()
+                    ->copyable(),
+                
+                Tables\Columns\TextColumn::make('name')
+                    ->label('Product Name')
+                    ->searchable()
+                    ->sortable()
+                    ->wrap(),
+                
+                Tables\Columns\TextColumn::make('description')
+                    ->label('Description')
+                    ->searchable()
+                    ->limit(50)
+                    ->toggleable()
+                    ->wrap(),
+                
                 Tables\Columns\TextColumn::make('performance_grade')
-                    ->searchable(),
+                    ->label('Performance Grade')
+                    ->searchable()
+                    ->sortable()
+                    ->toggleable(),
+                
+                Tables\Columns\TextColumn::make('modification_type')
+                    ->label('Modification Type')
+                    ->searchable()
+                    ->sortable()
+                    ->toggleable(),
+                
                 Tables\Columns\TextColumn::make('unit')
-                    ->badge(),
-                Tables\Columns\IconColumn::make('is_active')
-                    ->boolean(),
+                    ->label('Unit')
+                    ->badge()
+                    ->color(fn (string $state): string => match ($state) {
+                        'ton' => 'success',
+                        'barrel' => 'info',
+                        default => 'gray',
+                    })
+                    ->sortable(),
+                
                 Tables\Columns\TextColumn::make('price1')
+                    ->label('Price 1')
                     ->money('USD')
-                    ->sortable(),
+                    ->sortable()
+                    ->toggleable(),
+                
                 Tables\Columns\TextColumn::make('price2')
+                    ->label('Price 2')
                     ->money('USD')
+                    ->sortable()
+                    ->toggleable(),
+                
+                Tables\Columns\IconColumn::make('is_active')
+                    ->label('Status')
+                    ->boolean()
                     ->sortable(),
+                
                 Tables\Columns\TextColumn::make('created_at')
+                    ->label('Created At')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
+                
                 Tables\Columns\TextColumn::make('updated_at')
+                    ->label('Updated At')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),

@@ -600,12 +600,12 @@ VAT Number: 3001234567890
 </th>
 </tr>
 <tr>
-<td>{{ $receiptDocument->transporter->phone ?? '' }}</td>
-<td>{{ $receiptDocument->transporter->id_number ?? '' }}</td>
-<td>{{ $receiptDocument->transporter->driver_name ?? '' }}</td>
-<td>{{ $receiptDocument->transporter->car_no ?? '' }}</td>
+<td>{{ $receiptDocument->driver_phone ?? ($receiptDocument->transporter->phone ?? '') }}</td>
+<td>{{ $receiptDocument->driver_id_number ?? ($receiptDocument->transporter->id_number ?? '') }}</td>
+<td>{{ $receiptDocument->driver_name ?? ($receiptDocument->transporter->driver_name ?? $receiptDocument->transporter->name ?? '') }}</td>
+<td>{{ $receiptDocument->car_no ?? ($receiptDocument->transporter->car_no ?? '') }}</td>
 <td>{{ $receiptDocument->transporter->document_no ?? '' }}</td>
-<td>{{ $receiptDocument->transporter->name ?? '' }}</td>
+<td>{{ $receiptDocument->transportCompany->name ?? ($receiptDocument->transporter->name ?? '') }}</td>
 </tr>
 </table>
 </div>

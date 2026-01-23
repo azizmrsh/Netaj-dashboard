@@ -7,6 +7,7 @@ use App\Filament\Resources\ReceiptDocumentResource\RelationManagers;
 use App\Models\ReceiptDocument;
 use App\Models\Customer;
 use App\Models\Transporter;
+use App\Models\TransportCompany;
 use App\Models\Product;
 use Filament\Forms;
 use Filament\Forms\Form;
@@ -125,67 +126,133 @@ class ReceiptDocumentResource extends Resource
                                             ]),
                                     ])
                                     ->label('Supplier'),
-                                Forms\Components\Select::make('id_transporter')
-                                    ->relationship('transporter', 'name')
+                            ]),
+                        
+                        // Transport Company & Driver Information
+                        Forms\Components\Section::make('Transport Information')
+                            ->schema([
+                                Forms\Components\Select::make('transport_company_id')
+                                    ->label('Transport Company')
+                                    ->relationship('transportCompany', 'name')
                                     ->required()
                                     ->searchable()
                                     ->preload()
+                                    ->live()
                                     ->createOptionForm([
-                                        Forms\Components\Section::make('Basic Information')
-                                            ->schema([
-                                                Forms\Components\TextInput::make('name')
-                                                    ->label('Transporter Name')
-                                                    ->required()
-                                                    ->maxLength(255),
-                                                
-                                                Forms\Components\TextInput::make('phone')
-                                                    ->label('Phone Number')
-                                                    ->required()
-                                                    ->tel()
-                                                    ->maxLength(255),
-                                                
-                                                Forms\Components\TextInput::make('email')
-                                                    ->label('Email Address')
-                                                    ->email()
-                                                    ->maxLength(255),
-                                                
-                                                Forms\Components\Toggle::make('is_active')
-                                                    ->label('Active Status')
-                                                    ->default(true),
-                                            ])->columns(2),
-                                        
-                                        Forms\Components\Section::make('Additional Information')
-                                            ->schema([
-                                                Forms\Components\TextInput::make('id_number')
-                                                    ->label('ID Number')
-                                                    ->maxLength(255),
-                                                
-                                                Forms\Components\TextInput::make('tax_number')
-                                                    ->label('Tax Number')
-                                                    ->maxLength(255),
-                                                
-                                                Forms\Components\TextInput::make('driver_name')
-                                                    ->label('Driver Name')
-                                                    ->maxLength(255),
-                                                
-                                                Forms\Components\TextInput::make('document_no')
-                                                    ->label('Document Number')
-                                                    ->maxLength(255),
-                                                
-                                                Forms\Components\TextInput::make('car_no')
-                                                    ->label('Car Number')
-                                                    ->maxLength(255),
-                                            ])->columns(2),
-                                        
-                                        Forms\Components\Section::make('Notes')
-                                            ->schema([
-                                                Forms\Components\Textarea::make('note')
-                                                    ->label('Notes')
-                                                    ->rows(3)
-                                                    ->columnSpanFull(),
-                                            ]),
+                                        Forms\Components\TextInput::make('name')
+                                            ->label('Company Name')
+                                            ->required()
+                                            ->maxLength(255),
+                                        Forms\Components\TextInput::make('phone')
+                                            ->label('Phone Number')
+                                            ->tel()
+                                            ->maxLength(255),
+                                        Forms\Components\Toggle::make('is_active')
+                                            ->label('Active Status')
+                                            ->default(true),
                                     ])
-                                    ->label('Transporter'),
+                                    ->afterStateUpdated(fn ($state, Forms\Set $set) => $set('id_transporter', null)),
+                                
+                                Forms\Components\Grid::make(4)
+                                    ->schema([
+                                        Forms\Components\TextInput::make('driver_name')
+                                            ->label('Driver Name')
+                                            ->datalist(function (Forms\Get $get) {
+                                                $companyId = $get('transport_company_id');
+                                                if (!$companyId) return [];
+                                                return Transporter::where('transport_company_id', $companyId)
+                                                    ->where('is_active', true)
+                                                    ->pluck('name', 'name')
+                                                    ->toArray();
+                                            })
+                                            ->live(onBlur: true)
+                                            ->afterStateUpdated(function ($state, Forms\Set $set, Forms\Get $get) {
+                                                if (!$state || !$get('transport_company_id')) return;
+                                                $driver = Transporter::where('transport_company_id', $get('transport_company_id'))
+                                                    ->where('name', $state)
+                                                    ->first();
+                                                if ($driver) {
+                                                    $set('car_no', $driver->car_no);
+                                                    $set('driver_id_number', $driver->id_number);
+                                                    $set('driver_phone', $driver->phone);
+                                                }
+                                            }),
+                                        
+                                        Forms\Components\TextInput::make('car_no')
+                                            ->label('Car Number')
+                                            ->datalist(function (Forms\Get $get) {
+                                                $companyId = $get('transport_company_id');
+                                                if (!$companyId) return [];
+                                                return Transporter::where('transport_company_id', $companyId)
+                                                    ->where('is_active', true)
+                                                    ->whereNotNull('car_no')
+                                                    ->pluck('car_no', 'car_no')
+                                                    ->toArray();
+                                            })
+                                            ->live(onBlur: true)
+                                            ->afterStateUpdated(function ($state, Forms\Set $set, Forms\Get $get) {
+                                                if (!$state || !$get('transport_company_id')) return;
+                                                $driver = Transporter::where('transport_company_id', $get('transport_company_id'))
+                                                    ->where('car_no', $state)
+                                                    ->first();
+                                                if ($driver) {
+                                                    $set('driver_name', $driver->name);
+                                                    $set('driver_id_number', $driver->id_number);
+                                                    $set('driver_phone', $driver->phone);
+                                                }
+                                            }),
+                                        
+                                        Forms\Components\TextInput::make('driver_id_number')
+                                            ->label('ID Number')
+                                            ->datalist(function (Forms\Get $get) {
+                                                $companyId = $get('transport_company_id');
+                                                if (!$companyId) return [];
+                                                return Transporter::where('transport_company_id', $companyId)
+                                                    ->where('is_active', true)
+                                                    ->whereNotNull('id_number')
+                                                    ->pluck('id_number', 'id_number')
+                                                    ->toArray();
+                                            })
+                                            ->live(onBlur: true)
+                                            ->afterStateUpdated(function ($state, Forms\Set $set, Forms\Get $get) {
+                                                if (!$state || !$get('transport_company_id')) return;
+                                                $driver = Transporter::where('transport_company_id', $get('transport_company_id'))
+                                                    ->where('id_number', $state)
+                                                    ->first();
+                                                if ($driver) {
+                                                    $set('driver_name', $driver->name);
+                                                    $set('car_no', $driver->car_no);
+                                                    $set('driver_phone', $driver->phone);
+                                                }
+                                            }),
+                                        
+                                        Forms\Components\TextInput::make('driver_phone')
+                                            ->label('Phone Number')
+                                            ->tel()
+                                            ->datalist(function (Forms\Get $get) {
+                                                $companyId = $get('transport_company_id');
+                                                if (!$companyId) return [];
+                                                return Transporter::where('transport_company_id', $companyId)
+                                                    ->where('is_active', true)
+                                                    ->whereNotNull('phone')
+                                                    ->pluck('phone', 'phone')
+                                                    ->toArray();
+                                            })
+                                            ->live(onBlur: true)
+                                            ->afterStateUpdated(function ($state, Forms\Set $set, Forms\Get $get) {
+                                                if (!$state || !$get('transport_company_id')) return;
+                                                $driver = Transporter::where('transport_company_id', $get('transport_company_id'))
+                                                    ->where('phone', $state)
+                                                    ->first();
+                                                if ($driver) {
+                                                    $set('driver_name', $driver->name);
+                                                    $set('car_no', $driver->car_no);
+                                                    $set('driver_id_number', $driver->id_number);
+                                                }
+                                            }),
+                                    ]),
+                                
+                                Forms\Components\Hidden::make('id_transporter'),
                             ]),
                         Forms\Components\Grid::make(2)
                             ->schema([

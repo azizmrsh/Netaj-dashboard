@@ -21,11 +21,11 @@ class TransporterResource extends Resource
 
     protected static ?string $navigationGroup = 'Transport Management';
 
-    protected static ?string $modelLabel = 'Transporter';
+    protected static ?string $modelLabel = 'Driver';
 
-    protected static ?string $pluralModelLabel = 'Transporters';
+    protected static ?string $pluralModelLabel = 'Drivers';
 
-    protected static ?int $navigationSort = 5;
+    protected static ?int $navigationSort = 2;
 
     public static function form(Form $form): Form
     {
@@ -33,8 +33,32 @@ class TransporterResource extends Resource
             ->schema([
                 Forms\Components\Section::make('Basic Information')
                     ->schema([
+                        Forms\Components\Select::make('transport_company_id')
+                            ->label('Transport Company')
+                            ->relationship('transportCompany', 'name')
+                            ->searchable()
+                            ->preload()
+                            ->required()
+                            ->createOptionForm([
+                                Forms\Components\TextInput::make('name')
+                                    ->label('Company Name')
+                                    ->required()
+                                    ->maxLength(255),
+                                Forms\Components\TextInput::make('phone')
+                                    ->label('Phone Number')
+                                    ->tel()
+                                    ->maxLength(255),
+                                Forms\Components\TextInput::make('email')
+                                    ->label('Email Address')
+                                    ->email()
+                                    ->maxLength(255),
+                                Forms\Components\Toggle::make('is_active')
+                                    ->label('Active Status')
+                                    ->default(true),
+                            ]),
+                        
                         Forms\Components\TextInput::make('name')
-                            ->label('Transporter Name')
+                            ->label('Driver Name')
                             ->required()
                             ->maxLength(255),
                         
@@ -91,8 +115,13 @@ class TransporterResource extends Resource
     {
         return $table
             ->columns([
+                Tables\Columns\TextColumn::make('transportCompany.name')
+                    ->label('Transport Company')
+                    ->searchable()
+                    ->sortable(),
+                
                 Tables\Columns\TextColumn::make('name')
-                    ->label('Transporter Name')
+                    ->label('Driver Name')
                     ->searchable()
                     ->sortable(),
                 
