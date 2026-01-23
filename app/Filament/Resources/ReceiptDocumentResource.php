@@ -436,7 +436,10 @@ class ReceiptDocumentResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
-            ->modifyQueryUsing(fn (Builder $query) => $query->withCount('receiptDocumentProducts'))
+            ->modifyQueryUsing(fn (Builder $query) => $query
+                ->withCount('receiptDocumentProducts')
+                ->with(['receiptDocumentProducts.product', 'supplier', 'transporter'])
+            )
             ->columns([
                 Tables\Columns\TextColumn::make('date_and_time')
                     ->dateTime()
@@ -453,27 +456,82 @@ class ReceiptDocumentResource extends Resource
                     ->searchable()
                     ->toggleable()
                     ->label('Transporter'),
-                Tables\Columns\TextColumn::make('receiptDocumentProducts')
-                    ->label('Products')
-                    ->formatStateUsing(function ($record) {
+                Tables\Columns\TextColumn::make('product_names')
+                    ->label('Product Names')
+                    ->getStateUsing(function ($record) {
                         return $record->receiptDocumentProducts
-                            ->map(function($item) {
-                                $text = $item->product->name . ' (Qty: ' . $item->quantity;
-                                if ($item->unit_price) {
-                                    $text .= ', Price: $' . number_format($item->unit_price, 2);
-                                }
-                                if ($item->tax_rate) {
-                                    $text .= ', Tax: ' . $item->tax_rate . '%';
-                                }
-                                $text .= ')';
-                                return $text;
-                            })
-                            ->join(', ');
+                            ->map(fn($item) => $item->product->name ?? 'N/A')
+                            ->join("\n");
                     })
                     ->searchable(false)
                     ->sortable(false)
                     ->toggleable()
-                    ->limit(100),
+                    ->wrap()
+                    ->lineClamp(10),
+                Tables\Columns\TextColumn::make('product_codes')
+                    ->label('Product Codes')
+                    ->getStateUsing(function ($record) {
+                        return $record->receiptDocumentProducts
+                            ->map(fn($item) => $item->product->product_code ?? '-')
+                            ->join("\n");
+                    })
+                    ->searchable(false)
+                    ->sortable(false)
+                    ->toggleable()
+                    ->toggledHiddenByDefault()
+                    ->wrap()
+                    ->lineClamp(10),
+                Tables\Columns\TextColumn::make('product_quantities')
+                    ->label('Quantities')
+                    ->getStateUsing(function ($record) {
+                        return $record->receiptDocumentProducts
+                            ->map(fn($item) => number_format($item->quantity, 3) . ' ' . ($item->product->unit ?? ''))
+                            ->join("\n");
+                    })
+                    ->searchable(false)
+                    ->sortable(false)
+                    ->toggleable()
+                    ->wrap()
+                    ->lineClamp(10),
+                Tables\Columns\TextColumn::make('product_unit_prices')
+                    ->label('Unit Prices')
+                    ->getStateUsing(function ($record) {
+                        return $record->receiptDocumentProducts
+                            ->map(fn($item) => '$' . number_format($item->unit_price ?? 0, 2))
+                            ->join("\n");
+                    })
+                    ->searchable(false)
+                    ->sortable(false)
+                    ->toggleable()
+                    ->toggledHiddenByDefault()
+                    ->wrap()
+                    ->lineClamp(10),
+                Tables\Columns\TextColumn::make('product_performance_grades')
+                    ->label('Performance Grades')
+                    ->getStateUsing(function ($record) {
+                        return $record->receiptDocumentProducts
+                            ->map(fn($item) => $item->product->performance_grade ?? '-')
+                            ->join("\n");
+                    })
+                    ->searchable(false)
+                    ->sortable(false)
+                    ->toggleable()
+                    ->toggledHiddenByDefault()
+                    ->wrap()
+                    ->lineClamp(10),
+                Tables\Columns\TextColumn::make('product_modification_types')
+                    ->label('Modification Types')
+                    ->getStateUsing(function ($record) {
+                        return $record->receiptDocumentProducts
+                            ->map(fn($item) => $item->product->modification_type ?? '-')
+                            ->join("\n");
+                    })
+                    ->searchable(false)
+                    ->sortable(false)
+                    ->toggleable()
+                    ->toggledHiddenByDefault()
+                    ->wrap()
+                    ->lineClamp(10),
                 Tables\Columns\TextColumn::make('purchase_invoice_no')
                     ->searchable()
                     ->toggleable()

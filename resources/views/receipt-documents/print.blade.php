@@ -670,10 +670,10 @@ VAT Number: 3001234567890
     <tr>
         <td>{{ number_format($item->quantity, 3) }}</td>
         <td>{{ $item->product->unit ?? '' }}</td>
-        <td></td>
-        <td></td>
+        <td>{{ $item->product->modification_type ?? '' }}</td>
+        <td>{{ $item->product->performance_grade ?? '' }}</td>
         <td>{{ $item->product->name ?? '' }}</td>
-        <td></td>
+        <td>{{ $item->product->product_code ?? '' }}</td>
         <td>{{ $index + 1 }}</td>
     </tr>
 @endforeach
