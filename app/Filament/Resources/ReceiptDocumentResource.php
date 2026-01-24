@@ -258,6 +258,11 @@ class ReceiptDocumentResource extends Resource
                             ->schema([
                                 Forms\Components\TextInput::make('purchase_invoice_no')
                                     ->label('Purchase Invoice Number'),
+                                Forms\Components\TextInput::make('order_no')
+                                    ->label('رقم الطلب (Order No)'),
+                            ]),
+                        Forms\Components\Grid::make(1)
+                            ->schema([
                                 Forms\Components\TextInput::make('material_source')
                                     ->label('Material Source'),
                             ]),
@@ -307,6 +312,7 @@ class ReceiptDocumentResource extends Resource
                                                             ->options([
                                                                 'ton' => 'Ton',
                                                                 'barrel' => 'Barrel',
+                                                                'ltr' => 'Liter',
                                                             ])
                                                             ->required(),
                                                         
@@ -587,7 +593,7 @@ class ReceiptDocumentResource extends Resource
                     ->wrap()
                     ->lineClamp(10),
                 Tables\Columns\TextColumn::make('product_modification_types')
-                    ->label('Modification Types')
+                    ->label('أرقام الطلبات')
                     ->getStateUsing(function ($record) {
                         return $record->receiptDocumentProducts
                             ->map(fn($item) => $item->product->modification_type ?? '-')
@@ -603,6 +609,10 @@ class ReceiptDocumentResource extends Resource
                     ->searchable()
                     ->toggleable()
                     ->label('Invoice Number'),
+                Tables\Columns\TextColumn::make('order_no')
+                    ->searchable()
+                    ->toggleable()
+                    ->label('رقم الطلب'),
                 Tables\Columns\TextColumn::make('material_source')
                     ->searchable()
                     ->toggleable()

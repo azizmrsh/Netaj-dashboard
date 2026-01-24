@@ -635,8 +635,8 @@ VAT Number: 3001234567890
 </th>
 <th>
 <div class="bilingual">
-<div class="arabic">نوع المحسن</div>
-<div class="english">Modification Type</div>
+<div class="arabic">رقم الطلب</div>
+<div class="english">Order No</div>
 </div>
 </th>
 <th>
@@ -670,7 +670,7 @@ VAT Number: 3001234567890
     <tr>
         <td>{{ number_format($item->quantity, 3) }}</td>
         <td>{{ $item->product->unit ?? '' }}</td>
-        <td>{{ $item->product->modification_type ?? '' }}</td>
+        <td>{{ $receiptDocument->order_no ?? '' }}</td>
         <td>{{ $item->product->performance_grade ?? '' }}</td>
         <td>{{ $item->product->name ?? '' }}</td>
         <td>{{ $item->product->product_code ?? '' }}</td>

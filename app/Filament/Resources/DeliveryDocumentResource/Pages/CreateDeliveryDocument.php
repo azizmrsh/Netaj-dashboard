@@ -11,6 +11,21 @@ class CreateDeliveryDocument extends CreateRecord
 {
     protected static string $resource = DeliveryDocumentResource::class;
 
+    protected function getFormActions(): array
+    {
+        return [
+            $this->getCreateFormAction(),
+            Actions\Action::make('createAndPrint')
+                ->label('Save and Print')
+                ->action(function () {
+                    $this->create();
+                    return redirect()->route('delivery-documents.print', ['deliveryDocument' => $this->record->id]);
+                })
+                ->color('success'),
+            $this->getCancelFormAction(),
+        ];
+    }
+
     protected function mutateFormDataBeforeCreate(array $data): array
     {
         // Create or find transporter based on driver information

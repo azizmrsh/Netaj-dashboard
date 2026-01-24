@@ -11,6 +11,21 @@ class CreateReceiptDocument extends CreateRecord
 {
     protected static string $resource = ReceiptDocumentResource::class;
 
+    protected function getFormActions(): array
+    {
+        return [
+            $this->getCreateFormAction(),
+            Actions\Action::make('createAndPrint')
+                ->label('Save and Print')
+                ->action(function () {
+                    $this->create();
+                    return redirect()->route('receipt-documents.print', ['receiptDocument' => $this->record->id]);
+                })
+                ->color('success'),
+            $this->getCancelFormAction(),
+        ];
+    }
+
     protected function mutateFormDataBeforeCreate(array $data): array
     {
         // Create or find transporter based on driver information

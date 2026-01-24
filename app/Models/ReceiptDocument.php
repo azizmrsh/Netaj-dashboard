@@ -38,6 +38,7 @@ class ReceiptDocument extends Model
         'accountant_name',
         'accountant_signature',
         'purchase_invoice_no',
+        'order_no',
         'material_source',
         'note',
     ];

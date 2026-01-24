@@ -16,4 +16,19 @@ class EditSalesInvoice extends EditRecord
             Actions\DeleteAction::make(),
         ];
     }
+
+    protected function getFormActions(): array
+    {
+        return [
+            $this->getSaveFormAction(),
+            Actions\Action::make('saveAndPrint')
+                ->label('Save and Print')
+                ->action(function () {
+                    $this->save();
+                    return redirect()->route('sales-invoices.print', ['salesInvoice' => $this->record->id]);
+                })
+                ->color('success'),
+            $this->getCancelFormAction(),
+        ];
+    }
 }

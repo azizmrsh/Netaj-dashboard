@@ -635,8 +635,8 @@ VAT Number: 3001234567890
 </th>
 <th>
 <div class="bilingual">
-<div class="arabic">نوع التعديل</div>
-<div class="english">Modification Type</div>
+<div class="arabic">نوع المحسن</div>
+<div class="english">Modifier Type</div>
 </div>
 </th>
 <th>

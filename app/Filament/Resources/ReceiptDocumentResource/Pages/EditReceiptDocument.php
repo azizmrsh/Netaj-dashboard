@@ -18,6 +18,21 @@ class EditReceiptDocument extends EditRecord
         ];
     }
 
+    protected function getFormActions(): array
+    {
+        return [
+            $this->getSaveFormAction(),
+            Actions\Action::make('saveAndPrint')
+                ->label('Save and Print')
+                ->action(function () {
+                    $this->save();
+                    return redirect()->route('receipt-documents.print', ['receiptDocument' => $this->record->id]);
+                })
+                ->color('success'),
+            $this->getCancelFormAction(),
+        ];
+    }
+
     protected function mutateFormDataBeforeSave(array $data): array
     {
         // Create or find transporter based on driver information

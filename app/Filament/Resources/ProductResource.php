@@ -63,6 +63,7 @@ class ProductResource extends Resource
                             ->options([
                                 'ton' => 'Ton',
                                 'barrel' => 'Barrel',
+                                'ltr' => 'Liter',
                             ])
                             ->required(),
                         

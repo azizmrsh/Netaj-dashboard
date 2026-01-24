@@ -588,7 +588,7 @@ class DeliveryDocumentResource extends Resource
                     ->wrap()
                     ->lineClamp(10),
                 Tables\Columns\TextColumn::make('product_modification_types')
-                    ->label('Modification Types')
+                    ->label('نوع المحسن')
                     ->getStateUsing(function ($record) {
                         return $record->deliveryDocumentProducts
                             ->map(fn($item) => $item->product->modification_type ?? '-')
