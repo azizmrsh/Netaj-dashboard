@@ -553,7 +553,19 @@ class DeliveryDocumentResource extends Resource
                     ->label('Quantities')
                     ->getStateUsing(function ($record) {
                         return $record->deliveryDocumentProducts
-                            ->map(fn($item) => number_format($item->quantity, 3) . ' ' . ($item->product->unit ?? ''))
+                            ->map(fn($item) => number_format($item->quantity, 3))
+                            ->join("\n");
+                    })
+                    ->searchable(false)
+                    ->sortable(false)
+                    ->toggleable()
+                    ->wrap()
+                    ->lineClamp(10),
+                Tables\Columns\TextColumn::make('product_units')
+                    ->label('Units')
+                    ->getStateUsing(function ($record) {
+                        return $record->deliveryDocumentProducts
+                            ->map(fn($item) => $item->product->unit ?? '-')
                             ->join("\n");
                     })
                     ->searchable(false)
