@@ -50,7 +50,7 @@ class DeliveryDocumentResource extends Resource
                                     ->label('Date and Time')
                                     ->default(now()),
                                 Forms\Components\Select::make('id_customer')
-                                    ->relationship('customer', 'name', fn ($query) => $query->forDeliveries())
+                                    ->relationship('customer', 'name', fn($query) => $query->forDeliveries())
                                     ->required()
                                     ->searchable()
                                     ->preload()
@@ -63,61 +63,61 @@ class DeliveryDocumentResource extends Resource
                                                     ->default(Customer::TYPE_CUSTOMER)
                                                     ->required()
                                                     ->helperText('Select customer type'),
-                                                
+
                                                 Forms\Components\TextInput::make('name')
                                                     ->label('Customer Name')
                                                     ->required()
                                                     ->maxLength(255),
-                                                
+
                                                 Forms\Components\TextInput::make('phone')
                                                     ->label('Phone Number')
                                                     ->tel()
                                                     ->maxLength(255),
-                                                
+
                                                 Forms\Components\TextInput::make('email')
                                                     ->label('Email Address')
                                                     ->email()
                                                     ->maxLength(255),
-                                                
+
                                                 Forms\Components\Toggle::make('is_active')
                                                     ->label('Active')
                                                     ->default(true),
                                             ])
                                             ->columns(2),
-                                        
+
                                         Forms\Components\Section::make('Legal Information')
                                             ->schema([
                                                 Forms\Components\TextInput::make('tax_number')
                                                     ->label('Tax Number')
                                                     ->maxLength(255),
-                                                
+
                                                 Forms\Components\TextInput::make('commercial_registration_number')
                                                     ->label('Commercial Registration Number')
                                                     ->maxLength(255),
-                                                
+
                                                 Forms\Components\TextInput::make('national_number')
                                                     ->label('National Number')
                                                     ->maxLength(255),
                                             ])
                                             ->columns(2),
-                                        
+
                                         Forms\Components\Section::make('Address Information')
                                             ->schema([
                                                 Forms\Components\TextInput::make('country')
                                                     ->label('Country')
                                                     ->maxLength(255),
-                                                
+
                                                 Forms\Components\TextInput::make('zip_code')
                                                     ->label('Zip Code')
                                                     ->maxLength(255),
-                                                
+
                                                 Forms\Components\Textarea::make('address')
                                                     ->label('Address')
                                                     ->rows(3)
                                                     ->columnSpanFull(),
                                             ])
                                             ->columns(2),
-                                        
+
                                         Forms\Components\Section::make('Notes')
                                             ->schema([
                                                 Forms\Components\Textarea::make('note')
@@ -128,7 +128,7 @@ class DeliveryDocumentResource extends Resource
                                     ])
                                     ->label('Customer'),
                             ]),
-                        
+
                         // Transport Company & Driver Information
                         Forms\Components\Section::make('Transport Information')
                             ->schema([
@@ -152,15 +152,16 @@ class DeliveryDocumentResource extends Resource
                                             ->label('Active Status')
                                             ->default(true),
                                     ])
-                                    ->afterStateUpdated(fn ($state, Forms\Set $set) => $set('id_transporter', null)),
-                                
+                                    ->afterStateUpdated(fn($state, Forms\Set $set) => $set('id_transporter', null)),
+
                                 Forms\Components\Grid::make(4)
                                     ->schema([
                                         Forms\Components\TextInput::make('driver_name')
                                             ->label('Driver Name')
                                             ->datalist(function (Forms\Get $get) {
                                                 $companyId = $get('transport_company_id');
-                                                if (!$companyId) return [];
+                                                if (!$companyId)
+                                                    return [];
                                                 return Transporter::where('transport_company_id', $companyId)
                                                     ->where('is_active', true)
                                                     ->pluck('name', 'name')
@@ -168,7 +169,8 @@ class DeliveryDocumentResource extends Resource
                                             })
                                             ->live(onBlur: true)
                                             ->afterStateUpdated(function ($state, Forms\Set $set, Forms\Get $get) {
-                                                if (!$state || !$get('transport_company_id')) return;
+                                                if (!$state || !$get('transport_company_id'))
+                                                    return;
                                                 $driver = Transporter::where('transport_company_id', $get('transport_company_id'))
                                                     ->where('name', $state)
                                                     ->first();
@@ -178,12 +180,13 @@ class DeliveryDocumentResource extends Resource
                                                     $set('driver_phone', $driver->phone);
                                                 }
                                             }),
-                                        
+
                                         Forms\Components\TextInput::make('car_no')
                                             ->label('Car Number')
                                             ->datalist(function (Forms\Get $get) {
                                                 $companyId = $get('transport_company_id');
-                                                if (!$companyId) return [];
+                                                if (!$companyId)
+                                                    return [];
                                                 return Transporter::where('transport_company_id', $companyId)
                                                     ->where('is_active', true)
                                                     ->whereNotNull('car_no')
@@ -192,7 +195,8 @@ class DeliveryDocumentResource extends Resource
                                             })
                                             ->live(onBlur: true)
                                             ->afterStateUpdated(function ($state, Forms\Set $set, Forms\Get $get) {
-                                                if (!$state || !$get('transport_company_id')) return;
+                                                if (!$state || !$get('transport_company_id'))
+                                                    return;
                                                 $driver = Transporter::where('transport_company_id', $get('transport_company_id'))
                                                     ->where('car_no', $state)
                                                     ->first();
@@ -202,12 +206,13 @@ class DeliveryDocumentResource extends Resource
                                                     $set('driver_phone', $driver->phone);
                                                 }
                                             }),
-                                        
+
                                         Forms\Components\TextInput::make('driver_id_number')
                                             ->label('ID Number')
                                             ->datalist(function (Forms\Get $get) {
                                                 $companyId = $get('transport_company_id');
-                                                if (!$companyId) return [];
+                                                if (!$companyId)
+                                                    return [];
                                                 return Transporter::where('transport_company_id', $companyId)
                                                     ->where('is_active', true)
                                                     ->whereNotNull('id_number')
@@ -216,7 +221,8 @@ class DeliveryDocumentResource extends Resource
                                             })
                                             ->live(onBlur: true)
                                             ->afterStateUpdated(function ($state, Forms\Set $set, Forms\Get $get) {
-                                                if (!$state || !$get('transport_company_id')) return;
+                                                if (!$state || !$get('transport_company_id'))
+                                                    return;
                                                 $driver = Transporter::where('transport_company_id', $get('transport_company_id'))
                                                     ->where('id_number', $state)
                                                     ->first();
@@ -226,13 +232,14 @@ class DeliveryDocumentResource extends Resource
                                                     $set('driver_phone', $driver->phone);
                                                 }
                                             }),
-                                        
+
                                         Forms\Components\TextInput::make('driver_phone')
                                             ->label('Phone Number')
                                             ->tel()
                                             ->datalist(function (Forms\Get $get) {
                                                 $companyId = $get('transport_company_id');
-                                                if (!$companyId) return [];
+                                                if (!$companyId)
+                                                    return [];
                                                 return Transporter::where('transport_company_id', $companyId)
                                                     ->where('is_active', true)
                                                     ->whereNotNull('phone')
@@ -241,7 +248,8 @@ class DeliveryDocumentResource extends Resource
                                             })
                                             ->live(onBlur: true)
                                             ->afterStateUpdated(function ($state, Forms\Set $set, Forms\Get $get) {
-                                                if (!$state || !$get('transport_company_id')) return;
+                                                if (!$state || !$get('transport_company_id'))
+                                                    return;
                                                 $driver = Transporter::where('transport_company_id', $get('transport_company_id'))
                                                     ->where('phone', $state)
                                                     ->first();
@@ -252,7 +260,7 @@ class DeliveryDocumentResource extends Resource
                                                 }
                                             }),
                                     ]),
-                                
+
                                 Forms\Components\Hidden::make('id_transporter'),
                             ]),
                         Forms\Components\Repeater::make('deliveryDocumentProducts')
@@ -272,30 +280,30 @@ class DeliveryDocumentResource extends Resource
                                                             ->label('Product Name')
                                                             ->required()
                                                             ->maxLength(255),
-                                                        
+
                                                         Forms\Components\TextInput::make('product_code')
                                                             ->label('Product Code')
                                                             ->required()
                                                             ->unique(ignoreRecord: true)
                                                             ->maxLength(255),
-                                                        
+
                                                         Forms\Components\Textarea::make('description')
                                                             ->label('Description')
                                                             ->rows(3)
                                                             ->columnSpanFull(),
                                                     ])
                                                     ->columns(2),
-                                                
+
                                                 Forms\Components\Section::make('Product Specifications')
                                                     ->schema([
                                                         Forms\Components\TextInput::make('performance_grade')
                                                             ->label('Performance Grade')
                                                             ->maxLength(255),
-                                                        
+
                                                         Forms\Components\TextInput::make('modification_type')
                                                             ->label('Modification Type')
                                                             ->maxLength(255),
-                                                        
+
                                                         Forms\Components\Select::make('unit')
                                                             ->label('Unit of Measurement')
                                                             ->options([
@@ -303,7 +311,7 @@ class DeliveryDocumentResource extends Resource
                                                                 'barrel' => 'Barrel',
                                                             ])
                                                             ->required(),
-                                                        
+
                                                         Forms\Components\Select::make('is_active')
                                                             ->label('Status')
                                                             ->options([
@@ -314,14 +322,14 @@ class DeliveryDocumentResource extends Resource
                                                             ->required(),
                                                     ])
                                                     ->columns(2),
-                                                
+
                                                 Forms\Components\Section::make('Pricing Information')
                                                     ->schema([
                                                         Forms\Components\TextInput::make('price1')
                                                             ->label('Price 1')
                                                             ->numeric()
                                                             ->prefix('$'),
-                                                        
+
                                                         Forms\Components\TextInput::make('price2')
                                                             ->label('Price 2')
                                                             ->numeric()
@@ -353,12 +361,12 @@ class DeliveryDocumentResource extends Resource
                             ->defaultItems(1)
                             ->addActionLabel('Add Product')
                             ->deleteAction(
-                                fn (Action $action) => $action->label('Remove Product')
+                                fn(Action $action) => $action->label('Remove Product')
                             )
                             ->label('Products')
                             ->columnSpanFull(),
                     ])->columns(4),
-                
+
                 Forms\Components\Section::make('Order Summary')
                     ->schema([
                         Forms\Components\Placeholder::make('subtotal')
@@ -366,13 +374,13 @@ class DeliveryDocumentResource extends Resource
                             ->content(function (Get $get): string {
                                 $products = $get('deliveryDocumentProducts') ?? [];
                                 $subtotal = 0;
-                                
+
                                 foreach ($products as $product) {
                                     if (isset($product['quantity']) && isset($product['unit_price'])) {
                                         $subtotal += $product['quantity'] * $product['unit_price'];
                                     }
                                 }
-                                
+
                                 return '$' . number_format($subtotal, 2);
                             }),
                         Forms\Components\Placeholder::make('tax_amount')
@@ -380,14 +388,14 @@ class DeliveryDocumentResource extends Resource
                             ->content(function (Get $get): string {
                                 $products = $get('deliveryDocumentProducts') ?? [];
                                 $taxAmount = 0;
-                                
+
                                 foreach ($products as $product) {
                                     if (isset($product['quantity']) && isset($product['unit_price']) && isset($product['tax_rate'])) {
                                         $lineTotal = $product['quantity'] * $product['unit_price'];
                                         $taxAmount += $lineTotal * ($product['tax_rate'] / 100);
                                     }
                                 }
-                                
+
                                 return '$' . number_format($taxAmount, 2);
                             }),
                         Forms\Components\Placeholder::make('total')
@@ -396,36 +404,37 @@ class DeliveryDocumentResource extends Resource
                                 $products = $get('deliveryDocumentProducts') ?? [];
                                 $subtotal = 0;
                                 $taxAmount = 0;
-                                
+
                                 foreach ($products as $product) {
                                     if (isset($product['quantity']) && isset($product['unit_price'])) {
                                         $lineTotal = $product['quantity'] * $product['unit_price'];
                                         $subtotal += $lineTotal;
-                                        
+
                                         if (isset($product['tax_rate'])) {
                                             $taxAmount += $lineTotal * ($product['tax_rate'] / 100);
                                         }
                                     }
                                 }
-                                
+
                                 $total = $subtotal + $taxAmount;
                                 return '$' . number_format($total, 2);
                             }),
                     ])
                     ->columns(3),
-                
+
                 Forms\Components\Section::make('Order Information')
                     ->schema([
                         Forms\Components\Grid::make(2)
                             ->schema([
                                 Forms\Components\TextInput::make('purchase_order_no')
                                     ->required()
-                                    ->label('Purchase Order Number'),
+                                    ->label('Purchase Order Number')
+                                    ->default(fn() => (DeliveryDocument::max('purchase_order_no') ?? 0) + 1),
                                 Forms\Components\TextInput::make('project_name_and_location')
                                     ->label('Project Name and Location'),
                             ]),
                     ])->columns(2),
-                
+
                 Forms\Components\Section::make('Officer Information')
                     ->schema([
                         Forms\Components\Grid::make(4)
@@ -492,7 +501,7 @@ class DeliveryDocumentResource extends Resource
                                 ]),
                             ]),
                     ])->collapsible(),
-                
+
                 Forms\Components\Section::make('Additional Information')
                     ->schema([
                         Forms\Components\Textarea::make('note')
@@ -505,8 +514,9 @@ class DeliveryDocumentResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
-            ->modifyQueryUsing(fn (Builder $query) => $query
-                ->with(['deliveryDocumentProducts.product', 'customer', 'transporter'])
+            ->modifyQueryUsing(
+                fn(Builder $query) => $query
+                    ->with(['deliveryDocumentProducts.product', 'customer', 'transporter'])
             )
             ->columns([
                 Tables\Columns\TextColumn::make('date_and_time')
@@ -658,11 +668,11 @@ class DeliveryDocumentResource extends Resource
                         return $query
                             ->when(
                                 $data['date_from'],
-                                fn (Builder $query, $date): Builder => $query->whereDate('date_and_time', '>=', $date),
+                                fn(Builder $query, $date): Builder => $query->whereDate('date_and_time', '>=', $date),
                             )
                             ->when(
                                 $data['date_until'],
-                                fn (Builder $query, $date): Builder => $query->whereDate('date_and_time', '<=', $date),
+                                fn(Builder $query, $date): Builder => $query->whereDate('date_and_time', '<=', $date),
                             );
                     }),
                 Filter::make('created_at')
@@ -676,11 +686,11 @@ class DeliveryDocumentResource extends Resource
                         return $query
                             ->when(
                                 $data['created_from'],
-                                fn (Builder $query, $date): Builder => $query->whereDate('created_at', '>=', $date),
+                                fn(Builder $query, $date): Builder => $query->whereDate('created_at', '>=', $date),
                             )
                             ->when(
                                 $data['created_until'],
-                                fn (Builder $query, $date): Builder => $query->whereDate('created_at', '<=', $date),
+                                fn(Builder $query, $date): Builder => $query->whereDate('created_at', '<=', $date),
                             );
                     }),
                 SelectFilter::make('id_customer')
@@ -705,7 +715,7 @@ class DeliveryDocumentResource extends Resource
                         return $query
                             ->when(
                                 $data['purchase_order_no'],
-                                fn (Builder $query, $po): Builder => $query->where('purchase_order_no', 'like', "%{$po}%"),
+                                fn(Builder $query, $po): Builder => $query->where('purchase_order_no', 'like', "%{$po}%"),
                             );
                     }),
                 Filter::make('project_name_and_location')
@@ -718,7 +728,7 @@ class DeliveryDocumentResource extends Resource
                         return $query
                             ->when(
                                 $data['project_name'],
-                                fn (Builder $query, $project): Builder => $query->where('project_name_and_location', 'like', "%{$project}%"),
+                                fn(Builder $query, $project): Builder => $query->where('project_name_and_location', 'like', "%{$project}%"),
                             );
                     }),
 
@@ -743,7 +753,7 @@ class DeliveryDocumentResource extends Resource
                     ->label('Print')
                     ->icon('heroicon-o-printer')
                     ->color('success')
-                    ->url(fn (DeliveryDocument $record): string => route('delivery-documents.print', $record))
+                    ->url(fn(DeliveryDocument $record): string => route('delivery-documents.print', $record))
                     ->openUrlInNewTab(),
                 Tables\Actions\ViewAction::make(),
                 Tables\Actions\EditAction::make(),

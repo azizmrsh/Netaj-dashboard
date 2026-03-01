@@ -32,7 +32,7 @@ class ReceiptDocumentResource extends Resource
 {
     protected static ?string $model = ReceiptDocument::class;
 
-     protected static ?string $navigationIcon = 'heroicon-o-document-arrow-down';
+    protected static ?string $navigationIcon = 'heroicon-o-document-arrow-down';
 
     protected static ?string $navigationGroup = 'Document Management';
 
@@ -49,7 +49,7 @@ class ReceiptDocumentResource extends Resource
                                     ->label('Date and Time')
                                     ->default(now()),
                                 Forms\Components\Select::make('id_customer')
-                                    ->relationship('supplier', 'name', fn ($query) => $query->forReceipts())
+                                    ->relationship('supplier', 'name', fn($query) => $query->forReceipts())
                                     ->required()
                                     ->searchable()
                                     ->preload()
@@ -62,61 +62,61 @@ class ReceiptDocumentResource extends Resource
                                                     ->default(Customer::TYPE_SUPPLIER)
                                                     ->required()
                                                     ->helperText('Select customer type'),
-                                                
+
                                                 Forms\Components\TextInput::make('name')
                                                     ->label('Customer Name')
                                                     ->required()
                                                     ->maxLength(255),
-                                                
+
                                                 Forms\Components\TextInput::make('phone')
                                                     ->label('Phone Number')
                                                     ->tel()
                                                     ->maxLength(255),
-                                                
+
                                                 Forms\Components\TextInput::make('email')
                                                     ->label('Email Address')
                                                     ->email()
                                                     ->maxLength(255),
-                                                
+
                                                 Forms\Components\Toggle::make('is_active')
                                                     ->label('Active')
                                                     ->default(true),
                                             ])
                                             ->columns(2),
-                                        
+
                                         Forms\Components\Section::make('Legal Information')
                                             ->schema([
                                                 Forms\Components\TextInput::make('tax_number')
                                                     ->label('Tax Number')
                                                     ->maxLength(255),
-                                                
+
                                                 Forms\Components\TextInput::make('commercial_registration_number')
                                                     ->label('Commercial Registration Number')
                                                     ->maxLength(255),
-                                                
+
                                                 Forms\Components\TextInput::make('national_number')
                                                     ->label('National Number')
                                                     ->maxLength(255),
                                             ])
                                             ->columns(2),
-                                        
+
                                         Forms\Components\Section::make('Address Information')
                                             ->schema([
                                                 Forms\Components\TextInput::make('country')
                                                     ->label('Country')
                                                     ->maxLength(255),
-                                                
+
                                                 Forms\Components\TextInput::make('zip_code')
                                                     ->label('Zip Code')
                                                     ->maxLength(255),
-                                                
+
                                                 Forms\Components\Textarea::make('address')
                                                     ->label('Address')
                                                     ->rows(3)
                                                     ->columnSpanFull(),
                                             ])
                                             ->columns(2),
-                                        
+
                                         Forms\Components\Section::make('Notes')
                                             ->schema([
                                                 Forms\Components\Textarea::make('note')
@@ -127,7 +127,7 @@ class ReceiptDocumentResource extends Resource
                                     ])
                                     ->label('Supplier'),
                             ]),
-                        
+
                         // Transport Company & Driver Information
                         Forms\Components\Section::make('Transport Information')
                             ->schema([
@@ -151,15 +151,16 @@ class ReceiptDocumentResource extends Resource
                                             ->label('Active Status')
                                             ->default(true),
                                     ])
-                                    ->afterStateUpdated(fn ($state, Forms\Set $set) => $set('id_transporter', null)),
-                                
+                                    ->afterStateUpdated(fn($state, Forms\Set $set) => $set('id_transporter', null)),
+
                                 Forms\Components\Grid::make(4)
                                     ->schema([
                                         Forms\Components\TextInput::make('driver_name')
                                             ->label('Driver Name')
                                             ->datalist(function (Forms\Get $get) {
                                                 $companyId = $get('transport_company_id');
-                                                if (!$companyId) return [];
+                                                if (!$companyId)
+                                                    return [];
                                                 return Transporter::where('transport_company_id', $companyId)
                                                     ->where('is_active', true)
                                                     ->pluck('name', 'name')
@@ -167,7 +168,8 @@ class ReceiptDocumentResource extends Resource
                                             })
                                             ->live(onBlur: true)
                                             ->afterStateUpdated(function ($state, Forms\Set $set, Forms\Get $get) {
-                                                if (!$state || !$get('transport_company_id')) return;
+                                                if (!$state || !$get('transport_company_id'))
+                                                    return;
                                                 $driver = Transporter::where('transport_company_id', $get('transport_company_id'))
                                                     ->where('name', $state)
                                                     ->first();
@@ -177,12 +179,13 @@ class ReceiptDocumentResource extends Resource
                                                     $set('driver_phone', $driver->phone);
                                                 }
                                             }),
-                                        
+
                                         Forms\Components\TextInput::make('car_no')
                                             ->label('Car Number')
                                             ->datalist(function (Forms\Get $get) {
                                                 $companyId = $get('transport_company_id');
-                                                if (!$companyId) return [];
+                                                if (!$companyId)
+                                                    return [];
                                                 return Transporter::where('transport_company_id', $companyId)
                                                     ->where('is_active', true)
                                                     ->whereNotNull('car_no')
@@ -191,7 +194,8 @@ class ReceiptDocumentResource extends Resource
                                             })
                                             ->live(onBlur: true)
                                             ->afterStateUpdated(function ($state, Forms\Set $set, Forms\Get $get) {
-                                                if (!$state || !$get('transport_company_id')) return;
+                                                if (!$state || !$get('transport_company_id'))
+                                                    return;
                                                 $driver = Transporter::where('transport_company_id', $get('transport_company_id'))
                                                     ->where('car_no', $state)
                                                     ->first();
@@ -201,12 +205,13 @@ class ReceiptDocumentResource extends Resource
                                                     $set('driver_phone', $driver->phone);
                                                 }
                                             }),
-                                        
+
                                         Forms\Components\TextInput::make('driver_id_number')
                                             ->label('ID Number')
                                             ->datalist(function (Forms\Get $get) {
                                                 $companyId = $get('transport_company_id');
-                                                if (!$companyId) return [];
+                                                if (!$companyId)
+                                                    return [];
                                                 return Transporter::where('transport_company_id', $companyId)
                                                     ->where('is_active', true)
                                                     ->whereNotNull('id_number')
@@ -215,7 +220,8 @@ class ReceiptDocumentResource extends Resource
                                             })
                                             ->live(onBlur: true)
                                             ->afterStateUpdated(function ($state, Forms\Set $set, Forms\Get $get) {
-                                                if (!$state || !$get('transport_company_id')) return;
+                                                if (!$state || !$get('transport_company_id'))
+                                                    return;
                                                 $driver = Transporter::where('transport_company_id', $get('transport_company_id'))
                                                     ->where('id_number', $state)
                                                     ->first();
@@ -225,13 +231,14 @@ class ReceiptDocumentResource extends Resource
                                                     $set('driver_phone', $driver->phone);
                                                 }
                                             }),
-                                        
+
                                         Forms\Components\TextInput::make('driver_phone')
                                             ->label('Phone Number')
                                             ->tel()
                                             ->datalist(function (Forms\Get $get) {
                                                 $companyId = $get('transport_company_id');
-                                                if (!$companyId) return [];
+                                                if (!$companyId)
+                                                    return [];
                                                 return Transporter::where('transport_company_id', $companyId)
                                                     ->where('is_active', true)
                                                     ->whereNotNull('phone')
@@ -240,7 +247,8 @@ class ReceiptDocumentResource extends Resource
                                             })
                                             ->live(onBlur: true)
                                             ->afterStateUpdated(function ($state, Forms\Set $set, Forms\Get $get) {
-                                                if (!$state || !$get('transport_company_id')) return;
+                                                if (!$state || !$get('transport_company_id'))
+                                                    return;
                                                 $driver = Transporter::where('transport_company_id', $get('transport_company_id'))
                                                     ->where('phone', $state)
                                                     ->first();
@@ -251,15 +259,17 @@ class ReceiptDocumentResource extends Resource
                                                 }
                                             }),
                                     ]),
-                                
+
                                 Forms\Components\Hidden::make('id_transporter'),
                             ]),
                         Forms\Components\Grid::make(2)
                             ->schema([
                                 Forms\Components\TextInput::make('purchase_invoice_no')
-                                    ->label('Purchase Invoice Number'),
+                                    ->label('Purchase Invoice Number')
+                                    ->default(fn() => (ReceiptDocument::max('purchase_invoice_no') ?? 0) + 1),
                                 Forms\Components\TextInput::make('order_no')
-                                    ->label('رقم الطلب (Order No)'),
+                                    ->label('رقم الطلب (Order No)')
+                                    ->default(fn() => (ReceiptDocument::max('order_no') ?? 0) + 1),
                             ]),
                         Forms\Components\Grid::make(1)
                             ->schema([
@@ -283,30 +293,30 @@ class ReceiptDocumentResource extends Resource
                                                             ->label('Product Name')
                                                             ->required()
                                                             ->maxLength(255),
-                                                        
+
                                                         Forms\Components\TextInput::make('product_code')
                                                             ->label('Product Code')
                                                             ->required()
                                                             ->unique(ignoreRecord: true)
                                                             ->maxLength(255),
-                                                        
+
                                                         Forms\Components\Textarea::make('description')
                                                             ->label('Description')
                                                             ->rows(3)
                                                             ->columnSpanFull(),
                                                     ])
                                                     ->columns(2),
-                                                
+
                                                 Forms\Components\Section::make('Product Specifications')
                                                     ->schema([
                                                         Forms\Components\TextInput::make('performance_grade')
                                                             ->label('Performance Grade')
                                                             ->maxLength(255),
-                                                        
+
                                                         Forms\Components\TextInput::make('modification_type')
                                                             ->label('Modification Type')
                                                             ->maxLength(255),
-                                                        
+
                                                         Forms\Components\Select::make('unit')
                                                             ->label('Unit of Measurement')
                                                             ->options([
@@ -315,7 +325,7 @@ class ReceiptDocumentResource extends Resource
                                                                 'ltr' => 'Liter',
                                                             ])
                                                             ->required(),
-                                                        
+
                                                         Forms\Components\Select::make('is_active')
                                                             ->label('Status')
                                                             ->options([
@@ -326,14 +336,14 @@ class ReceiptDocumentResource extends Resource
                                                             ->required(),
                                                     ])
                                                     ->columns(2),
-                                                
+
                                                 Forms\Components\Section::make('Pricing Information')
                                                     ->schema([
                                                         Forms\Components\TextInput::make('price1')
                                                             ->label('Price 1')
                                                             ->numeric()
                                                             ->prefix('$'),
-                                                        
+
                                                         Forms\Components\TextInput::make('price2')
                                                             ->label('Price 2')
                                                             ->numeric()
@@ -367,12 +377,12 @@ class ReceiptDocumentResource extends Resource
                             ->defaultItems(1)
                             ->addActionLabel('Add Product')
                             ->deleteAction(
-                                fn (Action $action) => $action->label('Remove Product')
+                                fn(Action $action) => $action->label('Remove Product')
                             )
                             ->label('Products')
                             ->columnSpanFull(),
                     ])->columns(4),
-                
+
                 Forms\Components\Section::make('Order Summary')
                     ->schema([
                         Forms\Components\Grid::make(3)
@@ -382,38 +392,38 @@ class ReceiptDocumentResource extends Resource
                                     ->content(function (Get $get): string {
                                         $products = $get('receiptDocumentProducts') ?? [];
                                         $subtotal = 0;
-                                        
+
                                         foreach ($products as $product) {
                                             if (isset($product['quantity']) && isset($product['unit_price'])) {
                                                 $subtotal += $product['quantity'] * $product['unit_price'];
                                             }
                                         }
-                                        
+
                                         return '$' . number_format($subtotal, 2);
                                     }),
-                                
+
                                 Forms\Components\Placeholder::make('tax_amount')
                                     ->label('Tax Amount')
                                     ->content(function (Get $get): string {
                                         $products = $get('receiptDocumentProducts') ?? [];
                                         $taxAmount = 0;
-                                        
+
                                         foreach ($products as $product) {
                                             if (isset($product['quantity']) && isset($product['unit_price']) && isset($product['tax_rate'])) {
                                                 $subtotal = $product['quantity'] * $product['unit_price'];
                                                 $taxAmount += $subtotal * ($product['tax_rate'] / 100);
                                             }
                                         }
-                                        
+
                                         return '$' . number_format($taxAmount, 2);
                                     }),
-                                
+
                                 Forms\Components\Placeholder::make('total')
                                     ->label('Total')
                                     ->content(function (Get $get): string {
                                         $products = $get('receiptDocumentProducts') ?? [];
                                         $total = 0;
-                                        
+
                                         foreach ($products as $product) {
                                             if (isset($product['quantity']) && isset($product['unit_price'])) {
                                                 $subtotal = $product['quantity'] * $product['unit_price'];
@@ -421,7 +431,7 @@ class ReceiptDocumentResource extends Resource
                                                 $total += $subtotal * (1 + ($taxRate / 100));
                                             }
                                         }
-                                        
+
                                         return '$' . number_format($total, 2);
                                     })
                                     ->extraAttributes(['class' => 'font-bold text-lg']),
@@ -429,7 +439,7 @@ class ReceiptDocumentResource extends Resource
                     ])
                     ->collapsible()
                     ->collapsed(false),
-                
+
                 Forms\Components\Section::make('Officer Information')
                     ->schema([
                         Forms\Components\Grid::make(4)
@@ -496,7 +506,7 @@ class ReceiptDocumentResource extends Resource
                                 ]),
                             ]),
                     ])->collapsible(),
-                
+
                 Forms\Components\Section::make('Additional Information')
                     ->schema([
                         Forms\Components\Textarea::make('note')
@@ -509,9 +519,10 @@ class ReceiptDocumentResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
-            ->modifyQueryUsing(fn (Builder $query) => $query
-                ->withCount('receiptDocumentProducts')
-                ->with(['receiptDocumentProducts.product', 'supplier', 'transporter'])
+            ->modifyQueryUsing(
+                fn(Builder $query) => $query
+                    ->withCount('receiptDocumentProducts')
+                    ->with(['receiptDocumentProducts.product', 'supplier', 'transporter'])
             )
             ->columns([
                 Tables\Columns\TextColumn::make('date_and_time')
@@ -634,7 +645,7 @@ class ReceiptDocumentResource extends Resource
                     ->badge()
                     ->color('success')
                     ->toggleable()
-                    ->getStateUsing(fn ($record) => $record->receiptDocumentProducts()->count()),
+                    ->getStateUsing(fn($record) => $record->receiptDocumentProducts()->count()),
                 Tables\Columns\TextColumn::make('total_amount')
                     ->label('Total Amount')
                     ->money('USD')
@@ -688,11 +699,11 @@ class ReceiptDocumentResource extends Resource
                         return $query
                             ->when(
                                 $data['date_from'],
-                                fn (Builder $query, $date): Builder => $query->whereDate('date_and_time', '>=', $date),
+                                fn(Builder $query, $date): Builder => $query->whereDate('date_and_time', '>=', $date),
                             )
                             ->when(
                                 $data['date_until'],
-                                fn (Builder $query, $date): Builder => $query->whereDate('date_and_time', '<=', $date),
+                                fn(Builder $query, $date): Builder => $query->whereDate('date_and_time', '<=', $date),
                             );
                     })
                     ->indicateUsing(function (array $data): array {
@@ -712,7 +723,7 @@ class ReceiptDocumentResource extends Resource
                     ->label('Print')
                     ->icon('heroicon-o-printer')
                     ->color('success')
-                    ->url(fn (ReceiptDocument $record): string => route('receipt-documents.print', $record))
+                    ->url(fn(ReceiptDocument $record): string => route('receipt-documents.print', $record))
                     ->openUrlInNewTab(),
                 Tables\Actions\ViewAction::make(),
                 Tables\Actions\EditAction::make(),
