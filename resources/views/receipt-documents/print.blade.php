@@ -80,8 +80,8 @@
             margin: 0;
             background-color: #ffffff;
             color: #333;
-            font-size: 13px;
-            line-height: 1.3;
+            font-size: 16px;
+            line-height: 1.4;
             direction: rtl;
         }
 
@@ -134,7 +134,7 @@
         }
 
         .header-center h2 {
-            font-size: 14px;
+            font-size: 17px;
             margin: 3px 0;
             font-weight: 600;
             line-height: 1.2;
@@ -153,7 +153,7 @@
             display: flex;
             justify-content: space-between;
             margin: 4px 0;
-            font-size: 12px;
+            font-size: 15px;
             font-weight: 500;
             padding: 4px;
             border: 1px solid #ddd;
@@ -186,7 +186,7 @@
         .intro-text {
             text-align: center;
             margin: 4px 0;
-            font-size: 13px;
+            font-size: 15px;
             line-height: 1.3;
             direction: rtl;
             padding: 4px;
@@ -196,7 +196,7 @@
             width: 100%;
             border-collapse: collapse;
             margin-bottom: 6px;
-            font-size: 11px;
+            font-size: 14px;
             direction: rtl;
             table-layout: fixed;
         }
@@ -204,7 +204,7 @@
         th,
         td {
             border: 1px solid #333;
-            padding: 4px 3px;
+            padding: 5px 4px;
             text-align: center;
             vertical-align: middle;
             overflow: hidden;
@@ -215,7 +215,7 @@
         th {
             color: #000;
             font-weight: 600;
-            font-size: 10px;
+            font-size: 13px;
             background-color: #f5f5f5;
         }
 
@@ -232,8 +232,12 @@
             margin-top: 6px;
             margin-bottom: 3px;
             text-align: center;
-            font-size: 13px;
-            padding: 4px;
+            font-size: 16px;
+            padding: 6px 8px;
+        }
+
+        .section-title .bilingual .english {
+            font-size: 15px;
         }
 
         .signature-table {
@@ -241,26 +245,26 @@
             border-collapse: collapse;
             margin-top: 8px;
             margin-bottom: 8px;
-            font-size: 11px;
+            font-size: 14px;
             direction: rtl;
         }
 
         .signature-table th {
             background-color: #f5f5f5;
             font-weight: 600;
-            padding: 4px 3px;
-            font-size: 10px;
+            padding: 5px 4px;
+            font-size: 13px;
         }
 
         .signature-table td {
-            height: 35px;
-            padding: 4px 3px;
+            height: 40px;
+            padding: 5px 4px;
             vertical-align: bottom;
         }
 
         .signature-table .name-field {
-            height: 20px;
-            padding: 3px;
+            height: 25px;
+            padding: 4px;
             vertical-align: middle;
         }
 
@@ -300,17 +304,17 @@
 
         th .bilingual {
             flex-direction: column;
-            gap: 0px;
+            gap: 1px;
         }
 
         th .bilingual .arabic {
             font-weight: 600;
-            font-size: 10px;
+            font-size: 13px;
         }
 
         th .bilingual .english {
             font-weight: 500;
-            font-size: 9px;
+            font-size: 11px;
         }
 
         .company-info {
@@ -319,14 +323,14 @@
 
         .company-info strong {
             font-weight: 600;
-            font-size: 14px;
+            font-size: 16px;
             display: block;
             margin-bottom: 4px;
             font-family: 'Segoe UI', 'Cairo', Arial, sans-serif;
         }
 
         .company-info .info-details {
-            font-size: 11px;
+            font-size: 13px;
             line-height: 1.4;
             font-family: 'Segoe UI', 'Cairo', Arial, sans-serif;
         }
@@ -368,16 +372,16 @@
         }
 
         .transporter-table th {
-            font-size: 9px;
-            padding: 2px;
+            font-size: 12px;
+            padding: 4px;
         }
 
         .transporter-table th .bilingual .arabic {
-            font-size: 9px;
+            font-size: 12px;
         }
 
         .transporter-table th .bilingual .english {
-            font-size: 8px;
+            font-size: 10px;
         }
 
         @media print {
@@ -513,6 +517,16 @@
             width: 25%;
         }
 
+        .signature-table th .bilingual .english {
+            font-size: 9px;
+            white-space: normal;
+            line-height: 1.2;
+        }
+
+        .signature-table th .bilingual .arabic {
+            font-size: 12px;
+        }
+
         .header-content {
             display: flex;
             flex-direction: column;
@@ -521,14 +535,14 @@
         }
 
         .company-title {
-            font-size: 15px;
+            font-size: 17px;
             font-weight: 700;
             margin-bottom: 5px;
             color: #2c3e50;
         }
 
         .company-details {
-            font-size: 11px;
+            font-size: 13px;
             line-height: 1.4;
         }
 
