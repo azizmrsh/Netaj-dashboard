@@ -572,7 +572,7 @@
                         الرمز البريدي : ٢٢٣٤٧<br>
                         info@advanced-netaj.com : البريد الإلكتروني<br>
                         رقم السجل التجاري : ٤٠٣٠٥٧٩٠٩٠<br>
-                        رقم ضريبة القيمة المضافة : ٣١٢٥٤٤٥٢٩٠٠٠٣
+                        رقم ضريبة القيمة المضافة : ٣١٢٥٤٤٥٢٩٠٠٠٠٣
                     </div>
                 </div>
             </div>
@@ -597,7 +597,7 @@
                         Postal code: 22347<br>
                         E-mail: info@advanced-netaj.com<br>
                         Commercial Registration Number: 4030579090<br>
-                        VAT Number: 3125445290003
+                        VAT Number: 31254452900003
                     </div>
                 </div>
             </div>

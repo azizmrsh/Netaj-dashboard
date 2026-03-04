@@ -5,7 +5,8 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>فاتورة مبيعات - {{ $salesInvoice->customer_name ?? 'غير محدد' }} -
-        {{ \Carbon\Carbon::parse($salesInvoice->invoice_date)->format('Y-m-d') }}</title>
+        {{ \Carbon\Carbon::parse($salesInvoice->invoice_date)->format('Y-m-d') }}
+    </title>
     <link
         href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700&family=Segoe+UI:wght@400;500;600;700&display=swap"
         rel="stylesheet">
@@ -360,7 +361,7 @@
                         الرمز البريدي : ٢٢٣٤٧<br>
                         info@advanced-netaj.com : البريد الإلكتروني<br>
                         رقم السجل التجاري : ٤٠٣٠٥٧٩٠٩٠<br>
-                        رقم ضريبة القيمة المضافة : ٣١٢٥٤٤٥٢٩٠٠٠٣
+                        رقم ضريبة القيمة المضافة : ٣١٢٥٤٤٥٢٩٠٠٠٠٣
                     </div>
                 </div>
             </div>
@@ -385,7 +386,7 @@
                         Postal code: 22347<br>
                         E-mail: info@advanced-netaj.com<br>
                         Commercial Registration Number: 4030579090<br>
-                        VAT Number: 3125445290003
+                        VAT Number: 31254452900003
                     </div>
                 </div>
             </div>

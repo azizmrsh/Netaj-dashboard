@@ -5,7 +5,8 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>فاتورة مشتريات - {{ $purchaseInvoice->receiptDocument->supplier->name ?? 'غير محدد' }} -
-        {{ \Carbon\Carbon::parse($purchaseInvoice->date_and_time)->format('Y-m-d') }}</title>
+        {{ \Carbon\Carbon::parse($purchaseInvoice->date_and_time)->format('Y-m-d') }}
+    </title>
     <link
         href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700&family=Segoe+UI:wght@400;500;600;700&display=swap"
         rel="stylesheet">
@@ -364,7 +365,7 @@
                         الرمز البريدي : ٢٢٣٤٧<br>
                         info@advanced-netaj.com : البريد الإلكتروني<br>
                         رقم السجل التجاري : ٤٠٣٠٥٧٩٠٩٠<br>
-                        رقم ضريبة القيمة المضافة : ٣١٢٥٤٤٥٢٩٠٠٠٣
+                        رقم ضريبة القيمة المضافة : ٣١٢٥٤٤٥٢٩٠٠٠٠٣
                     </div>
                 </div>
             </div>
@@ -389,7 +390,7 @@
                         Postal code: 22347<br>
                         E-mail: info@advanced-netaj.com<br>
                         Commercial Registration Number: 4030579090<br>
-                        VAT Number: 3125445290003
+                        VAT Number: 31254452900003
                     </div>
                 </div>
             </div>
@@ -639,7 +640,8 @@
                     </div>
                 </td>
                 <td class="value" colspan="2" style="width: 50%;">
-                    {{ number_format($purchaseInvoice->subtotal_amount ?? $subtotal, 2) }}</td>
+                    {{ number_format($purchaseInvoice->subtotal_amount ?? $subtotal, 2) }}
+                </td>
             </tr>
             <tr>
                 <td class="label">
@@ -659,7 +661,8 @@
                     </div>
                 </td>
                 <td class="value total" style="width: 25%;">
-                    {{ number_format($purchaseInvoice->total_amount_with_tax ?? ($subtotal + $totalTax), 2) }}</td>
+                    {{ number_format($purchaseInvoice->total_amount_with_tax ?? ($subtotal + $totalTax), 2) }}
+                </td>
                 <td class="text-value total" style="width: 25%;">
                     @php
                         $total = $purchaseInvoice->total_amount_with_tax ?? ($subtotal + $totalTax);
