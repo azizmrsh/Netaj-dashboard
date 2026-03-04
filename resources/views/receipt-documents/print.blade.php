@@ -566,12 +566,13 @@
                 <div class="header-content">
                     <div class="company-title">شركة نتاج المتطورة التجارية</div>
                     <div class="company-details">
-                        رقم السجل التجاري: ١٢٣٤٥٦٧٨٩٠<br>
-                        رقم ضريبة القيمة المضافة: ٣٠٠١٢٣٤٥٦٧٨٩٠<br>
-                        البريد الإلكتروني: info@netaj.com<br>
-                        الرمز البريدي: ١١٥٦٤<br>
-                        العنوان: ص.ب: ١٢٣٤٥ الرياض<br>
-                        المنطقة - الدولة: الرياض - المملكة العربية السعودية
+                        رقم المبنى - الشارع : ٣٠٣٠ - شارع قيصر الكاتب<br>
+                        الحي - المدينة : ٦٢٠٨ مدائن الفهد - جدة<br>
+                        الولاية - البلد : مكة المكرمة - المملكة العربية السعودية<br>
+                        الرمز البريدي : ٢٢٣٤٧<br>
+                        info@advanced-netaj.com : البريد الإلكتروني<br>
+                        رقم السجل التجاري : ٤٠٣٠٥٧٩٠٩٠<br>
+                        رقم ضريبة القيمة المضافة : ٣١٢٥٤٤٥٢٩٠٠٠٣
                     </div>
                 </div>
             </div>
@@ -590,13 +591,13 @@
                 <div class="header-content">
                     <div class="company-title">Netaj Almotatwrah Commercial Company</div>
                     <div class="company-details">
-                        P.O. Box: 12345 Riyadh 11564<br>
-                        Tel: 011-1234567<br>
-                        State - Country: Riyadh - Kingdom of Saudi Arabia<br>
-                        Postal code: 11564<br>
-                        E-mail: info@netaj.com<br>
-                        Commercial Registration Number: 1234567890<br>
-                        VAT Number: 3001234567890
+                        Building No. - Street: 3030 - Qaiser Al Kateb Street<br>
+                        District - City: 6208 Madain Al Fahd - Jeddah<br>
+                        State - Country: Makka - Kingdom of Saudi Arabia<br>
+                        Postal code: 22347<br>
+                        E-mail: info@advanced-netaj.com<br>
+                        Commercial Registration Number: 4030579090<br>
+                        VAT Number: 3125445290003
                     </div>
                 </div>
             </div>
