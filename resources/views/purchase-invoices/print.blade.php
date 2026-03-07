@@ -83,12 +83,12 @@
             text-align: right;
             font-size: 11px;
             line-height: 1.4;
-            width: 34%;
+            width: 32%;
             direction: rtl;
         }
 
         .header-center {
-            width: 32%;
+            width: 36%;
             text-align: center;
             display: flex;
             flex-direction: column;
@@ -97,9 +97,10 @@
         }
 
         .logo-container {
-            width: 160px;
-            height: 80px;
-            margin-bottom: 15px;
+            width: 250px;
+            height: 125px;
+            margin-top: -15px;
+            margin-bottom: 0px;
             display: flex;
             align-items: flex-start;
             justify-content: center;
@@ -112,7 +113,7 @@
 
         .header-center h2 {
             font-size: 14px;
-            margin: 3px 0;
+            margin: 1px 0;
             font-weight: 600;
             line-height: 1.2;
             font-family: 'Segoe UI', 'Cairo', Arial, sans-serif;
@@ -122,7 +123,7 @@
             text-align: left;
             font-size: 11px;
             line-height: 1.4;
-            width: 34%;
+            width: 32%;
             direction: ltr;
         }
 
@@ -360,7 +361,8 @@
         <div class="header">
             <div class="header-left">
                 <div class="header-content">
-                    <div class="company-title">شركة نتاج المتطورة التجارية</div>
+                    <div class="company-title" style="font-size: 17px; letter-spacing: 0.8px;">شركة نتاج المتطورة
+                        التجارية</div>
                     <div class="company-details">
                         رقم المبنى - الشارع : ٣٠٣٠ - شارع قيصر الكاتب<br>
                         الحي - المدينة : ٦٢٠٨ مدائن الفهد - جدة<br>
@@ -378,13 +380,16 @@
                     <img src="{{ asset('images/logo.svg') }}" alt="Company Logo"
                         style="width: 100%; height: 100%; object-fit: contain;">
                 </div>
-                <h2>Purchases Invoice</h2>
-                <h2>فاتورة مشتريات</h2>
+                <h2 style="margin-top: -10px;">Purchases Invoice</h2>
+                <h2 style="font-size: 20px; margin-top: 2px;">فاتورة مشتريات</h2>
             </div>
 
             <div class="header-right">
                 <div class="header-content">
-                    <div class="company-title">Netaj Almotatwrah Commercial Company</div>
+                    <div class="company-title"
+                        style="font-size: 12.5px; letter-spacing: 0.5px; margin-bottom: 6px; text-align-last: justify; width: 100%;">
+                        Netaj Almotatwrah Commercial
+                        Company</div>
                     <div class="company-details">
                         Building No. - Street: 3030 - Qaiser Al Kateb Street<br>
                         District - City: 6208 Madain Al Fahd - Jeddah<br>
