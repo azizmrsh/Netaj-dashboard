@@ -83,12 +83,12 @@
             text-align: right;
             font-size: 11px;
             line-height: 1.4;
-            width: 32%;
+            width: 34%;
             direction: rtl;
         }
 
         .header-center {
-            width: 36%;
+            width: 32%;
             text-align: center;
             display: flex;
             flex-direction: column;
@@ -97,11 +97,11 @@
         }
 
         .logo-container {
-            width: 180px;
-            height: 110px;
-            margin-bottom: 6px;
+            width: 160px;
+            height: 80px;
+            margin-bottom: 15px;
             display: flex;
-            align-items: center;
+            align-items: flex-start;
             justify-content: center;
             border: none;
             border-radius: 0;
@@ -122,35 +122,38 @@
             text-align: left;
             font-size: 11px;
             line-height: 1.4;
-            width: 32%;
+            width: 34%;
             direction: ltr;
         }
 
         .header-content {
             display: flex;
             flex-direction: column;
-            height: 100%;
-            justify-content: space-between;
+            height: auto;
+            justify-content: flex-start;
         }
 
         .company-title {
-            font-size: 15px;
+            font-size: 14px;
             font-weight: 700;
-            margin-bottom: 5px;
+            margin-bottom: 4px;
             color: #2c3e50;
+            white-space: nowrap;
+            height: 18px;
         }
 
         .company-details {
-            font-size: 11px;
-            line-height: 1.4;
+            font-size: 10px;
+            line-height: 1.7;
+            white-space: nowrap;
         }
 
         .header-left,
         .header-right {
             display: flex;
             flex-direction: column;
-            justify-content: space-between;
-            height: 100%;
+            justify-content: flex-start;
+            height: auto;
         }
 
         table {
@@ -361,10 +364,10 @@
                     <div class="company-details">
                         رقم المبنى - الشارع : ٣٠٣٠ - شارع قيصر الكاتب<br>
                         الحي - المدينة : ٦٢٠٨ مدائن الفهد - جدة<br>
-                        الولاية - البلد : مكة المكرمة - المملكة العربية السعودية<br>
+                        البلد : المملكة العربية السعودية<br>
                         الرمز البريدي : ٢٢٣٤٧<br>
-                        info@advanced-netaj.com : البريد الإلكتروني<br>
-                        رقم السجل التجاري : ٤٠٣٠٥٧٩٠٩٠<br>
+                        البريد الإلكتروني : info@advanced-netaj.com<br>
+                        الرقم الوطني الموحد : ٧٠٤١٨٢٦٢١٠<br>
                         رقم ضريبة القيمة المضافة : ٣١٢٥٤٤٥٢٩٠٠٠٠٣
                     </div>
                 </div>
@@ -375,7 +378,6 @@
                     <img src="{{ asset('images/logo.svg') }}" alt="Company Logo"
                         style="width: 100%; height: 100%; object-fit: contain;">
                 </div>
-                <h2>Netaj Almotatwrah Commercial Company</h2>
                 <h2>Purchases Invoice</h2>
                 <h2>فاتورة مشتريات</h2>
             </div>
@@ -386,10 +388,10 @@
                     <div class="company-details">
                         Building No. - Street: 3030 - Qaiser Al Kateb Street<br>
                         District - City: 6208 Madain Al Fahd - Jeddah<br>
-                        State - Country: Makka - Kingdom of Saudi Arabia<br>
+                        Country: Kingdom of Saudi Arabia<br>
                         Postal code: 22347<br>
                         E-mail: info@advanced-netaj.com<br>
-                        Commercial Registration Number: 4030579090<br>
+                        National Number : 7041826210<br>
                         VAT Number: 31254452900003
                     </div>
                 </div>
