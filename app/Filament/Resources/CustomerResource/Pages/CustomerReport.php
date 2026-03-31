@@ -77,12 +77,13 @@ class CustomerReport extends Page implements Forms\Contracts\HasForms
                         $this->selectedCustomer = $state ? Customer::find($state) : null;
                     }),
                 
-                Forms\Components\Select::make('product_id')
-                    ->label('Filter by Product - تصفية حسب المنتج (Optional)')
-                    ->options(Product::pluck('name', 'id'))
+                Forms\Components\CheckboxList::make('product_ids')
+                    ->label('تصفية حسب المنتجات — Filter by Products')
+                    ->options(Product::orderBy('name')->pluck('name', 'id'))
+                    ->columns(3)
                     ->searchable()
-                    ->nullable()
-                    ->helperText('Leave empty to show all products'),
+                    ->bulkToggleable()
+                    ->helperText('اختر منتجاً أو أكثر — اتركه فارغاً لعرض جميع المنتجات'),
                 
                 Forms\Components\DatePicker::make('date_from')
                     ->label('From Date')
@@ -240,16 +241,17 @@ class CustomerReport extends Page implements Forms\Contracts\HasForms
     {
         $transactions = collect();
         $separateProducts = $this->data['separate_products'] ?? false;
-        $productId = $this->data['product_id'] ?? null;
+        // multi-select returns array; null or empty array = all products
+        $productIds = !empty($this->data['product_ids']) ? $this->data['product_ids'] : null;
 
         // Get receipt documents in range
         $receiptQuery = ReceiptDocument::where('id_customer', $customerId)
             ->whereBetween('date_and_time', [$dateFrom, $dateTo])
             ->with(['receiptDocumentProducts.product']);
         
-        if ($productId) {
-            $receiptQuery->whereHas('receiptDocumentProducts', function($q) use ($productId) {
-                $q->where('id_product', $productId);
+        if ($productIds) {
+            $receiptQuery->whereHas('receiptDocumentProducts', function($q) use ($productIds) {
+                $q->whereIn('product_id', $productIds);
             });
         }
         
@@ -258,9 +260,9 @@ class CustomerReport extends Page implements Forms\Contracts\HasForms
         foreach ($receiptDocs as $doc) {
             $products = $doc->receiptDocumentProducts;
             
-            // Filter products if specific product selected
-            if ($productId) {
-                $products = $products->where('id_product', $productId);
+            // Filter products if specific products selected
+            if ($productIds) {
+                $products = $products->whereIn('product_id', $productIds);
             }
             
             if ($separateProducts) {
@@ -298,9 +300,9 @@ class CustomerReport extends Page implements Forms\Contracts\HasForms
             ->whereBetween('date_and_time', [$dateFrom, $dateTo])
             ->with(['deliveryDocumentProducts.product']);
         
-        if ($productId) {
-            $deliveryQuery->whereHas('deliveryDocumentProducts', function($q) use ($productId) {
-                $q->where('id_product', $productId);
+        if ($productIds) {
+            $deliveryQuery->whereHas('deliveryDocumentProducts', function($q) use ($productIds) {
+                $q->whereIn('product_id', $productIds);
             });
         }
         
@@ -309,9 +311,9 @@ class CustomerReport extends Page implements Forms\Contracts\HasForms
         foreach ($deliveryDocs as $doc) {
             $products = $doc->deliveryDocumentProducts;
             
-            // Filter products if specific product selected
-            if ($productId) {
-                $products = $products->where('id_product', $productId);
+            // Filter products if specific products selected
+            if ($productIds) {
+                $products = $products->whereIn('product_id', $productIds);
             }
             
             if ($separateProducts) {
