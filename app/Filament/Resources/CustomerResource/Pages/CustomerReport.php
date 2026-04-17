@@ -270,7 +270,7 @@ class CustomerReport extends Page implements Forms\Contracts\HasForms
                 foreach ($products as $docProduct) {
                     $transactions->push([
                         'date' => $doc->date_and_time,
-                        'document_number' => $doc->document_number ?: 'Receipt-' . $doc->id,
+                        'document_number' => $doc->purchase_invoice_no ? 'REC-' . $doc->purchase_invoice_no : ($doc->document_number ?: 'REC-' . $doc->id),
                         'product_name' => $docProduct->product->name,
                         'receipts' => $docProduct->quantity,
                         'issues' => 0,
@@ -285,7 +285,7 @@ class CustomerReport extends Page implements Forms\Contracts\HasForms
                 if ($totalQty > 0) {
                     $transactions->push([
                         'date' => $doc->date_and_time,
-                        'document_number' => $doc->document_number ?: 'Receipt-' . $doc->id,
+                        'document_number' => $doc->purchase_invoice_no ? 'REC-' . $doc->purchase_invoice_no : ($doc->document_number ?: 'REC-' . $doc->id),
                         'product_name' => $productNames,
                         'receipts' => $totalQty,
                         'issues' => 0,
@@ -321,7 +321,7 @@ class CustomerReport extends Page implements Forms\Contracts\HasForms
                 foreach ($products as $docProduct) {
                     $transactions->push([
                         'date' => $doc->date_and_time,
-                        'document_number' => $doc->document_number ?: 'Delivery-' . $doc->id,
+                        'document_number' => $doc->purchase_order_no ? 'DEL-' . $doc->purchase_order_no : ($doc->document_number ?: 'DEL-' . $doc->id),
                         'product_name' => $docProduct->product->name,
                         'receipts' => 0,
                         'issues' => $docProduct->quantity,
@@ -336,7 +336,7 @@ class CustomerReport extends Page implements Forms\Contracts\HasForms
                 if ($totalQty > 0) {
                     $transactions->push([
                         'date' => $doc->date_and_time,
-                        'document_number' => $doc->document_number ?: 'Delivery-' . $doc->id,
+                        'document_number' => $doc->purchase_order_no ? 'DEL-' . $doc->purchase_order_no : ($doc->document_number ?: 'DEL-' . $doc->id),
                         'product_name' => $productNames,
                         'receipts' => 0,
                         'issues' => $totalQty,
