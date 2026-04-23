@@ -429,7 +429,7 @@ class DeliveryDocumentResource extends Resource
                                 Forms\Components\TextInput::make('purchase_order_no')
                                     ->required()
                                     ->label('Purchase Order Number')
-                                    ->default(fn() => (DeliveryDocument::max('purchase_order_no') ?? 0) + 1),
+                                    ->default(fn() => DeliveryDocument::nextSequentialNumberFor('purchase_order_no')),
                                 Forms\Components\TextInput::make('project_name_and_location')
                                     ->label('Project Name and Location'),
                             ]),

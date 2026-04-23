@@ -266,10 +266,10 @@ class ReceiptDocumentResource extends Resource
                             ->schema([
                                 Forms\Components\TextInput::make('purchase_invoice_no')
                                     ->label('Purchase Invoice Number')
-                                    ->default(fn() => (ReceiptDocument::max('purchase_invoice_no') ?? 0) + 1),
+                                    ->default(fn() => ReceiptDocument::nextSequentialNumberFor('purchase_invoice_no')),
                                 Forms\Components\TextInput::make('order_no')
                                     ->label('رقم الطلب (Order No)')
-                                    ->default(fn() => (ReceiptDocument::max('order_no') ?? 0) + 1),
+                                    ->default(fn() => ReceiptDocument::nextSequentialNumberFor('order_no')),
                             ]),
                         Forms\Components\Grid::make(1)
                             ->schema([
